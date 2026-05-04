@@ -1,9 +1,10 @@
----
+﻿---
 name: docx
-description: "Use this skill when a Word document (.docx) is the explicit input or the most likely required output. Good fit for creating, reading, editing, restructuring, or polishing .docx files, including tracked changes, comments, formatting, images, headings, tables of contents, and template-style document work. The user does not need to say '.docx' verbatim if the request clearly implies a Word document handoff, such as a formal report, memo, letter, or document template meant for Word editing."
+description: Use this skill when a Word document (.docx) is the explicit input or the most likely required output. Good fit for creating, reading, editing, restructuring, or polishing .docx files, including tracked changes, comments, formatting, images, headings, tables of contents, and template-style document work. The user does not need to say '.docx' verbatim if the request clearly implies a Word document handoff, such as a formal report, memo, letter, or document template meant for Word editing.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill when the format requirement is clearly **Word / .docx**, whether stated explicitly or strongly implied by the deliverable.
@@ -23,6 +24,7 @@ Do **not** use this as the default for every "write a report" style request.
 - If the user explicitly wants a PDF deliverable, prefer `pdf`
 - If the user explicitly wants a spreadsheet deliverable, prefer `xlsx`
 - If the user explicitly wants a presentation deliverable, prefer `pptx`, `ppt-master`, or `html-ppt` depending on format
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # DOCX creation, editing, and analysis
 

@@ -1,5 +1,5 @@
 ﻿param(
-    [ValidateSet('check', 'update')]
+    [ValidateSet('check', 'update', 'apply-overrides')]
     [string]$Mode = 'check',
 
     [string[]]$Only = @(),
@@ -15,13 +15,47 @@ $OutputEncoding = [Console]::OutputEncoding
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SkillsRoot = $ScriptRoot
 $ConfigPath = Join-Path $ScriptRoot 'skills-sources.json'
+$OverridesPath = Join-Path $ScriptRoot 'local-routing-overrides.json'
+$RoutingOverrideStart = '<!-- LOCAL ROUTING OVERRIDE START -->'
+$RoutingOverrideEnd = '<!-- LOCAL ROUTING OVERRIDE END -->'
 
 if (-not (Test-Path $ConfigPath)) {
     throw "缺少配置文件: $ConfigPath"
 }
 
-$Config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+function Read-JsonFileUtf8 {
+    param([string]$Path)
+
+    if (-not (Test-Path $Path)) {
+        return $null
+    }
+
+    $RawText = [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
+    return ($RawText | ConvertFrom-Json)
+}
+
+$Config = Read-JsonFileUtf8 -Path $ConfigPath
 $Entries = @($Config.skills)
+
+$RoutingOverrides = @{}
+if (Test-Path $OverridesPath) {
+    try {
+        $OverridesConfig = Read-JsonFileUtf8 -Path $OverridesPath
+        foreach ($Override in @($OverridesConfig.overrides)) {
+            if ($null -eq $Override) {
+                continue
+            }
+
+            $Key = if ($Override.localFolder) { $Override.localFolder } elseif ($Override.skill) { $Override.skill } else { $null }
+            if ($null -ne $Key -and $Key -ne '') {
+                $RoutingOverrides[$Key.ToLowerInvariant()] = $Override
+            }
+        }
+    }
+    catch {
+        throw "读取本地路由覆盖配置失败: $OverridesPath`n$($_.Exception.Message)"
+    }
+}
 
 if ($Only.Count -gt 0) {
     $Wanted = @(
@@ -60,7 +94,7 @@ function Get-NormalizedText {
     if ($null -eq $Text) {
         return $null
     }
-    return $Text.Replace("`r`n", "`n").Replace("`r", "`n")
+    return $Text.TrimStart([char]0xFEFF).Replace("`r`n", "`n").Replace("`r", "`n")
 }
 
 function Get-FileText {
@@ -75,6 +109,224 @@ function Get-WebText {
     param([string]$Url)
     $Response = Invoke-WebRequest -UseBasicParsing -Uri $Url -TimeoutSec 60
     return (Get-NormalizedText -Text $Response.Content)
+}
+
+function Get-RoutingOverride {
+    param([object]$Entry)
+
+    $Keys = @()
+    if ($Entry.PSObject.Properties.Name -contains 'localFolder' -and $Entry.localFolder) {
+        $Keys += $Entry.localFolder.ToLowerInvariant()
+    }
+    if ($Entry.PSObject.Properties.Name -contains 'skill' -and $Entry.skill) {
+        $Keys += $Entry.skill.ToLowerInvariant()
+    }
+    if ($Entry.PSObject.Properties.Name -contains 'name' -and $Entry.name) {
+        $Keys += $Entry.name.ToLowerInvariant()
+    }
+
+    foreach ($Key in $Keys | Select-Object -Unique) {
+        if ($RoutingOverrides.ContainsKey($Key)) {
+            return $RoutingOverrides[$Key]
+        }
+    }
+
+    return $null
+}
+
+function Get-FrontMatterMatch {
+    param([string]$Text)
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return $null
+    }
+
+    return [regex]::Match($Text, '(?ms)^---\s*(.*?)\s*---')
+}
+
+function Set-FrontMatterDescription {
+    param(
+        [string]$FrontMatter,
+        [string]$Value
+    )
+
+    $Lines = $FrontMatter -split "`n"
+    $OutputLines = New-Object System.Collections.Generic.List[string]
+    $SingleLineValue = ((Get-NormalizedText -Text $Value) -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' }) -join ' '
+    $DescriptionLines = @("description: $SingleLineValue")
+    $Inserted = $false
+    $SkippingDescription = $false
+
+    foreach ($Line in $Lines) {
+        if ($SkippingDescription) {
+            if ($Line -match '^\s' -and $Line -notmatch '^[A-Za-z0-9_-]+:\s*') {
+                continue
+            }
+
+            $SkippingDescription = $false
+        }
+
+        if ($Line -match '^description:\s*') {
+            foreach ($DescriptionLine in $DescriptionLines) {
+                $OutputLines.Add($DescriptionLine)
+            }
+            $Inserted = $true
+            $SkippingDescription = $true
+            continue
+        }
+
+        $OutputLines.Add($Line)
+    }
+
+    if (-not $Inserted) {
+        foreach ($DescriptionLine in $DescriptionLines) {
+            $OutputLines.Add($DescriptionLine)
+        }
+    }
+
+    return (($OutputLines -join "`n").TrimEnd())
+}
+
+function Apply-RoutingOverrideToText {
+    param(
+        [string]$Text,
+        [object]$Override
+    )
+
+    if ($null -eq $Override -or [string]::IsNullOrWhiteSpace($Text)) {
+        return $Text
+    }
+
+    $TrailingNewlines = [regex]::Match($Text, '(\r?\n*)$').Groups[1].Value
+    $Result = $Text
+    $FrontMatterMatch = Get-FrontMatterMatch -Text $Result
+    if ($null -eq $FrontMatterMatch) {
+        return $Result
+    }
+
+    $FrontMatterContent = $FrontMatterMatch.Groups[1].Value
+    if ($Override.PSObject.Properties.Name -contains 'description' -and -not [string]::IsNullOrWhiteSpace($Override.description)) {
+        $FrontMatterContent = Set-FrontMatterDescription -FrontMatter $FrontMatterContent -Value $Override.description
+    }
+
+    $Result = $Result.Substring(0, $FrontMatterMatch.Groups[1].Index) + $FrontMatterContent + $Result.Substring($FrontMatterMatch.Groups[1].Index + $FrontMatterMatch.Groups[1].Length)
+
+    if ($Override.PSObject.Properties.Name -contains 'usageRule' -and -not [string]::IsNullOrWhiteSpace($Override.usageRule)) {
+        $UsageRuleText = Get-NormalizedText -Text $Override.usageRule
+        $ManagedBlock = $RoutingOverrideStart + "`n" + $UsageRuleText + "`n" + $RoutingOverrideEnd
+        $ManagedPattern = '(?ms)^<!-- LOCAL ROUTING OVERRIDE START -->\s*.*?^<!-- LOCAL ROUTING OVERRIDE END -->\s*'
+        $UsagePattern = '(?ms)^## Usage Rule\s*.*?(?=^## |^# [^#]|\Z)'
+
+        if ([regex]::IsMatch($Result, $ManagedPattern)) {
+            $Result = [regex]::Replace($Result, $ManagedPattern, ($ManagedBlock + "`n`n"))
+        }
+        elseif ([regex]::IsMatch($Result, $UsagePattern)) {
+            $Result = [regex]::Replace($Result, $UsagePattern, ($ManagedBlock + "`n`n"))
+        }
+        else {
+            $FrontMatterEnd = [regex]::Match($Result, '(?ms)^---\s*.*?\s*---')
+            if ($FrontMatterEnd.Success) {
+                $InsertAt = $FrontMatterEnd.Index + $FrontMatterEnd.Length
+                $Result = $Result.Substring(0, $InsertAt) + "`n`n" + $ManagedBlock + "`n`n" + $Result.Substring($InsertAt).TrimStart("`r", "`n")
+            }
+        }
+    }
+
+    $Result = [regex]::Replace($Result, '(\n){3,}', "`n`n")
+
+    return ($Result.TrimEnd("`r", "`n") + $TrailingNewlines)
+}
+
+function Write-TextFile {
+    param(
+        [string]$Path,
+        [string]$Text
+    )
+
+    [System.IO.File]::WriteAllText($Path, $Text, [System.Text.UTF8Encoding]::new($true))
+}
+
+function Get-TextHash {
+    param([string]$Text)
+
+    $Normalized = if ($null -eq $Text) { '' } else { $Text.TrimEnd("`r", "`n") }
+    $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Normalized)
+    $Sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $HashBytes = $Sha.ComputeHash($Bytes)
+        return ([System.BitConverter]::ToString($HashBytes) -replace '-', '').ToLowerInvariant()
+    }
+    finally {
+        $Sha.Dispose()
+    }
+}
+
+function Apply-RoutingOverrideToLocalSkill {
+    param([object]$Entry)
+
+    $Override = Get-RoutingOverride -Entry $Entry
+    if ($null -eq $Override) {
+        return $false
+    }
+
+    $SkillFile = Get-LocalSkillFile -Entry $Entry
+    $LocalText = Get-FileText -Path $SkillFile
+    if ($null -eq $LocalText) {
+        throw "缺少本地文件: $SkillFile"
+    }
+
+    $UpdatedText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
+    if ($UpdatedText -ne $LocalText) {
+        Write-TextFile -Path $SkillFile -Text $UpdatedText
+        return $true
+    }
+
+    return $false
+}
+
+function Invoke-ApplyOverrides {
+    param([object[]]$TargetEntries)
+
+    $ApplyResults = @()
+
+    foreach ($Entry in $TargetEntries) {
+        $Override = Get-RoutingOverride -Entry $Entry
+        if ($null -eq $Override) {
+            $ApplyResults += [pscustomobject]@{
+                Name      = $Entry.name
+                Type      = $Entry.type
+                Installed = (Test-Path (Get-LocalSkillPath -Entry $Entry))
+                Action    = 'skipped'
+                Status    = 'skipped'
+                Detail    = '没有本地 override'
+            }
+            continue
+        }
+
+        try {
+            $Changed = Apply-RoutingOverrideToLocalSkill -Entry $Entry
+            $ApplyResults += [pscustomobject]@{
+                Name      = $Entry.name
+                Type      = $Entry.type
+                Installed = (Test-Path (Get-LocalSkillPath -Entry $Entry))
+                Action    = if ($Changed) { 'applied' } else { 'unchanged' }
+                Status    = 'up-to-date'
+                Detail    = '已应用本地 override'
+            }
+        }
+        catch {
+            $ApplyResults += [pscustomobject]@{
+                Name      = $Entry.name
+                Type      = $Entry.type
+                Installed = (Test-Path (Get-LocalSkillPath -Entry $Entry))
+                Action    = 'failed'
+                Status    = 'error'
+                Detail    = $_.Exception.Message
+            }
+        }
+    }
+
+    return $ApplyResults
 }
 
 function Get-FrontMatterVersion {
@@ -199,9 +451,12 @@ function Get-SkillStatus {
                 }
 
                 $RemoteText = Get-WebText -Url $Entry.rawSkillUrl
+                $Override = Get-RoutingOverride -Entry $Entry
+                $NormalizedLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
+                $ExpectedLocalText = Apply-RoutingOverrideToText -Text $RemoteText -Override $Override
                 $LocalVersion = Get-FrontMatterVersion -Text $LocalText
                 $RemoteVersion = Get-FrontMatterVersion -Text $RemoteText
-                $Status = if ($LocalText -eq $RemoteText) { 'up-to-date' } else { 'outdated' }
+                $Status = if ((Get-TextHash -Text $NormalizedLocalText) -eq (Get-TextHash -Text $ExpectedLocalText)) { 'up-to-date' } else { 'outdated' }
 
                 $LocalVersionText = if ($null -ne $LocalVersion -and $LocalVersion -ne '') { $LocalVersion } else { 'n/a' }
                 $RemoteVersionText = if ($null -ne $RemoteVersion -and $RemoteVersion -ne '') { $RemoteVersion } else { 'n/a' }
@@ -312,6 +567,8 @@ function Update-Skill {
                 if ($LASTEXITCODE -ne 0) {
                     throw 'skills add 命令执行失败'
                 }
+
+                $null = Apply-RoutingOverrideToLocalSkill -Entry $Entry
             }
             default {
                 throw "不支持的更新类型: $($Entry.type)"
@@ -361,6 +618,9 @@ if ($Mode -eq 'check') {
             Detail    = $Status.Detail
         }
     }
+}
+elseif ($Mode -eq 'apply-overrides') {
+    $Results = @(Invoke-ApplyOverrides -TargetEntries $Entries)
 }
 else {
     foreach ($Entry in $Entries) {

@@ -1,9 +1,10 @@
----
+﻿---
 name: frontend-design
 description: Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use for normal UI creation or iteration on web components, pages, apps, landing pages, and product surfaces. Do NOT use by default for design extraction, static poster art, HTML slide decks, or PowerPoint generation when specialized skills exist.
 license: Apache 2.0. Based on Anthropic's frontend-design skill. See NOTICE.md for attribution.
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill as the **default web UI and frontend creation** skill.
@@ -23,6 +24,7 @@ Do **not** use this by default in these cases:
 - HTML/browser slide decks or explicitly presentation-style HTML artifacts: prefer `html-ppt`
 - Complex React artifact systems with state/routing and bundling needs: prefer `web-artifacts-builder`
 - PowerPoint or `.pptx` deliverables: prefer `pptx` or `ppt-master`
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
 

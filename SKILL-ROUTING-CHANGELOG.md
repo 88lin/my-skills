@@ -249,6 +249,50 @@
 
 **永远不需要再调整的终极方案**
 
+### 当前冲突簇判断
+
+当前真正需要路由治理的，主要只有这几组：
+
+1. 前端展示簇
+   - `frontend-design`
+   - `extract-design`
+   - `canvas-design`
+   - `web-artifacts-builder`
+   - `html-ppt`
+2. 演示文稿簇
+   - `pptx`
+   - `ppt-master`
+   - `html-ppt`
+3. 文档格式簇
+   - `pdf`
+   - `docx`
+   - `xlsx`
+   - `pptx`
+4. SEO 簇
+   - `seo-audit`
+   - `schema-markup`
+   - `ai-seo`
+5. Vercel 簇
+   - `deploy-to-vercel`
+   - `vercel-cli-with-tokens`
+
+这些组之外的大多数 skill，不需要为了形式统一继续补更多路由规则。
+
+### 当前无需额外加规则的 skill 组
+
+以下这几类当前明确保持默认，不再继续硬加路由规则：
+
+- 工程 / 流程型：`systematic-debugging`、`test-driven-development`、`verification-before-completion`、`writing-plans`、`using-git-worktrees`、`karpathy-guidelines`、`receiving-code-review`
+- 平台 / 工具型：`web-access`、`health`、`mindos-zh`、`mcp-builder`、`skill-creator`、`find-skills`
+- 研究 / 内容型：`brainstorming`、`hv-analysis`、`khazix-writer`、`luo-xiang-perspective`、`create-crush`
+- 设计辅助链：`adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset`、`teach-impeccable`
+
+理由很简单：
+
+- 它们要么职责天然独立
+- 要么本来就是协同链
+- 没必要为了“看起来规范”而继续补互斥规则
+
 ---
 
 ## 后续维护方式

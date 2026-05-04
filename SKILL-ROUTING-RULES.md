@@ -99,6 +99,27 @@
 - `ai-seo`
 - `vercel-cli-with-tokens`
 
+### 5. 不是所有 skill 都要加路由规则
+
+只有真正存在冲突的 skill，才值得加本地路由规则。
+
+不要为了形式统一而给所有 skill 都补 `Usage Rule`。
+
+下面这些通常不需要额外加路由规则：
+
+- 工程 / 流程型 skill
+- 平台 / 工具型 skill
+- 研究 / 内容型 skill
+- 设计辅助链里那些本来就协同使用的 skill
+
+如果一个 skill：
+
+- 职责足够独立
+- 不会抢别的最终产物
+- 不在高冲突簇里
+
+那就保持默认，不要过度治理。
+
 ---
 
 ## 默认入口 Skill
@@ -124,6 +145,14 @@
 - 静态海报：`canvas-design`
 - HTML 演示稿：`html-ppt`
 - 复杂 React artifact：`web-artifacts-builder`
+
+判断口诀：
+
+- 正常产品网页 / landing page / 应用界面 → `frontend-design`
+- 演示型、PPT 风格、editorial 风格静态 HTML 页面 → `html-ppt`
+- 复杂交互式 React artifact → `web-artifacts-builder`
+- 静态视觉物料 → `canvas-design`
+- 提取现有网站设计语言 → `extract-design`
 
 ### SEO 默认入口
 
@@ -220,6 +249,7 @@
 - 网页分享稿
 - 小红书图文风多页演示
 - presenter mode / keyboard navigation 是目标的一部分
+- 演示型、PPT 风格、editorial 风格的静态 HTML 页面
 
 不要默认用于：
 
@@ -338,6 +368,20 @@
 不要默认用于：
 
 - HTML 演示稿
+
+---
+
+## 当前高冲突簇
+
+为了方便以后继续维护，当前真正需要重点关注的冲突簇只有这些：
+
+1. 前端展示簇
+2. 演示文稿簇
+3. 文档格式簇
+4. SEO 簇
+5. Vercel 簇
+
+除了这些之外，不要轻易再扩张本地路由规则范围。
 - 从原始资料大规模生成新演示文稿时的重型流程
 
 ---

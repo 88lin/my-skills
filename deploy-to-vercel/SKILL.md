@@ -1,4 +1,4 @@
----
+﻿---
 name: deploy-to-vercel
 description: Deploy applications and websites to Vercel using the normal interactive or already-authenticated Vercel workflow. Use when the user explicitly wants to deploy a project to Vercel and there is no special requirement to work through access tokens. Do NOT use as the default if the task is specifically about token-based Vercel CLI authentication or token-managed automation.
 metadata:
@@ -6,6 +6,7 @@ metadata:
   version: "3.0.0"
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill as the **default Vercel deployment** skill.
@@ -18,6 +19,7 @@ Trigger it when the task clearly involves one of these goals:
 - Inspecting or iterating on a normal Vercel deployment workflow
 
 Do **not** use this if the task is specifically about token-based authentication, `VERCEL_TOKEN`, non-interactive auth setup, or token-driven CLI automation. In those cases, prefer `vercel-cli-with-tokens`.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Deploy to Vercel
 

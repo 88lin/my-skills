@@ -162,15 +162,13 @@
                        "autoUpdate":  false,
                        "reason":  "Customized local design stack; do not overwrite automatically"
                    },
-                   {
-                       "name":  "health",
-                       "localFolder":  "health",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "tw93/Waza",
-                       "skill":  "health",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/tw93/Waza/main/skills/health/SKILL.md"
-                   },
+                    {
+                        "name":  "health",
+                        "localFolder":  "health",
+                        "type":  "manual",
+                        "autoUpdate":  false,
+                        "reason":  "Current upstream/skills-cli resolution for tw93/Waza no longer matches local health entry; kept manual to avoid update failures until a safe dedicated update path is verified"
+                    },
                    {
                        "name":  "html-ppt",
                        "localFolder":  "html-ppt",

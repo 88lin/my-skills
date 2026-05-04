@@ -1,9 +1,10 @@
----
+﻿---
 name: canvas-design
 description: Create beautiful static visual art in .png and .pdf outputs using design philosophy. Use when the user explicitly wants a poster, cover, visual artwork, or other static design piece. Do NOT use by default for web UI, slide decks, or PowerPoint deliverables.
 license: Complete terms in LICENSE.txt
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill **on demand** for static visual output.
@@ -21,6 +22,7 @@ Do **not** use this by default in these cases:
 - HTML slide decks: prefer `html-ppt`
 - `.pptx` or PowerPoint deliverables: prefer `pptx` or `ppt-master`
 - Complex interactive artifacts: prefer `web-artifacts-builder`
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 These are instructions for creating design philosophies - aesthetic movements that are then EXPRESSED VISUALLY. Output only .md files, .pdf files, and .png files.
 

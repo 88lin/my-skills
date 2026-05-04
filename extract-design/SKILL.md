@@ -1,9 +1,10 @@
----
+﻿---
 name: extract-design
-description: "Extract the full design language from any website URL. Produces 8 output files including AI-optimized markdown, visual HTML preview, Tailwind config, React theme, shadcn/ui theme, Figma variables, W3C design tokens, and CSS variables. Also runs WCAG accessibility scoring. Use when the user wants to inspect, analyze, extract, or reference a live website's visual style or design system — for example colors, fonts, spacing, shadows, radii, component patterns, motion style, design tokens, or CSS variables — including cases like '参考这个网站的风格', '看看这个网站的样式', 'what colors/fonts does this site use', or '/extract-design'."
+description: Extract the full design language from any website URL. Produces 8 output files including AI-optimized markdown, visual HTML preview, Tailwind config, React theme, shadcn/ui theme, Figma variables, W3C design tokens, and CSS variables. Also runs WCAG accessibility scoring. Use when the user wants to inspect, analyze, extract, or reference a live website's visual style or design system — for example colors, fonts, spacing, shadows, radii, component patterns, motion style, design tokens, or CSS variables — including cases like '参考这个网站的风格', '看看这个网站的样式', 'what colors/fonts does this site use', or '/extract-design'.
 allowed-tools: Bash, Read, Write, Glob
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill **on demand**, not by default.
@@ -29,6 +30,7 @@ this skill can be the right fit even when they phrase it casually.
 Do **not** use this as the default skill for everyday UI design work, polish, critique, or typography improvements. For normal UI creation or iteration, prefer the existing design workflow and only use this skill when a real extraction task is needed.
 
 Do **not** trigger it for a vague `看看这个项目` or `看看这个网站` unless the context is clearly about visual design language rather than product logic, content, or code structure.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Extract Design Language
 

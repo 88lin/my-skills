@@ -1,9 +1,10 @@
----
+﻿---
 name: web-artifacts-builder
 description: Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use only for complex artifacts requiring state management, routing, multi-component architecture, or shadcn/ui components. Do NOT use for normal website or page design, slide decks, or simple single-file HTML/JSX artifacts.
 license: Complete terms in LICENSE.txt
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill **on demand** for complex artifact builds, not as the default frontend skill.
@@ -20,6 +21,7 @@ Do **not** use this by default in these cases:
 - HTML presentations or slide decks: prefer `html-ppt`
 - Static poster-style visual work: prefer `canvas-design`
 - Simple single-file HTML output: use a lighter approach instead of this stack
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Web Artifacts Builder
 

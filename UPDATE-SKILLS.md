@@ -512,6 +512,13 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 - `none currently tracked in this file`
 
+### 单独说明：`health`
+
+- 本地目录：`C:\Users\Computer\.agents\skills\health`
+- 当前状态：已改为手动管理，不参加统一 `skills-cli` 自动更新
+- 原因：当前 `tw93/Waza` 的 `skills` CLI 识别结果与本地 `health` 条目不一致，继续走统一自动更新会报错
+- 当前策略：保留本地已安装版本，先停止自动更新，等确认安全更新路径后再恢复自动化
+
 ### 单独说明：`extract-design`
 
 - 来源仓库：`Manavarya09/design-extract`

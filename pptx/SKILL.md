@@ -1,9 +1,10 @@
----
+﻿---
 name: pptx
-description: "Use this skill when a .pptx file is the explicit input or the most likely required output, or when the user clearly wants an editable PowerPoint file. Good fit for reading, modifying, updating, combining, splitting, or creating .pptx files, including requests where the user says 'PowerPoint', '可编辑 PPT', or otherwise implies Microsoft PowerPoint as the expected deliverable. Do NOT use for HTML or browser slide decks."
+description: Use this skill when a .pptx file is the explicit input or the most likely required output, or when the user clearly wants an editable PowerPoint file. Good fit for reading, modifying, updating, combining, splitting, or creating .pptx files, including requests where the user says 'PowerPoint', '可编辑 PPT', or otherwise implies Microsoft PowerPoint as the expected deliverable. Do NOT use for HTML or browser slide decks.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill when the format requirement is clearly **PowerPoint / .pptx**, whether stated explicitly or strongly implied by the deliverable.
@@ -22,6 +23,7 @@ Do **not** use this as the default for all slide or presentation requests.
 - If the user wants an HTML or browser-based deck, prefer `html-ppt`
 - If the user wants a new editable PPTX generated from source materials like PDF, DOCX, URL, or Markdown, prefer `ppt-master`
 - If the user only wants a normal web UI or page, prefer `frontend-design`
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # PPTX Skill
 

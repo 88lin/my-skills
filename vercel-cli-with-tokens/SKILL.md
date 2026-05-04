@@ -1,4 +1,4 @@
----
+﻿---
 name: vercel-cli-with-tokens
 description: Deploy and manage projects on Vercel using token-based authentication. Use only when the task explicitly involves access tokens, `VERCEL_TOKEN`, CI/non-interactive auth, or token-managed Vercel CLI workflows. Do NOT use as the default for ordinary Vercel deployment requests when standard authenticated deployment is enough.
 metadata:
@@ -6,6 +6,7 @@ metadata:
   version: "1.0.0"
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill **on demand**, not as the default Vercel deployment skill.
@@ -18,6 +19,7 @@ Trigger it when the task clearly involves one of these goals:
 - Managing Vercel through access-token-driven automation
 
 Do **not** use this for normal "deploy to Vercel" requests unless token-based auth is explicitly required. In ordinary deployment cases, prefer `deploy-to-vercel`.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Vercel CLI with Tokens
 

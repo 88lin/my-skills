@@ -1,8 +1,9 @@
----
+﻿---
 name: html-ppt
 description: HTML PPT Studio — author professional static HTML presentations in many styles, layouts, and animations, all driven by templates. Use when the user's goal clearly implies a browser-delivered, presentation-style HTML artifact: reveal-style slides, a static web presentation, a shareable online deck, presenter-mode slides, 小红书图文, a multi-slide HTML report, or even a single-page HTML site that is intentionally composed like a PPT or editorial presentation. The user does not need to say “HTML” verbatim if the requested delivery style makes it obvious. Do NOT use as the default only when a .pptx or editable PowerPoint file is more likely.
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill **on demand**, not as the default answer to every "PPT" or "presentation" request.
@@ -36,6 +37,7 @@ Do **not** use this as the default when the user only says "做个 PPT" or "做�
 - If the user needs a `.pptx` or PowerPoint deliverable, prefer `pptx` or `ppt-master`
 - If the user needs a normal product web page, application page, or non-presentation website UI, prefer `frontend-design`
 - If the user needs a complex interactive React artifact rather than slides, prefer `web-artifacts-builder`
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # html-ppt — HTML PPT Studio
 

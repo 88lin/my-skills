@@ -1,9 +1,10 @@
----
+﻿---
 name: xlsx
-description: "Use this skill when a spreadsheet file is the explicit input or the most likely required output. Good fit for reading, editing, fixing, cleaning, charting, converting, or generating .xlsx, .xlsm, .csv, or .tsv files. The user does not need to say '.xlsx' verbatim if the request clearly implies a workbook or spreadsheet handoff with tabs, formulas, columns, charts, or CSV/XLSX delivery. Use when the final deliverable should be a spreadsheet file, not just an analysis."
+description: Use this skill when a spreadsheet file is the explicit input or the most likely required output. Good fit for reading, editing, fixing, cleaning, charting, converting, or generating .xlsx, .xlsm, .csv, or .tsv files. The user does not need to say '.xlsx' verbatim if the request clearly implies a workbook or spreadsheet handoff with tabs, formulas, columns, charts, or CSV/XLSX delivery. Use when the final deliverable should be a spreadsheet file, not just an analysis.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill when the format requirement is clearly **spreadsheet / .xlsx / .csv / .tsv**, whether stated explicitly or strongly implied by the deliverable.
@@ -24,6 +25,7 @@ Do **not** use this as the default for every data-related task.
 - If the user wants a Word document deliverable, prefer `docx`
 - If the user wants a PDF deliverable, prefer `pdf`
 - If the user wants a presentation deliverable, prefer `pptx`, `ppt-master`, or `html-ppt` depending on format
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Requirements for Outputs
 

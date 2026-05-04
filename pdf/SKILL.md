@@ -1,9 +1,10 @@
----
+﻿---
 name: pdf
 description: Use this skill when a PDF file is the explicit input or the most likely required output. Good fit for extracting text or tables, OCR, filling forms, merging, splitting, rotating, watermarking, encrypting, decrypting, or creating PDFs. The user does not need to say “PDF” verbatim if the task clearly implies a PDF deliverable such as a filled form, exportable handout, or scanned-document workflow. Do NOT use as the default for generic writing, reporting, presentation, or document-editing tasks unless a PDF is genuinely part of the job.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
 Use this skill when the format requirement is clearly **PDF**, whether stated explicitly or strongly implied by the workflow.
@@ -24,6 +25,7 @@ Do **not** use this as the default for general document requests.
 - If the user wants a spreadsheet deliverable, prefer `xlsx`
 - If the user wants a PowerPoint deliverable, prefer `pptx` or `ppt-master`
 - If the user only asks for writing help, summarization, or structured content without a PDF requirement, use a more appropriate writing or document workflow first
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # PDF Processing Guide
 
