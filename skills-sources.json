@@ -1,0 +1,428 @@
+﻿{
+    "skills":  [
+                   {
+                       "name":  "adapt",
+                       "localFolder":  "adapt",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "ai-seo",
+                       "localFolder":  "ai-seo",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "coreyhaines31/marketingskills",
+                       "skill":  "ai-seo",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/ai-seo/SKILL.md"
+                   },
+                   {
+                       "name":  "animate",
+                       "localFolder":  "animate",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local split from pbakaus/impeccable reference/animate.md; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "audit",
+                       "localFolder":  "audit",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "brainstorming",
+                       "localFolder":  "brainstorming",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "brainstorming",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/brainstorming/SKILL.md"
+                   },
+                   {
+                       "name":  "canvas-design",
+                       "localFolder":  "canvas-design",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "canvas-design",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/canvas-design/SKILL.md"
+                   },
+                   {
+                       "name":  "chinese-code-review",
+                       "localFolder":  "chinese-code-review",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "chinese-code-review",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-code-review/SKILL.md"
+                   },
+                   {
+                       "name":  "chinese-commit-conventions",
+                       "localFolder":  "chinese-commit-conventions",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "chinese-commit-conventions",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-commit-conventions/SKILL.md"
+                   },
+                   {
+                       "name":  "chinese-documentation",
+                       "localFolder":  "chinese-documentation",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "chinese-documentation",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-documentation/SKILL.md"
+                   },
+                   {
+                       "name":  "clarify",
+                       "localFolder":  "clarify",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "create-crush",
+                       "localFolder":  "crush-skills",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "xiaoheizi8/crush-skills",
+                       "skill":  "create-crush",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/xiaoheizi8/crush-skills/main/SKILL.md"
+                   },
+                   {
+                       "name":  "critique",
+                       "localFolder":  "critique",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "delight",
+                       "localFolder":  "delight",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local split from pbakaus/impeccable reference/delight.md; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "deploy-to-vercel",
+                       "localFolder":  "deploy-to-vercel",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "vercel-labs/agent-skills",
+                       "skill":  "deploy-to-vercel",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/deploy-to-vercel/SKILL.md"
+                   },
+                   {
+                       "name":  "distill",
+                       "localFolder":  "distill",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "docx",
+                       "localFolder":  "docx",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "docx",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/docx/SKILL.md"
+                   },
+                   {
+                       "name":  "extract-design",
+                       "localFolder":  "extract-design",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "Manavarya09/design-extract",
+                       "skill":  "extract-design",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/Manavarya09/design-extract/main/skills/extract-design/SKILL.md"
+                   },
+                   {
+                       "name":  "find-skills",
+                       "localFolder":  "find-skills",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "vercel-labs/skills",
+                       "skill":  "find-skills",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/vercel-labs/skills/main/skills/find-skills/SKILL.md"
+                   },
+                   {
+                       "name":  "frontend-design",
+                       "localFolder":  "frontend-design",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "harden",
+                       "localFolder":  "harden",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "health",
+                       "localFolder":  "health",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "tw93/Waza",
+                       "skill":  "health",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/tw93/Waza/main/skills/health/SKILL.md"
+                   },
+                   {
+                       "name":  "html-ppt",
+                       "localFolder":  "html-ppt",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "lewislulu/html-ppt-skill",
+                       "skill":  "html-ppt",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/lewislulu/html-ppt-skill/main/SKILL.md"
+                   },
+                   {
+                       "name":  "hv-analysis",
+                       "localFolder":  "hv-analysis",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "KKKKhazix/khazix-skills",
+                       "skill":  "hv-analysis",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/hv-analysis/SKILL.md"
+                   },
+                   {
+                       "name":  "karpathy-guidelines",
+                       "localFolder":  "karpathy-guidelines",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "forrestchang/andrej-karpathy-skills",
+                       "skill":  "karpathy-guidelines",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/main/skills/karpathy-guidelines/SKILL.md"
+                   },
+                   {
+                       "name":  "khazix-writer",
+                       "localFolder":  "khazix-writer",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "KKKKhazix/khazix-skills",
+                       "skill":  "khazix-writer",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/khazix-writer/SKILL.md"
+                   },
+                   {
+                       "name":  "luo-xiang-perspective",
+                       "localFolder":  "luo-xiang-perspective",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "YixiaJack/luo-xiang-skill",
+                       "skill":  "luo-xiang-perspective",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/YixiaJack/luo-xiang-skill/main/SKILL.md"
+                   },
+                   {
+                       "name":  "mcp-builder",
+                       "localFolder":  "mcp-builder",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "mcp-builder",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
+                   },
+                   {
+                       "name":  "mindos-zh",
+                       "localFolder":  "mindos-zh",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "GeminiLight/MindOS",
+                       "skill":  "mindos-zh",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/GeminiLight/MindOS/main/skills/mindos-zh/SKILL.md"
+                   },
+                   {
+                       "name":  "optimize",
+                       "localFolder":  "optimize",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "pdf",
+                       "localFolder":  "pdf",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "pdf",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/pdf/SKILL.md"
+                   },
+                   {
+                       "name":  "polish",
+                       "localFolder":  "polish",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "pptx",
+                       "localFolder":  "pptx",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "pptx",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/pptx/SKILL.md"
+                   },
+                   {
+                       "name":  "receiving-code-review",
+                       "localFolder":  "receiving-code-review",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "receiving-code-review",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/receiving-code-review/SKILL.md"
+                   },
+                   {
+                       "name":  "schema-markup",
+                       "localFolder":  "schema-markup",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "coreyhaines31/marketingskills",
+                       "skill":  "schema-markup",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/schema-markup/SKILL.md"
+                   },
+                   {
+                       "name":  "seo-audit",
+                       "localFolder":  "seo-audit",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "coreyhaines31/marketingskills",
+                       "skill":  "seo-audit",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
+                   },
+                   {
+                       "name":  "skill-creator",
+                       "localFolder":  "skill-creator",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "skill-creator",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/skill-creator/SKILL.md"
+                   },
+                   {
+                       "name":  "systematic-debugging",
+                       "localFolder":  "systematic-debugging",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "systematic-debugging",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
+                   },
+                   {
+                       "name":  "teach-impeccable",
+                       "localFolder":  "teach-impeccable",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "test-driven-development",
+                       "localFolder":  "test-driven-development",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "test-driven-development",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/test-driven-development/SKILL.md"
+                   },
+                   {
+                       "name":  "typeset",
+                       "localFolder":  "typeset",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Customized local design stack; do not overwrite automatically"
+                   },
+                   {
+                       "name":  "using-git-worktrees",
+                       "localFolder":  "using-git-worktrees",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "using-git-worktrees",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/using-git-worktrees/SKILL.md"
+                   },
+                   {
+                       "name":  "vercel-cli-with-tokens",
+                       "localFolder":  "vercel-cli-with-tokens",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "vercel-labs/agent-skills",
+                       "skill":  "vercel-cli-with-tokens",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/vercel-cli-with-tokens/SKILL.md"
+                   },
+                   {
+                       "name":  "vercel-composition-patterns",
+                       "localFolder":  "vercel-composition-patterns",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "vercel-labs/agent-skills",
+                       "skill":  "vercel-composition-patterns",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/composition-patterns/SKILL.md"
+                   },
+                   {
+                       "name":  "vercel-react-best-practices",
+                       "localFolder":  "vercel-react-best-practices",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "vercel-labs/agent-skills",
+                       "skill":  "vercel-react-best-practices",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/react-best-practices/SKILL.md"
+                   },
+                   {
+                       "name":  "verification-before-completion",
+                       "localFolder":  "verification-before-completion",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "verification-before-completion",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/verification-before-completion/SKILL.md"
+                   },
+                   {
+                       "name":  "web-access",
+                       "localFolder":  "web-access",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/eze-is/web-access.git",
+                       "branch":  "main",
+                       "notes":  "Standalone Git repository"
+                   },
+                   {
+                       "name":  "webapp-testing",
+                       "localFolder":  "webapp-testing",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "webapp-testing",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
+                   },
+                   {
+                       "name":  "web-artifacts-builder",
+                       "localFolder":  "web-artifacts-builder",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "web-artifacts-builder",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/web-artifacts-builder/SKILL.md"
+                   },
+                   {
+                       "name":  "writing-plans",
+                       "localFolder":  "writing-plans",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "writing-plans",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/writing-plans/SKILL.md"
+                   },
+                   {
+                       "name":  "xlsx",
+                       "localFolder":  "xlsx",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "xlsx",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/xlsx/SKILL.md"
+                   }
+               ]
+}
