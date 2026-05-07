@@ -614,7 +614,7 @@ function Update-Skill {
                 }
             }
             'skills-cli' {
-                & npx skills add "$($Entry.repo)@$($Entry.skill)" -g -y
+                & npx -y skills add "$($Entry.repo)@$($Entry.skill)" -g -y
                 if ($LASTEXITCODE -ne 0) {
                     throw 'skills add 命令执行失败'
                 }

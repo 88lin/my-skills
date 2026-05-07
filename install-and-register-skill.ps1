@@ -180,7 +180,7 @@ if ($Preview) {
 
 if ($SourceType -eq 'skills-cli' -and -not $SkipInstall -and -not $Preview) {
     Write-Host "正在安装 $Skill..."
-    & npx skills add "$Repo@$Skill" -g -y
+    & npx -y skills add "$Repo@$Skill" -g -y
     if ($LASTEXITCODE -ne 0) {
         throw '安装 skill 失败。'
     }

@@ -32,7 +32,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - `manual` 条目不会自动拉上游；如果它同时用了 `local-routing-overrides.json`，`check` 会检查 override 是否已经同步到本地文件。
 - 如果你刚改了 `local-routing-overrides.json`，记得额外运行一次 `manage-skills.ps1 -Mode apply-overrides`。
 - 设计系那批本地定制 skill 默认不自动覆盖上游。
-- `web-access` 用 Git 更新，其余已确认来源的 skill 用单 skill 的 `npx skills add owner/repo@skill -g -y` 更新。
+- `web-access` 用 Git 更新，其余已确认来源的 skill 用单 skill 的 `npx -y skills add owner/repo@skill -g -y` 更新。
 
 ## 当前收手点与维护边界
 
@@ -156,7 +156,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 - 不要直接使用 `npx skills update`。
 - 不要在没有确认的情况下安装整个多 skill 仓库。
 - Git 管理的 skill 用 `git pull --ff-only`。
-- Skills CLI 管理的 skill 用 `npx skills add owner/repo@skill -g -y`。
+- Skills CLI 管理的 skill 用 `npx -y skills add owner/repo@skill -g -y`。
 - 即使某个上游 skill 正文里提到 `npx skills update`，在你这套本地环境里也不要照做。
 
 ## Git 管理的 Skill
@@ -182,16 +182,16 @@ git -C "C:\Users\Computer\.agents\skills\web-access" pull --ff-only origin main
 ### Vercel 系
 
 ```powershell
-npx skills add vercel-labs/agent-skills@deploy-to-vercel -g -y
-npx skills add vercel-labs/agent-skills@vercel-cli-with-tokens -g -y
-npx skills add vercel-labs/agent-skills@vercel-composition-patterns -g -y
-npx skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
+npx -y skills add vercel-labs/agent-skills@deploy-to-vercel -g -y
+npx -y skills add vercel-labs/agent-skills@vercel-cli-with-tokens -g -y
+npx -y skills add vercel-labs/agent-skills@vercel-composition-patterns -g -y
+npx -y skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
 ```
 
 ### 工具类
 
 ```powershell
-npx skills add GeminiLight/MindOS@mindos-zh -g -y
+npx -y skills add GeminiLight/MindOS@mindos-zh -g -y
 ```
 
 ### 其他已确认来源的 Skill
@@ -199,31 +199,31 @@ npx skills add GeminiLight/MindOS@mindos-zh -g -y
 这些 skill 的来源已经确认，而且状态也已经核对过。
 
 ```powershell
-npx skills add xiaoheizi8/crush-skills@create-crush -g -y
-npx skills add YixiaJack/luo-xiang-skill@luo-xiang-perspective -g -y
-npx skills add KKKKhazix/khazix-skills@hv-analysis -g -y
-npx skills add KKKKhazix/khazix-skills@khazix-writer -g -y
-npx skills add forrestchang/andrej-karpathy-skills@karpathy-guidelines -g -y
+npx -y skills add xiaoheizi8/crush-skills@create-crush -g -y
+npx -y skills add YixiaJack/luo-xiang-skill@luo-xiang-perspective -g -y
+npx -y skills add KKKKhazix/khazix-skills@hv-analysis -g -y
+npx -y skills add KKKKhazix/khazix-skills@khazix-writer -g -y
+npx -y skills add forrestchang/andrej-karpathy-skills@karpathy-guidelines -g -y
 ```
 
-注意：`health` 已转为手动管理，当前不要再用 `npx skills add tw93/Waza@health -g -y` 直接覆盖，见后面的单独说明。
+注意：`health` 已转为手动管理，当前不要再用 `npx -y skills add tw93/Waza@health -g -y` 直接覆盖，见后面的单独说明。
 
 ### Superpowers-ZH 精选 Skill
 
 这些 skill 来自 `jnMetaCode/superpowers-zh`，只安装了当前选定的单个 skill，没有安装整仓库其他 skill。
 
 ```powershell
-npx skills add jnMetaCode/superpowers-zh@systematic-debugging -g -y
-npx skills add jnMetaCode/superpowers-zh@test-driven-development -g -y
-npx skills add jnMetaCode/superpowers-zh@verification-before-completion -g -y
-npx skills add jnMetaCode/superpowers-zh@chinese-documentation -g -y
-npx skills add jnMetaCode/superpowers-zh@chinese-commit-conventions -g -y
-npx skills add jnMetaCode/superpowers-zh@mcp-builder -g -y
-npx skills add jnMetaCode/superpowers-zh@receiving-code-review -g -y
-npx skills add jnMetaCode/superpowers-zh@chinese-code-review -g -y
-npx skills add jnMetaCode/superpowers-zh@brainstorming -g -y
-npx skills add jnMetaCode/superpowers-zh@writing-plans -g -y
-npx skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
+npx -y skills add jnMetaCode/superpowers-zh@systematic-debugging -g -y
+npx -y skills add jnMetaCode/superpowers-zh@test-driven-development -g -y
+npx -y skills add jnMetaCode/superpowers-zh@verification-before-completion -g -y
+npx -y skills add jnMetaCode/superpowers-zh@chinese-documentation -g -y
+npx -y skills add jnMetaCode/superpowers-zh@chinese-commit-conventions -g -y
+npx -y skills add jnMetaCode/superpowers-zh@mcp-builder -g -y
+npx -y skills add jnMetaCode/superpowers-zh@receiving-code-review -g -y
+npx -y skills add jnMetaCode/superpowers-zh@chinese-code-review -g -y
+npx -y skills add jnMetaCode/superpowers-zh@brainstorming -g -y
+npx -y skills add jnMetaCode/superpowers-zh@writing-plans -g -y
+npx -y skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 ```
 
 当前状态：
@@ -347,9 +347,9 @@ npx skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 这些 skill 的上游来源已经确认，可以单独更新。
 
 ```powershell
-npx skills add coreyhaines31/marketingskills@seo-audit -g -y
-npx skills add coreyhaines31/marketingskills@schema-markup -g -y
-npx skills add coreyhaines31/marketingskills@ai-seo -g -y
+npx -y skills add coreyhaines31/marketingskills@seo-audit -g -y
+npx -y skills add coreyhaines31/marketingskills@schema-markup -g -y
+npx -y skills add coreyhaines31/marketingskills@ai-seo -g -y
 ```
 
 当前状态：
@@ -363,14 +363,14 @@ npx skills add coreyhaines31/marketingskills@ai-seo -g -y
 这些 skill 来自 `anthropics/skills`，本次只安装了指定的单个 skill，没有把同仓库其他 skill 一起装下来。
 
 ```powershell
-npx skills add anthropics/skills@webapp-testing -g -y
-npx skills add anthropics/skills@pdf -g -y
-npx skills add anthropics/skills@xlsx -g -y
-npx skills add anthropics/skills@skill-creator -g -y
-npx skills add anthropics/skills@docx -g -y
-npx skills add anthropics/skills@pptx -g -y
-npx skills add anthropics/skills@canvas-design -g -y
-npx skills add anthropics/skills@web-artifacts-builder -g -y
+npx -y skills add anthropics/skills@webapp-testing -g -y
+npx -y skills add anthropics/skills@pdf -g -y
+npx -y skills add anthropics/skills@xlsx -g -y
+npx -y skills add anthropics/skills@skill-creator -g -y
+npx -y skills add anthropics/skills@docx -g -y
+npx -y skills add anthropics/skills@pptx -g -y
+npx -y skills add anthropics/skills@canvas-design -g -y
+npx -y skills add anthropics/skills@web-artifacts-builder -g -y
 ```
 
 当前状态：
@@ -400,7 +400,7 @@ npx skills add anthropics/skills@web-artifacts-builder -g -y
 这批 skill 不都适合同一种管理方式，需要分开看。
 
 ```powershell
-npx skills add lewislulu/html-ppt-skill@html-ppt -g -y
+npx -y skills add lewislulu/html-ppt-skill@html-ppt -g -y
 ```
 
 当前状态：
@@ -602,13 +602,13 @@ git -C "C:\Users\Computer\.agents\skills\<skill-name>" pull --ff-only origin mai
 用仓库 + skill 名的写法：
 
 ```powershell
-npx skills add owner/repo@skill-name -g -y
+npx -y skills add owner/repo@skill-name -g -y
 ```
 
 ## 示例
 
 ```powershell
-npx skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
+npx -y skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
 git -C "C:\Users\Computer\.agents\skills\web-access" pull --ff-only origin main
 ```
 
@@ -616,7 +616,7 @@ git -C "C:\Users\Computer\.agents\skills\web-access" pull --ff-only origin main
 
 ```powershell
 npx skills update
-npx skills add vercel-labs/agent-skills -g -y
+npx -y skills add vercel-labs/agent-skills -g -y
 ```
 
 原因：
