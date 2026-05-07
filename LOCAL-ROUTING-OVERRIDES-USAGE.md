@@ -6,7 +6,7 @@
 
 - `C:\Users\Computer\.agents\skills\local-routing-overrides.json`
 
-这个文件是你本地 skills 路由增强规则的**真正来源**。
+对已经纳入 override 系统的 skill，这个文件是你本地路由增强规则的**真正来源**。
 
 它的作用是：
 
@@ -33,6 +33,8 @@
 1. 上游更新正常走
 2. 更新后自动读取 `local-routing-overrides.json`
 3. 把你的本地规则重新回写到对应 `SKILL.md`
+
+对于 `manual` 类型的 skill，没有“上游更新”这一步，但仍然可以通过 `manage-skills.ps1 -Mode apply-overrides` 把 override 回写到本地文件。
 
 这样可以同时保留：
 
@@ -139,7 +141,16 @@
 
 ### 第四步：再同步本地 `SKILL.md`
 
-可以通过重新更新该 skill，或者手动同步一次，让本地 `SKILL.md` 与 override 一致。
+最稳妥的做法是直接运行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode apply-overrides -Only <skill>
+```
+
+说明：
+
+- `skills-cli` 类型的 skill：更新后会自动回写 override，但你手动改了 override 以后，最好还是显式跑一次 `apply-overrides`
+- `manual` 类型的 skill：不会经过上游更新，改完 override 后更应该显式跑 `apply-overrides`
 
 ---
 
@@ -148,8 +159,8 @@
 如果要改现有 override，建议这样做：
 
 1. 先改 `local-routing-overrides.json`
-2. 再让对应 skill 的本地 `SKILL.md` 跟它同步
-3. 最后跑一次 `manage-skills.ps1 -Mode check -Only <skill>`
+2. 运行 `manage-skills.ps1 -Mode apply-overrides -Only <skill>`
+3. 再跑一次 `manage-skills.ps1 -Mode check -Only <skill>`
 
 不要只改 `SKILL.md` 而不改 override 文件。
 
@@ -185,8 +196,11 @@
 ### `manage-skills.ps1`
 
 - 负责读取这个 override 文件
-- 更新后自动回写本地规则
-- 检查时按“上游 + override”来判断状态
+- 对 `skills-cli` 类型：更新后自动回写本地规则
+- 对 `manual` 类型：可通过 `-Mode apply-overrides` 手动回写
+- 检查时：
+  - `skills-cli` 按“磁盘上的真实本地文件” vs “上游 + override”来判断
+  - `manual + override` 检查本地文件是否已经同步了 override
 
 ### `SKILL-ROUTING-RULES.md`
 
@@ -202,11 +216,12 @@
 
 - 真正应该优先维护的是 `local-routing-overrides.json`
 - `SKILL.md` 是生成后的结果
+- `check` 不等于回写；真正把规则落到磁盘上的是 `apply-overrides` 或 `update`
 
 ---
 
 ## 最后总结
 
-以后如果你想保护某个自动更新 skill 的本地触发规则，记住这句就够了：
+以后如果你想保护某个 skill 的本地触发规则，记住这句就够了：
 
-**不要只改 `SKILL.md`，要把规则写进 `local-routing-overrides.json`。**
+**不要只改 `SKILL.md`，要把规则写进 `local-routing-overrides.json`，然后跑一次 `apply-overrides`。**

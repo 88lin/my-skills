@@ -22,15 +22,44 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode check -Only ai-seo,seo-audit
-powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode update -Only health,web-access
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode update -Only web-access,html-ppt
 ```
 
 ### 说明
 
 - 管理脚本使用同目录下的 `skills-sources.json` 作为来源配置。
-- 安全 skill 会自动检查、自动更新。
-- 设计系那批本地定制 skill 默认只报告 `skipped`，不会自动覆盖。
+- `skills-cli` / `git` 且 `autoUpdate=true` 的条目会自动检查，更新时按各自来源方式更新。
+- `manual` 条目不会自动拉上游；如果它同时用了 `local-routing-overrides.json`，`check` 会检查 override 是否已经同步到本地文件。
+- 如果你刚改了 `local-routing-overrides.json`，记得额外运行一次 `manage-skills.ps1 -Mode apply-overrides`。
+- 设计系那批本地定制 skill 默认不自动覆盖上游。
 - `web-access` 用 Git 更新，其余已确认来源的 skill 用单 skill 的 `npx skills add owner/repo@skill -g -y` 更新。
+
+## 当前收手点与维护边界
+
+当前这套管理系统已经处于稳定可用状态，后续维护优先用真实问题驱动，不要为了形式统一继续扩张规则。
+
+先不要继续动这些地方：
+
+- `manage-skills.ps1`：只在出现真实检查、更新、override 回写错误时修改，不为了“更优雅”重构
+- `local-routing-overrides.json`：只给真冲突、真误触发、真需要保住本地规则的 skill 新增 override
+- `skills-sources.json`：不要轻易改变现有 `manual` / `skills-cli` / `git` 分类，尤其保留 `health` 当前 `manual` 策略
+
+这些点当前可以继续观察，不作为必须修复项：
+
+- `ppt-master`：作为外部相关能力出现在路由文档里，边界复杂但已经说明清楚
+- `web-access`：真实目录是独立 Git 仓库，GitHub 备份里缺少 `.git` 不代表它不能正常更新
+
+以后只有出现真实误触发、真实漏触发、高冲突新 skill、或上游结构大改时，再重新修改规则。记录问题时至少写清：用户原话、期望触发的 skill、实际触发的 skill、造成的影响。
+
+## 备份仓库注意
+
+这个 GitHub 仓库主要是备份和说明用途，不等于每个 skill 在真实运行环境里的原生安装目录。
+
+- 本文里的命令路径默认以真实运行目录 `C:\Users\Computer\.agents\skills` 为准
+- `web-access` 的真实运行目录是 `C:\Users\Computer\.agents\skills\web-access`
+- 真实目录里保留独立 `.git`，可以按 Git 方式和上游同步
+- 上传到 GitHub 的备份目录可能不保留嵌套 `.git` 元数据，不要用备份目录判断 `web-access` 是否能更新
+- 真正执行 `git pull`、检查远端 HEAD、或处理脏工作区时，应以真实本地 skills 目录为准
 
 ## 新 Skill 安装与纳管
 
@@ -52,30 +81,30 @@ C:\Users\Computer\Desktop\纳管新 Skill.bat
 
 双击后会依次让你输入：
 
-1. GitHub 仓库，例如 `tw93/Waza`
-2. skill 名，例如 `health`
+1. GitHub 仓库，例如 `coreyhaines31/marketingskills`
+2. skill 名，例如 `seo-audit`
 3. 是否只做预览
 
 仓库正确示例：
 
 ```text
-tw93/Waza
-https://github.com/tw93/Waza
-https://github.com/tw93/Waza.git
+coreyhaines31/marketingskills
+https://github.com/coreyhaines31/marketingskills
+https://github.com/coreyhaines31/marketingskills.git
 ```
 
 仓库错误示例：
 
 ```text
-health
-https://raw.githubusercontent.com/tw93/Waza/main/skills/health/SKILL.md
-https://skills.sh/tw93/Waza/health
+seo-audit
+https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md
+https://skills.sh/coreyhaines31/marketingskills/seo-audit
 ```
 
 skill 名正确示例：
 
 ```text
-health
+seo-audit
 create-crush
 luo-xiang-perspective
 ```
@@ -94,7 +123,7 @@ luo-xiang-perspective
 ### 自动纳管示例
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\install-and-register-skill.ps1" -SourceType skills-cli -Repo tw93/Waza -Skill health -RawSkillUrl "https://raw.githubusercontent.com/tw93/Waza/main/skills/health/SKILL.md"
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\install-and-register-skill.ps1" -SourceType skills-cli -Repo coreyhaines31/marketingskills -Skill seo-audit -RawSkillUrl "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
 ```
 
 这个脚本会做这些事：
@@ -118,7 +147,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 如果你只想先看看会写入什么配置，不想真正落盘，可以加 `-Preview`：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\install-and-register-skill.ps1" -SourceType skills-cli -Repo tw93/Waza -Skill health -Preview
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\install-and-register-skill.ps1" -SourceType skills-cli -Repo coreyhaines31/marketingskills -Skill seo-audit -Preview
 ```
 
 ## 基本规则
@@ -128,6 +157,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 - 不要在没有确认的情况下安装整个多 skill 仓库。
 - Git 管理的 skill 用 `git pull --ff-only`。
 - Skills CLI 管理的 skill 用 `npx skills add owner/repo@skill -g -y`。
+- 即使某个上游 skill 正文里提到 `npx skills update`，在你这套本地环境里也不要照做。
 
 ## Git 管理的 Skill
 
@@ -138,6 +168,12 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 ```powershell
 git -C "C:\Users\Computer\.agents\skills\web-access" pull --ff-only origin main
 ```
+
+补充：
+
+- 真实的 `web-access` 目录在 `C:\Users\Computer\.agents\skills\web-access`，并保留独立 `.git`
+- GitHub 备份里的 `web-access/` 可能没有 `.git`，不要以备份目录的状态判断更新能力
+- 真正执行 `git pull` 时，应在你实际的 skills 目录里操作上面这条路径
 
 ## Skills CLI 管理的 Skill
 
@@ -155,7 +191,6 @@ npx skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
 ### 工具类
 
 ```powershell
-npx skills add vercel-labs/skills@find-skills -g -y
 npx skills add GeminiLight/MindOS@mindos-zh -g -y
 ```
 
@@ -166,11 +201,12 @@ npx skills add GeminiLight/MindOS@mindos-zh -g -y
 ```powershell
 npx skills add xiaoheizi8/crush-skills@create-crush -g -y
 npx skills add YixiaJack/luo-xiang-skill@luo-xiang-perspective -g -y
-npx skills add tw93/Waza@health -g -y
 npx skills add KKKKhazix/khazix-skills@hv-analysis -g -y
 npx skills add KKKKhazix/khazix-skills@khazix-writer -g -y
 npx skills add forrestchang/andrej-karpathy-skills@karpathy-guidelines -g -y
 ```
+
+注意：`health` 已转为手动管理，当前不要再用 `npx skills add tw93/Waza@health -g -y` 直接覆盖，见后面的单独说明。
 
 ### Superpowers-ZH 精选 Skill
 
@@ -213,7 +249,7 @@ npx skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 
 - `create-crush`：来源已确认，当前已是最新
 - `luo-xiang-perspective`：来源已确认，当前已是最新
-- `health`：来源已确认，已更新到最新
+- `health`：来源已确认，但当前已改为手动管理，不参加统一自动更新
 - `hv-analysis`：来源已确认，已纳入管理系统
 - `khazix-writer`：来源已确认，已纳入管理系统
 - `karpathy-guidelines`：来源已确认，已纳入管理系统
@@ -460,11 +496,9 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `vercel-cli-with-tokens`
 - `vercel-composition-patterns`
 - `vercel-react-best-practices`
-- `find-skills`
 - `mindos-zh`
 - `create-crush`
 - `luo-xiang-perspective`
-- `health`
 - `hv-analysis`
 - `khazix-writer`
 - `karpathy-guidelines`
@@ -551,6 +585,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `bolder`：低频视觉增强 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `normalize`：低频设计系统一致性 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `extract`：低频组件/tokens 提取 skill，已删除本地目录并从 `skills-sources.json` 移除。
+- `find-skills`：开放生态 skill 发现入口，与当前本地纳管流程重叠，已删除本地目录并从 `skills-sources.json` 移除。
 
 ## 怎么判断该用哪种更新方式
 

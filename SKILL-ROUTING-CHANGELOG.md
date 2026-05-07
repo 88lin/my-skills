@@ -7,7 +7,7 @@
 3. 哪些 skill 明确保持默认，不额外加规则
 4. 哪些判断已经经过人工确认
 
-更新时间：2026-05-04（已同步当前保留文档状态）
+更新时间：2026-05-07（已同步当前保留文档状态）
 
 ---
 
@@ -52,10 +52,10 @@
 - `web-artifacts-builder`：复杂 React artifact，多组件、状态管理、routing
 - `html-ppt`：演示型、展示型、PPT 风格、editorial 风格的静态 HTML 页面或 deck
 
-### 演示文稿簇
+### 演示文稿簇（含外部相关能力）
 
 - `pptx`
-- `ppt-master`
+- `ppt-master`（外部相关能力）
 - `html-ppt`
 
 加规则原因：
@@ -66,8 +66,13 @@
 当前分工：
 
 - `pptx`：修改、拆分、整理现有 `.pptx`
-- `ppt-master`：从 PDF / DOCX / URL / Markdown 等资料生成正式可编辑 `.pptx`
+- `ppt-master`（外部相关能力）：从 PDF / DOCX / URL / Markdown 等资料生成正式可编辑 `.pptx`
 - `html-ppt`：浏览器展示用的 HTML 演示稿
+
+补充说明：
+
+- `ppt-master` 当前按外部独立仓库管理，不在这个仓库的普通 skills 镜像和 override 自动回写范围内
+- 这里把它写进变更记录，只是为了说明演示文稿路由边界，不代表它已经被纳入这个仓库的普通 skill 成员列表
 
 ### 文档格式簇
 
@@ -148,12 +153,11 @@
 - `mindos-zh`
 - `mcp-builder`
 - `skill-creator`
-- `find-skills`
 
 原因：
 
 - 用途相对独立
-- 没必要为了形式统一而强行加限制
+- 大多数情况下没必要为了形式统一而强行加限制
 
 ### 研究 / 内容型
 
@@ -261,7 +265,7 @@
    - `html-ppt`
 2. 演示文稿簇
    - `pptx`
-   - `ppt-master`
+   - `ppt-master`（外部相关能力）
    - `html-ppt`
 3. 文档格式簇
    - `pdf`
@@ -283,7 +287,7 @@
 以下这几类当前明确保持默认，不再继续硬加路由规则：
 
 - 工程 / 流程型：`systematic-debugging`、`test-driven-development`、`verification-before-completion`、`writing-plans`、`using-git-worktrees`、`karpathy-guidelines`、`receiving-code-review`
-- 平台 / 工具型：`web-access`、`health`、`mindos-zh`、`mcp-builder`、`skill-creator`、`find-skills`
+- 平台 / 工具型：`web-access`、`health`、`mindos-zh`、`mcp-builder`、`skill-creator`
 - 研究 / 内容型：`brainstorming`、`hv-analysis`、`khazix-writer`、`luo-xiang-perspective`、`create-crush`
 - 设计辅助链：`adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset`、`teach-impeccable`
 
@@ -301,24 +305,31 @@
 
 1. 真实使用中发生误触发
 2. 明显漏触发
-3. 新装了和现有 skill 重叠的新 skill
-4. 某个上游 skill 描述有重大变化
+3. 新装了和现有 skill 重叠的高冲突新 skill
+4. 某个上游 skill 描述、frontmatter、仓库结构或安装方式有重大变化
 
 推荐步骤：
 
-1. 先记录真实错例
+1. 先记录真实错例：用户原话、期望触发、实际触发、造成的影响
 2. 人工确认你真正想要的主 skill 和最终交付物
 3. 再反推是否需要改某个 skill 的 `description` 或 `Usage Rule`
 
 不要直接跳到第 3 步。
+
+当前不再继续大修：
+
+- 不继续扩张 `local-routing-overrides.json`
+- 不为了统一风格重构路由文档结构
+- 不把 `ppt-master` 强行纳入这个仓库的普通 skill 成员范围
+- `web-access` 以真实本地目录 `C:\Users\Computer\.agents\skills\web-access` 的 Git 状态为准
 
 ---
 
 ## 相关文件
 
 - 总路由规则：`C:\Users\Computer\.agents\skills\SKILL-ROUTING-RULES.md`
-- html-ppt 使用说明：`C:\Users\Computer\.agents\skills\HTML-PPT-USAGE.md`
-- ppt-master 使用说明：`C:\Users\Computer\.agents\skills\PPT-MASTER-USAGE.md`
+- html-ppt 本地 skill：`C:\Users\Computer\.agents\skills\html-ppt\SKILL.md`
+- ppt-master 外部 skill：`C:\Users\Computer\.agents\external\ppt-master\skills\ppt-master\SKILL.md`
 
 已删除的测试辅助文件：
 

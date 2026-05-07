@@ -404,13 +404,51 @@ function Get-SkillStatus {
 
     switch ($Entry.type) {
         'manual' {
-            return [pscustomobject]@{
-                Name      = $Entry.name
-                LocalPath = $FolderPath
-                Type      = $Entry.type
-                Installed = $true
-                Status    = 'skipped'
-                Detail    = $Entry.reason
+            try {
+                $LocalText = Get-FileText -Path $SkillFile
+                if ($null -eq $LocalText) {
+                    throw "缺少本地文件: $SkillFile"
+                }
+
+                $Override = Get-RoutingOverride -Entry $Entry
+                if ($null -eq $Override) {
+                    return [pscustomobject]@{
+                        Name      = $Entry.name
+                        LocalPath = $FolderPath
+                        Type      = $Entry.type
+                        Installed = $true
+                        Status    = 'skipped'
+                        Detail    = $Entry.reason
+                    }
+                }
+
+                $ExpectedLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
+                $Status = if ((Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)) { 'up-to-date' } else { 'outdated' }
+                $Detail = if ($Status -eq 'up-to-date') {
+                    "$($Entry.reason); local override 已同步"
+                }
+                else {
+                    "$($Entry.reason); local override 未同步，请运行 manage-skills.ps1 -Mode apply-overrides -Only $($Entry.name)"
+                }
+
+                return [pscustomobject]@{
+                    Name      = $Entry.name
+                    LocalPath = $FolderPath
+                    Type      = $Entry.type
+                    Installed = $true
+                    Status    = $Status
+                    Detail    = $Detail
+                }
+            }
+            catch {
+                return [pscustomobject]@{
+                    Name      = $Entry.name
+                    LocalPath = $FolderPath
+                    Type      = $Entry.type
+                    Installed = $true
+                    Status    = 'error'
+                    Detail    = $_.Exception.Message
+                }
             }
         }
         'git' {
@@ -455,11 +493,17 @@ function Get-SkillStatus {
 
                 $RemoteText = Get-WebText -Url $Entry.rawSkillUrl
                 $Override = Get-RoutingOverride -Entry $Entry
-                $NormalizedLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
                 $ExpectedLocalText = Apply-RoutingOverrideToText -Text $RemoteText -Override $Override
+                $ExpectedOverrideLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
                 $LocalVersion = Get-FrontMatterVersion -Text $LocalText
                 $RemoteVersion = Get-FrontMatterVersion -Text $RemoteText
-                $Status = if ((Get-TextHash -Text $NormalizedLocalText) -eq (Get-TextHash -Text $ExpectedLocalText)) { 'up-to-date' } else { 'outdated' }
+                $Status = if ((Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)) { 'up-to-date' } else { 'outdated' }
+                $OverrideInSync = if ($null -eq $Override) {
+                    $true
+                }
+                else {
+                    (Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedOverrideLocalText)
+                }
 
                 $LocalVersionText = if ($null -ne $LocalVersion -and $LocalVersion -ne '') { $LocalVersion } else { 'n/a' }
                 $RemoteVersionText = if ($null -ne $RemoteVersion -and $RemoteVersion -ne '') { $RemoteVersion } else { 'n/a' }
@@ -469,6 +513,10 @@ function Get-SkillStatus {
                 }
                 else {
                     '未声明版本号'
+                }
+
+                if (-not $OverrideInSync) {
+                    $VersionDetail += '; local override 未同步'
                 }
 
                 return [pscustomobject]@{

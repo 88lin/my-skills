@@ -140,15 +140,6 @@
                        "rawSkillUrl":  "https://raw.githubusercontent.com/Manavarya09/design-extract/main/skills/extract-design/SKILL.md"
                    },
                    {
-                       "name":  "find-skills",
-                       "localFolder":  "find-skills",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "vercel-labs/skills",
-                       "skill":  "find-skills",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/vercel-labs/skills/main/skills/find-skills/SKILL.md"
-                   },
-                   {
                        "name":  "frontend-design",
                        "localFolder":  "frontend-design",
                        "type":  "manual",

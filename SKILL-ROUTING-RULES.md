@@ -92,7 +92,7 @@
 
 - `extract-design`
 - `html-ppt`
-- `ppt-master`
+- `ppt-master`（外部相关能力）
 - `canvas-design`
 - `web-artifacts-builder`
 - `schema-markup`
@@ -111,6 +111,10 @@
 - 平台 / 工具型 skill
 - 研究 / 内容型 skill
 - 设计辅助链里那些本来就协同使用的 skill
+
+补充：
+
+- 本文默认描述这个仓库里纳管的 skill；若出现 `ppt-master`，均按外部相关能力理解，只用于界定演示文稿路由边界，不代表它是这个仓库的镜像成员
 
 如果一个 skill：
 
@@ -256,7 +260,7 @@
 - 泛化“做个 PPT”请求
 - 最终必须交付 `.pptx` 的请求
 
-### `ppt-master`
+### `ppt-master`（外部相关能力）
 
 只在这些情况触发：
 
@@ -269,6 +273,10 @@
 - 普通演示需求
 - HTML deck
 - 改现有 `.pptx`
+
+补充说明：
+
+- `ppt-master` 当前按外部独立仓库管理，不是这个仓库收录的普通 skill 目录成员，也不在这个仓库的普通 skills 镜像 / override 自动回写范围内
 
 ### `schema-markup`
 
@@ -382,7 +390,6 @@
 5. Vercel 簇
 
 除了这些之外，不要轻易再扩张本地路由规则范围。
-- 从原始资料大规模生成新演示文稿时的重型流程
 
 ---
 
@@ -410,13 +417,13 @@
 
 1. 改现有 `.pptx`：`pptx`
 2. 做 HTML 演示稿：`html-ppt`
-3. 从资料生成正式可编辑 `.pptx`：`ppt-master`
+3. 从资料生成正式可编辑 `.pptx`：`ppt-master`（外部相关能力）
 
 一句话判断：
 
 - 要 `.pptx` 文件并编辑现成内容：`pptx`
 - 要网页 deck：`html-ppt`
-- 要正式可编辑 PPTX 成品：`ppt-master`
+- 要正式可编辑 PPTX 成品：`ppt-master`（外部相关能力）
 
 补充：
 
