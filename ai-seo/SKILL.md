@@ -1,6 +1,7 @@
-﻿---
+---
 name: ai-seo
-description: Use this skill when the task is specifically about AI search, AI Overviews, LLM citations, answer-engine optimization, or improving visibility in AI-generated answers. Good fit for AEO, GEO, LLMO, AI citations, zero-click AI visibility, and optimization for ChatGPT, Perplexity, Claude, Gemini, or similar systems. Do NOT use as the default for broad SEO audits or for pure schema-markup implementation.
+description: >-
+  Use this skill when the task is specifically about AI search, AI Overviews, LLM citations, answer-engine optimization, or improving visibility in AI-generated answers. Good fit for AEO, GEO, LLMO, AI citations, zero-click AI visibility, and optimization for ChatGPT, Perplexity, Claude, Gemini, or similar systems. Do NOT use as the default for broad SEO audits or for pure schema-markup implementation.
 metadata:
   version: 1.2.0
 ---

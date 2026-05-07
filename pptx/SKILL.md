@@ -1,6 +1,7 @@
-﻿---
+---
 name: pptx
-description: Use this skill when a .pptx file is the explicit input or the most likely required output, or when the user clearly wants an editable PowerPoint file. Good fit for reading, modifying, updating, combining, splitting, or creating .pptx files, including requests where the user says 'PowerPoint', '可编辑 PPT', or otherwise implies Microsoft PowerPoint as the expected deliverable. Do NOT use for HTML or browser slide decks.
+description: >-
+  Use this skill when a .pptx file is the explicit input or the most likely required output, or when the user clearly wants an editable PowerPoint file. Good fit for reading, modifying, updating, combining, splitting, or creating .pptx files, including requests where the user says 'PowerPoint', '可编辑 PPT', or otherwise implies Microsoft PowerPoint as the expected deliverable. Do NOT use for HTML or browser slide decks.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 

@@ -1,6 +1,7 @@
-﻿---
+---
 name: vercel-cli-with-tokens
-description: Deploy and manage projects on Vercel using token-based authentication. Use only when the task explicitly involves access tokens, `VERCEL_TOKEN`, CI/non-interactive auth, or token-managed Vercel CLI workflows. Do NOT use as the default for ordinary Vercel deployment requests when standard authenticated deployment is enough.
+description: >-
+  Deploy and manage projects on Vercel using token-based authentication. Use only when the task explicitly involves access tokens, `VERCEL_TOKEN`, CI/non-interactive auth, or token-managed Vercel CLI workflows. Do NOT use as the default for ordinary Vercel deployment requests when standard authenticated deployment is enough.
 metadata:
   author: vercel
   version: "1.0.0"

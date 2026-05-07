@@ -1,6 +1,7 @@
-﻿---
+---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use for normal UI creation or iteration on web components, pages, apps, landing pages, and product surfaces. Do NOT use by default for design extraction, static poster art, HTML slide decks, or PowerPoint generation when specialized skills exist.
+description: >-
+  Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use for normal UI creation or iteration on web components, pages, apps, landing pages, and product surfaces. Do NOT use by default for design extraction, static poster art, HTML slide decks, or PowerPoint generation when specialized skills exist.
 license: Apache 2.0. Based on Anthropic's frontend-design skill. See NOTICE.md for attribution.
 ---
 

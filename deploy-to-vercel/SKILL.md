@@ -1,6 +1,7 @@
-﻿---
+---
 name: deploy-to-vercel
-description: Deploy applications and websites to Vercel using the normal interactive or already-authenticated Vercel workflow. Use when the user explicitly wants to deploy a project to Vercel and there is no special requirement to work through access tokens. Do NOT use as the default if the task is specifically about token-based Vercel CLI authentication or token-managed automation.
+description: >-
+  Deploy applications and websites to Vercel using the normal interactive or already-authenticated Vercel workflow. Use when the user explicitly wants to deploy a project to Vercel and there is no special requirement to work through access tokens. Do NOT use as the default if the task is specifically about token-based Vercel CLI authentication or token-managed automation.
 metadata:
   author: vercel
   version: "3.0.0"

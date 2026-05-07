@@ -153,7 +153,10 @@ function Set-FrontMatterDescription {
     $Lines = $FrontMatter -split "`n"
     $OutputLines = New-Object System.Collections.Generic.List[string]
     $SingleLineValue = ((Get-NormalizedText -Text $Value) -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' }) -join ' '
-    $DescriptionLines = @("description: $SingleLineValue")
+    $DescriptionLines = @(
+        'description: >-',
+        ('  ' + $SingleLineValue)
+    )
     $Inserted = $false
     $SkippingDescription = $false
 
@@ -243,7 +246,7 @@ function Write-TextFile {
         [string]$Text
     )
 
-    [System.IO.File]::WriteAllText($Path, $Text, [System.Text.UTF8Encoding]::new($true))
+    [System.IO.File]::WriteAllText($Path, $Text, [System.Text.UTF8Encoding]::new($false))
 }
 
 function Get-TextHash {

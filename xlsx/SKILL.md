@@ -1,6 +1,7 @@
-﻿---
+---
 name: xlsx
-description: Use this skill when a spreadsheet file is the explicit input or the most likely required output. Good fit for reading, editing, fixing, cleaning, charting, converting, or generating .xlsx, .xlsm, .csv, or .tsv files. The user does not need to say '.xlsx' verbatim if the request clearly implies a workbook or spreadsheet handoff with tabs, formulas, columns, charts, or CSV/XLSX delivery. Use when the final deliverable should be a spreadsheet file, not just an analysis.
+description: >-
+  Use this skill when a spreadsheet file is the explicit input or the most likely required output. Good fit for reading, editing, fixing, cleaning, charting, converting, or generating .xlsx, .xlsm, .csv, or .tsv files. The user does not need to say '.xlsx' verbatim if the request clearly implies a workbook or spreadsheet handoff with tabs, formulas, columns, charts, or CSV/XLSX delivery. Use when the final deliverable should be a spreadsheet file, not just an analysis.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 

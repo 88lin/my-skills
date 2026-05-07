@@ -1,6 +1,7 @@
-﻿---
+---
 name: seo-audit
-description: Use this skill as the default SEO diagnosis skill when the user wants to audit, review, or troubleshoot organic search performance, rankings, indexing, crawlability, on-page SEO, or technical SEO issues. Good fit for vague SEO requests like "my SEO is bad" or "help with SEO". Do NOT use when the task is specifically about schema markup / structured data or specifically about AI-search / LLM citation optimization.
+description: >-
+  Use this skill as the default SEO diagnosis skill when the user wants to audit, review, or troubleshoot organic search performance, rankings, indexing, crawlability, on-page SEO, or technical SEO issues. Good fit for vague SEO requests like "my SEO is bad" or "help with SEO". Do NOT use when the task is specifically about schema markup / structured data or specifically about AI-search / LLM citation optimization.
 metadata:
   version: 1.2.0
 ---

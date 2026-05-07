@@ -1,6 +1,7 @@
-﻿---
+---
 name: canvas-design
-description: Create beautiful static visual art in .png and .pdf outputs using design philosophy. Use when the user explicitly wants a poster, cover, visual artwork, or other static design piece. Do NOT use by default for web UI, slide decks, or PowerPoint deliverables.
+description: >-
+  Create beautiful static visual art in .png and .pdf outputs using design philosophy. Use when the user explicitly wants a poster, cover, visual artwork, or other static design piece. Do NOT use by default for web UI, slide decks, or PowerPoint deliverables.
 license: Complete terms in LICENSE.txt
 ---
 
