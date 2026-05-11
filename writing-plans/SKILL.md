@@ -1,7 +1,34 @@
 ---
 name: writing-plans
-description: 当你有规格说明或需求用于多步骤任务时使用，在动手写代码之前
+description: >-
+  当已经有明确规格、需求或多步骤实现目标时使用，用来拆成可执行计划。不要作为普通 bug 修复、小改动或日常执行的默认入口；不要假设必须使用未安装的 superpowers execution skills。在 OpenCode 中，计划应交接给当前可用的 todo、task、验证命令和最小改动流程。
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill **on demand** for implementation planning, not as the default entry for every coding task.
+
+Trigger it when the task clearly involves one of these goals:
+
+- Turning an approved spec or clear multi-step requirement into an implementation plan
+- Coordinating several files, phases, or dependencies before coding
+- Creating a handoff document for another agent or future session
+- Breaking a medium or large project into verifiable steps
+
+Do **not** trigger it for:
+
+- A single straightforward code edit
+- Routine bug fixes where the next step is root-cause debugging
+- Small refactors that can be handled directly with a todo list
+- Tasks where the user asked to implement now rather than write a plan
+
+OpenCode compatibility:
+
+- Do not require `superpowers:subagent-driven-development` or `superpowers:executing-plans` unless those skills are actually installed and available
+- If the upstream workflow mentions missing execution skills, translate the handoff into OpenCode-native execution: `todowrite`, `task` when useful, direct edits, and verification commands
+- Do not create or commit plan documents by default unless the user asked for a saved plan or the task genuinely needs a durable handoff
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 编写计划
 

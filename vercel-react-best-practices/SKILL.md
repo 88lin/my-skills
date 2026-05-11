@@ -1,11 +1,33 @@
 ---
 name: vercel-react-best-practices
-description: React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.
+description: >-
+  React and Next.js performance and engineering-quality guidelines from Vercel Engineering. Use when the task is specifically about React/Next performance, data fetching, server/client rendering, bundle size, hydration, or performance-oriented code review/refactoring. Do NOT use as the default for purely visual UI design or normal frontend creation; prefer frontend-design unless performance or React architecture quality is part of the task.
 license: MIT
 metadata:
   author: vercel
   version: "1.0.0"
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill **on demand** for React/Next.js performance and engineering-quality work.
+
+Trigger it when the task clearly involves one of these goals:
+
+- Improving React or Next.js performance
+- Reviewing or refactoring React/Next.js data fetching, rendering, hydration, or bundle size
+- Diagnosing slow, janky, waterfall-heavy, or over-rendering React behavior
+- Applying Vercel-specific React/Next.js best practices during code review or implementation
+
+Do **not** use this as the default for every frontend task.
+
+- For purely visual UI creation, landing pages, product surfaces, hierarchy, layout, or aesthetics, prefer `frontend-design`
+- For flexible component API design, boolean prop proliferation, compound components, or reusable component architecture, prefer `vercel-composition-patterns`
+- For generic minimal-change coding discipline, use `karpathy-guidelines` rather than forcing performance refactors
+
+When this skill is used, keep changes surgical. Do not introduce broad performance rewrites unless the task or evidence justifies them.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Vercel React Best Practices
 

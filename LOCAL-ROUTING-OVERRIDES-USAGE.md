@@ -179,13 +179,18 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - `docx`
 - `xlsx`
 - `frontend-design`
-- `web-artifacts-builder`
 - `canvas-design`
 - `seo-audit`
 - `schema-markup`
 - `ai-seo`
 - `deploy-to-vercel`
 - `vercel-cli-with-tokens`
+- `brainstorming`
+- `writing-plans`
+- `using-git-worktrees`
+- `vercel-react-best-practices`
+- `hv-analysis`
+- `khazix-writer`
 
 这些是因为它们之间存在真实触发冲突，才值得放进 override 系统。
 

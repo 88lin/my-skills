@@ -94,10 +94,15 @@
 - `html-ppt`
 - `ppt-master`（外部相关能力）
 - `canvas-design`
-- `web-artifacts-builder`
 - `schema-markup`
 - `ai-seo`
 - `vercel-cli-with-tokens`
+- `brainstorming`
+- `writing-plans`
+- `using-git-worktrees`
+- `vercel-react-best-practices`
+- `hv-analysis`
+- `khazix-writer`
 
 ### 5. 不是所有 skill 都要加路由规则
 
@@ -107,7 +112,7 @@
 
 下面这些通常不需要额外加路由规则：
 
-- 工程 / 流程型 skill
+- 工程 / 流程型 skill（除非真实案例显示它会误拦其他流程）
 - 平台 / 工具型 skill
 - 研究 / 内容型 skill
 - 设计辅助链里那些本来就协同使用的 skill
@@ -141,6 +146,7 @@
 - 组件
 - dashboard
 - landing page
+- 复杂交互 Web app / React demo / mini-app
 - 正常的 UI 创建和迭代
 
 不要默认切到这些：
@@ -148,13 +154,11 @@
 - 提取设计语言：`extract-design`
 - 静态海报：`canvas-design`
 - HTML 演示稿：`html-ppt`
-- 复杂 React artifact：`web-artifacts-builder`
 
 判断口诀：
 
-- 正常产品网页 / landing page / 应用界面 → `frontend-design`
+- 正常产品网页 / landing page / 应用界面 / 复杂交互 Web app → `frontend-design`
 - 演示型、PPT 风格、editorial 风格静态 HTML 页面 → `html-ppt`
-- 复杂交互式 React artifact → `web-artifacts-builder`
 - 静态视觉物料 → `canvas-design`
 - 提取现有网站设计语言 → `extract-design`
 
@@ -196,6 +200,139 @@
 
 这些 skill 只有在目标很明确时才应该触发。
 
+### `brainstorming`
+
+只在这些情况触发：
+
+- 创造性产品或设计工作
+- 创建新功能、新组件、新工作流或新产品界面
+- 添加新能力，且用户意图、约束或成功标准还需要探索
+- 有意改变既定产品行为或 UX
+- 实现前需要比较多个设计方案
+
+不要用于：
+
+- Bug 修复
+- 测试失败或构建失败
+- 回归修复
+- 恢复已有行为
+- 预期行为已经明确的直接实现任务
+
+这些情况优先走工程修复流程：
+
+- `systematic-debugging`：先定位根因
+- `test-driven-development`：先建立失败的回归测试或可复现检查
+- `verification-before-completion`：完成前用新鲜验证证据支撑结论
+
+关键区分：
+
+- 恢复既有预期行为 → 调试流程
+- 设计新的预期行为 → 头脑风暴流程
+
+### `writing-plans`
+
+只在这些情况触发：
+
+- 已有明确规格或多步骤需求，需要拆成实施计划
+- 多文件、多阶段或多依赖的任务需要先规划
+- 需要保存可交接的计划文档
+- 需要给后续 agent 或未来会话做执行交接
+
+不要默认用于：
+
+- 单个简单代码改动
+- 普通 bug 修复
+- 用户已经要求直接实现的任务
+- 可以用当前会话 todo list 管住的小型任务
+
+OpenCode 中的本地边界：
+
+- 不要假设必须存在 `superpowers:subagent-driven-development` 或 `superpowers:executing-plans`
+- 如果上游正文提到未安装的执行 skill，改用 OpenCode 可用的 `todowrite`、`task`、直接编辑和验证命令
+- 不要默认写计划文档或 commit，除非用户明确要保存计划或任务规模确实需要持久交接
+
+### `using-git-worktrees`
+
+只在这些情况触发：
+
+- 并行开发需要隔离当前工作区
+- 临时 hotfix、PR 检查或多方案实验
+- 多 agent 并行或大型实施计划需要隔离基线
+- 用户明确要求开独立 worktree
+
+不要默认用于：
+
+- 只读调查
+- 小 bug 修复
+- 单文件改动
+- 简单配置或文档更新
+- 当前工作区就是预期编辑位置的任务
+
+关键判断：隔离有价值才开 worktree；普通小修直接在当前工作区做，同时尊重已有未提交改动。
+
+### `vercel-react-best-practices`
+
+只在这些情况触发：
+
+- React / Next.js 性能问题
+- data fetching、server/client rendering、hydration、bundle size
+- React 过度渲染、waterfall、jank、加载慢
+- 性能导向的 React / Next.js code review 或 refactor
+
+不要默认用于：
+
+- 纯视觉 UI 创建
+- landing page 或产品界面的美术方向
+- 普通 frontend-design 任务
+- 没有性能证据支撑的大范围重构
+
+相邻 skill 边界：
+
+- 视觉和产品界面质量 → `frontend-design`
+- 组件 API、boolean props、compound components → `vercel-composition-patterns`
+- 最小改动和避免过度设计 → `karpathy-guidelines`
+
+### `hv-analysis`
+
+只在这些情况触发：
+
+- 系统性研究产品、公司、概念、技术、市场或人物
+- 需要横纵分析：纵向历史 + 横向竞品/同类对比
+- 需要深度研究、竞品分析或结构化调研
+- 负责研究内容生成和研究报告产出，PDF 可作为输出格式
+
+不要默认用于：
+
+- 简单解释“XX 是什么”
+- 普通代码库分析、bug 调试或实现规划
+- SEO / schema / AI 搜索优化
+- 公众号文章写作
+- 已有 PDF、DOCX、PPTX、表格或 HTML 交付物的处理、转换或编辑
+
+关键判断：研究内容生成和研究报告产出 → `hv-analysis`；文章/稿子 → `khazix-writer`；已有文件处理、转换或编辑 → 格式 skill；快速解释或技术回答 → 不默认用深度研究 skill。
+
+### `khazix-writer`
+
+只在这些情况触发：
+
+- 公众号文章
+- 长文、稿子、出稿
+- 续写、扩写、改写成文章
+- 按数字生命卡兹克风格写作
+- 把素材整理成可发布的文章或 essay
+
+不要仅因为输入是 PDF、brief、新闻链接、语音转文字或散乱素材就触发。
+
+按最终产物路由：
+
+- 研究内容生成和研究报告产出 → `hv-analysis`
+- PDF 处理或最终 PDF 交付 → `pdf`
+- 可编辑 Word 文档 → `docx`
+- PowerPoint / PPTX → `pptx` 或 `ppt-master`
+- HTML 演示稿 → `html-ppt`
+- SEO / schema / AI 搜索 → 对应 SEO skill
+- 短帖、标题生成、简单摘要 → 不默认用 `khazix-writer`
+
 ### `extract-design`
 
 只在这些情况触发：
@@ -226,22 +363,6 @@
 - 网页 UI
 - HTML 演示稿
 - `.pptx` 文稿
-
-### `web-artifacts-builder`
-
-只在这些情况触发：
-
-- 多组件 React artifact
-- 需要状态管理
-- 需要 routing
-- 更像交互 demo / mini-app
-
-不要默认用于：
-
-- 普通页面
-- 普通网站 UI
-- slide deck
-- 静态海报
 
 ### `html-ppt`
 
@@ -388,6 +509,9 @@
 3. 文档格式簇
 4. SEO 簇
 5. Vercel 簇
+6. 流程入口簇
+7. React 工程簇
+8. 内容研究 / 写作簇
 
 除了这些之外，不要轻易再扩张本地路由规则范围。
 
@@ -395,21 +519,19 @@
 
 ## 常见冲突对照
 
-### 1. `frontend-design` vs `extract-design` vs `canvas-design` vs `web-artifacts-builder`
+### 1. `frontend-design` vs `extract-design` vs `canvas-design`
 
 默认顺序：
 
 1. 普通网页/UI：`frontend-design`
 2. 提取设计语言：`extract-design`
 3. 静态海报/封面：`canvas-design`
-4. 复杂交互 artifact：`web-artifacts-builder`
 
 一句话判断：
 
 - 做网页：`frontend-design`
 - 拆现有网站设计：`extract-design`
 - 做视觉物料：`canvas-design`
-- 做复杂交互 demo：`web-artifacts-builder`
 
 ### 2. `pptx` vs `html-ppt` vs `ppt-master`
 
@@ -456,6 +578,82 @@
 - 正常发版：`deploy-to-vercel`
 - token 特殊场景：`vercel-cli-with-tokens`
 
+### 5. `brainstorming` vs 工程修复流程
+
+默认顺序：
+
+1. Bug、回归、测试失败、构建失败、恢复已有行为：`systematic-debugging` → `test-driven-development` → `verification-before-completion`
+2. 新功能、新组件、新能力、有意改变产品行为：`brainstorming`
+
+一句话判断：
+
+- 恢复本来就该有的行为：不要走 `brainstorming`
+- 需要决定未来应该是什么行为：走 `brainstorming`
+
+补充：
+
+- `修改行为` 不是充分触发条件；要先判断是“修复偏离预期”还是“重新定义预期”
+- 如果调试过程中发现预期行为本身不明确，再暂停并转入 `brainstorming`
+
+### 6. `writing-plans` / `using-git-worktrees` vs 直接执行
+
+默认顺序：
+
+1. 小型直接任务：当前工作区 + todo list + 验证命令
+2. 多步骤但不需要隔离：`writing-plans` 或直接 todo list，按任务规模判断
+3. 需要隔离、并行、hotfix、实验：`using-git-worktrees`
+
+一句话判断：
+
+- 需要想清楚怎么做：考虑 `writing-plans`
+- 需要隔离在哪里做：考虑 `using-git-worktrees`
+- 只是小修小改：不要默认触发这两个
+
+补充：
+
+- OpenCode 中不要因为上游正文提到未安装的 execution skill 就阻塞
+- 可以把计划交接翻译成 `todowrite`、`task`、直接编辑和验证命令
+
+### 7. `frontend-design` vs `vercel-react-best-practices` vs `vercel-composition-patterns`
+
+默认顺序：
+
+1. 视觉 / 页面 / 产品界面 / 交互功能实现：`frontend-design`
+2. React / Next 性能、渲染、数据获取、bundle：`vercel-react-best-practices`
+3. 组件 API、组合模式、boolean props：`vercel-composition-patterns`
+
+一句话判断：
+
+- 看起来如何、页面如何设计、交互功能如何实现：`frontend-design`
+- 跑得快不快、渲染/加载是否健康：`vercel-react-best-practices`
+- 组件 API 是否可扩展：`vercel-composition-patterns`
+
+补充：
+
+- 复杂交互 React demo、mini-app、多组件 Web app，如果目标是 UI / 功能实现，归 `frontend-design`
+- 如果目标是 React / Next 性能、渲染、bundle、hydration 或 data fetching，才归 `vercel-react-best-practices`
+
+### 8. `hv-analysis` vs `khazix-writer` vs 文档格式 skill
+
+默认顺序：
+
+1. 需要研究内容生成并产出研究报告：`hv-analysis`
+2. 公众号文章 / 长文 / 稿子：`khazix-writer`
+3. 已有文件处理、格式转换、编辑文件：`pdf` / `docx` / `pptx` / `xlsx` / `html-ppt` / `ppt-master`
+4. 简单解释、摘要、技术回答：不用默认触发深度研究或写作风格 skill
+
+一句话判断：
+
+- 需要研究内容生成并产出报告：`hv-analysis`
+- 最终是文章：`khazix-writer`
+- 已有文件处理、格式转换、编辑文件：格式 skill 优先
+- 最终只是回答问题：普通回答优先
+
+特别注意：
+
+- `hv-analysis` 的 PDF 研究报告指“先做研究内容，再生成报告”
+- `pdf` 指“已有 PDF 的读取、OCR、拆分、合并、表单、转换、编辑或最终 PDF 文件处理”
+
 ---
 
 ## 低优先级观察项
@@ -487,6 +685,8 @@
 - 默认入口已经明确
 - 高冲突专项 skill 已经改成按需触发
 - 格式型 skill 已经改成格式明确再触发
+- 已按真实误触发风险补上 `brainstorming` 与工程修复流程的边界
+- 已收窄 `writing-plans`、`using-git-worktrees`、`vercel-react-best-practices`、`hv-analysis`、`khazix-writer` 的触发边界
 - 剩下主要是设计链内部的柔性交集，不属于必须马上修的错误
 
 如果后面再装新 skill，优先按这份文档判断它属于：

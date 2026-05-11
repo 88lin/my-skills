@@ -215,15 +215,6 @@
                        "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
                    },
                    {
-                       "name":  "mindos-zh",
-                       "localFolder":  "mindos-zh",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "GeminiLight/MindOS",
-                       "skill":  "mindos-zh",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/GeminiLight/MindOS/main/skills/mindos-zh/SKILL.md"
-                   },
-                   {
                        "name":  "optimize",
                        "localFolder":  "optimize",
                        "type":  "manual",
@@ -299,13 +290,6 @@
                        "repo":  "jnMetaCode/superpowers-zh",
                        "skill":  "systematic-debugging",
                        "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
-                   },
-                   {
-                       "name":  "teach-impeccable",
-                       "localFolder":  "teach-impeccable",
-                       "type":  "manual",
-                       "autoUpdate":  false,
-                       "reason":  "Customized local design stack; do not overwrite automatically"
                    },
                    {
                        "name":  "test-driven-development",
@@ -385,15 +369,6 @@
                        "repo":  "anthropics/skills",
                        "skill":  "webapp-testing",
                        "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
-                   },
-                   {
-                       "name":  "web-artifacts-builder",
-                       "localFolder":  "web-artifacts-builder",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "web-artifacts-builder",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/web-artifacts-builder/SKILL.md"
                    },
                    {
                        "name":  "writing-plans",

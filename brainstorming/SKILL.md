@@ -1,7 +1,34 @@
 ---
 name: brainstorming
-description: "在任何创造性工作之前必须使用此技能——创建功能、构建组件、添加功能或修改行为。在实现之前先探索用户意图、需求和设计。"
+description: >-
+  在创造性产品或设计工作之前使用此技能：创建新功能、构建新组件、添加新能力，或有意改变既定产品行为。在实现前先探索用户意图、需求和设计。不要用于 bug 修复、测试失败、构建失败、回归修复、恢复已有行为，或预期行为已经明确的实现任务；这些情况优先使用 systematic-debugging、test-driven-development 和 verification-before-completion。
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill for creative product or design work, not routine bug fixes.
+
+Trigger it when the task clearly involves one of these goals:
+
+- Creating a new feature, component, workflow, or product surface
+- Adding a new capability where user intent, constraints, or success criteria are not yet clear
+- Intentionally changing established product behavior or UX
+- Exploring design alternatives before implementation
+
+Do **not** trigger this skill when the user is reporting a bug, test failure, build failure, regression, broken behavior, or asking to restore existing behavior. In those cases, prefer:
+
+- `systematic-debugging` to find the root cause before proposing a fix
+- `test-driven-development` to create a failing regression test or reproducible check before implementation
+- `verification-before-completion` before claiming the fix is complete
+
+If a bug investigation reveals that the expected behavior is ambiguous or requires a new product or UX decision, pause and ask the user. Use this skill only after the task becomes a design decision rather than a repair.
+
+A phrase like `修改行为` is not enough by itself. Distinguish between:
+
+- Restoring intended existing behavior: debugging workflow
+- Designing a new intended behavior: brainstorming workflow
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 头脑风暴：将想法转化为设计
 

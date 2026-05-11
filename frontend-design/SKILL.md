@@ -1,7 +1,7 @@
 ---
 name: frontend-design
 description: >-
-  Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use for normal UI creation or iteration on web components, pages, apps, landing pages, and product surfaces. Do NOT use by default for design extraction, static poster art, HTML slide decks, or PowerPoint generation when specialized skills exist.
+  Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use for normal UI/feature implementation on web components, pages, apps, React demos, mini-apps, multi-component web apps, landing pages, and product surfaces. Do NOT use by default for design extraction, static poster art, HTML slide decks, PowerPoint generation, or React/Next performance engineering when specialized skills exist.
 license: Apache 2.0. Based on Anthropic's frontend-design skill. See NOTICE.md for attribution.
 ---
 
@@ -13,7 +13,8 @@ Use this skill as the **default web UI and frontend creation** skill.
 Trigger it when the task clearly involves one of these goals:
 
 - Designing or implementing a normal web page, app screen, component, dashboard, or landing page
-- Iterating on existing frontend UI quality, hierarchy, aesthetics, or layout
+- Building a complex interactive web app, React demo, mini-app, or multi-component frontend experience when the goal is UI and feature implementation
+- Iterating on existing frontend UI quality, hierarchy, aesthetics, layout, or interaction design
 - Creating product UI where the main output is working frontend code
 - Creating a new page or UI while using another website as visual inspiration, as long as the goal is implementation rather than design-system extraction
 - Creating a single-page website or landing page when the goal is a normal site experience, even if it borrows some visual inspiration from presentations
@@ -23,8 +24,8 @@ Do **not** use this by default in these cases:
 - Design extraction from a live site: prefer `extract-design`
 - Static poster, cover, or art output: prefer `canvas-design`
 - HTML/browser slide decks or explicitly presentation-style HTML artifacts: prefer `html-ppt`
-- Complex React artifact systems with state/routing and bundling needs: prefer `web-artifacts-builder`
 - PowerPoint or `.pptx` deliverables: prefer `pptx` or `ppt-master`
+- React/Next.js performance, rendering, data fetching, hydration, or bundle-size work where engineering quality is the main goal: prefer `vercel-react-best-practices`
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
@@ -46,7 +47,7 @@ Individual skills may require additional context — check the skill's preparati
 **Gathering order:**
 1. **Check current instructions (instant)**: If your loaded instructions already contain a **Design Context** section, proceed immediately.
 2. **Check .impeccable.md (fast)**: If not in instructions, read `.impeccable.md` from the project root. If it exists and contains the required context, proceed.
-3. **Run teach-impeccable (REQUIRED)**: If neither source has context, you MUST run /teach-impeccable NOW before doing anything else. Do NOT skip this step. Do NOT attempt to infer context from the codebase instead.
+3. **Ask for missing context**: If neither source has context, ask the user for the missing required context before doing design work. Do not infer audience, use cases, tone, or register from the codebase alone.
 
 ---
 

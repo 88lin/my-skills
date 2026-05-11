@@ -39,7 +39,6 @@ Do **not** use this as the default when the user only says "做个 PPT" or "做�
 
 - If the user needs a `.pptx` or PowerPoint deliverable, prefer `pptx` or `ppt-master`
 - If the user needs a normal product web page, application page, or non-presentation website UI, prefer `frontend-design`
-- If the user needs a complex interactive React artifact rather than slides, prefer `web-artifacts-builder`
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # html-ppt — HTML PPT Studio

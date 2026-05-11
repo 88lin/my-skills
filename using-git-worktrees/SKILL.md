@@ -1,7 +1,32 @@
 ---
 name: using-git-worktrees
-description: 当需要开始与当前工作区隔离的功能开发或执行实现计划之前使用——创建具有智能目录选择和安全验证的隔离 git 工作树
+description: >-
+  当确实需要与当前工作区隔离时使用，例如并行开发、临时 hotfix、PR 检查、多方案实验或执行大型实现计划。不要作为日常小修、普通 bug 修复、只读调查或单文件改动的默认流程。
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill **only when isolation is valuable**, not as the default setup for ordinary work.
+
+Trigger it when the task clearly involves one of these goals:
+
+- Parallel development that should not touch the current working tree
+- Temporary hotfixes or PR checks that need an isolated branch
+- Multi-agent or multi-solution experiments
+- Executing a larger implementation plan where baseline isolation matters
+
+Do **not** trigger it for:
+
+- Read-only investigation
+- Small bug fixes or single-file edits
+- Simple configuration or documentation updates
+- Work where the current workspace is already the intended place to edit
+
+If the user did not ask for isolation and the task is small, work in the current workspace while respecting existing uncommitted changes.
+
+If this skill references missing cleanup or execution skills, adapt the workflow to available OpenCode tools and normal git commands rather than blocking on unavailable skills.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 使用 Git 工作树
 

@@ -1,8 +1,34 @@
 ---
 name: khazix-writer
-description: |
-  数字生命卡兹克（Khazix）的公众号长文写作skill。当用户需要撰写公众号文章、写稿子、续写文章、根据素材产出长文时使用。触发词包括但不限于：写文章、写稿子、帮我写、续写、扩写、公众号文章、长文、出稿、按我的风格写。即使用户只是说"帮我把这个写成文章"或"用我的风格写一下"，只要上下文涉及内容创作和公众号输出，都应该触发。也适用于用户丢过来一个PDF、brief、新闻链接、语音转文字或任何素材说"帮我写篇文章"的场景。不要用于短内容（小红书帖子、推特、朋友圈）或纯标题摘要生成（那个用wechat-title skill）。
+description: >-
+  数字生命卡兹克（Khazix）的公众号长文写作 skill。仅当最终产物是公众号文章、长文、稿子、续写、扩写或按卡兹克风格写作时使用。不要仅因为输入是 PDF、brief、新闻链接或语音转文字就触发；如果用户想要研究报告、Word/PDF/PPT、SEO 审计、数据表格或简单摘要，应优先使用对应 skill 或普通分析流程。
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill **on demand** for Khazix-style long-form article writing.
+
+Trigger it when the final output is clearly one of these:
+
+- 公众号文章
+- 长文 / 稿子 / 出稿
+- 续写、扩写、改写成文章
+- 按数字生命卡兹克风格写作
+- Turning supplied material into a publishable article or essay
+
+Do **not** trigger it merely because the input is a PDF, brief, news link, transcript, or messy material. Route by final deliverable:
+
+- Research content generation and research report output -> `hv-analysis`
+- Existing PDF processing or final PDF file handling -> `pdf`
+- Editable Word document -> `docx`
+- PowerPoint / PPTX -> `pptx` or `ppt-master`
+- HTML presentation -> `html-ppt`
+- SEO / schema / AI-search work -> the relevant SEO skill
+- Short social posts, title generation, or simple summaries -> do not use this skill by default
+
+If the user asks for both research and an article, gather enough research first, then write the article with this skill only after the article deliverable is clear.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 卡兹克公众号长文写作
 

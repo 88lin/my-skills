@@ -1,12 +1,36 @@
 ---
 name: hv-analysis
-description: |
-  横纵分析法（Horizontal-Vertical Analysis）深度研究Skill。由数字生命卡兹克提出，融合了索绪尔的历时-共时分析、社会科学的纵向-横截面研究设计、商学院案例研究法与竞争战略分析的核心思想。
-  当用户想要系统性研究一个产品、公司、概念、技术或人物时使用。核心是双轴分析：纵轴追踪从诞生到当下的完整生命历程（以叙事故事呈现），横轴在当下时间截面上与竞品/同类进行系统性横向对比，最后交叉两条轴产出独到洞察。最终产出一份排版精美的PDF研究报告。
-  触发词包括但不限于：横纵分析、研究一下、帮我分析、深度研究、做个研究、调研一下、竞品分析、帮我看看这个东西怎么样、这个产品/公司/概念是怎么回事、帮我摸清楚、帮我搞懂、帮我做个deep research。
-  即使用户只是说"帮我了解一下XX"或"XX是什么来头"，只要上下文暗示需要系统性的深度研究（而非简单的概念解释），都应该触发。也适用于用户丢来一个产品名、公司名、技术名词说"帮我研究一下这个"的场景。
-  不要用于简单的名词解释（用户只是问"XX是什么"）、不要用于公众号写作（那个用khazix-writer）、不要用于纯标题摘要生成（用wechat-title）。
+description: >-
+  横纵分析法深度研究 skill，用于系统性研究一个产品、公司、概念、技术或人物，并产出排版精美的 PDF 研究报告。仅在用户需要深度研究、横纵分析、竞品分析、系统调研或明确要研究报告时使用。不要用于简单名词解释、普通代码分析、bug 排查、公众号文章写作、SEO 审计、文档/PPT 转换或轻量问答。
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill **on demand** for deep research reports, not for every analysis request.
+
+Trigger it when the task clearly involves one of these goals:
+
+- Systematically researching a product, company, concept, technology, market, or person
+- Producing a horizontal-vertical analysis with both history and current competitive comparison
+- Generating the research content for a polished report; PDF can be the output format
+- Performing deep research, competitive analysis, or structured market / concept investigation
+
+Do **not** trigger it for:
+
+- Simple explanations like `XX 是什么` when the user only needs a direct answer
+- Normal codebase analysis, bug debugging, or implementation planning
+- SEO, schema, or AI-search optimization tasks
+- Writing a公众号文章 or long-form essay: prefer `khazix-writer` when the final output is an article
+- Existing-file processing, format conversion, or file editing for PDF/DOCX/PPTX/spreadsheets/HTML decks: prefer the corresponding format skill
+
+The deciding question is the real work, not just the file extension:
+
+- Research content generation and a polished research report -> `hv-analysis`
+- Article /稿子 /公众号长文 -> `khazix-writer`
+- Existing file processing, conversion, or editing -> the corresponding format skill
+- Quick explanation or technical answer -> no deep-research skill by default
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 横纵分析法深度研究
 

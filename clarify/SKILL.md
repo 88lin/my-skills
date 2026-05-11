@@ -9,7 +9,7 @@ Identify and improve unclear, confusing, or poorly written interface text to mak
 
 ## MANDATORY PREPARATION
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run /teach-impeccable first. Additionally gather: audience technical level and users' mental state in context.
+Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing. Additionally gather: audience technical level and users' mental state in context.
 
 ---
 

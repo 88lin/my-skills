@@ -7,7 +7,7 @@
 3. 哪些 skill 明确保持默认，不额外加规则
 4. 哪些判断已经经过人工确认
 
-更新时间：2026-05-07（已同步当前保留文档状态）
+更新时间：2026-05-12（已同步流程入口、React 工程、内容研究 / 写作边界）
 
 ---
 
@@ -35,7 +35,6 @@
 - `frontend-design`
 - `extract-design`
 - `canvas-design`
-- `web-artifacts-builder`
 - `html-ppt`
 
 加规则原因：
@@ -46,10 +45,9 @@
 
 当前分工：
 
-- `frontend-design`：正常网页 / UI / landing page / 产品界面
+- `frontend-design`：正常网页 / UI / landing page / 产品界面；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
 - `extract-design`：提取现有网站设计语言、颜色、字体、spacing、tokens
 - `canvas-design`：静态视觉稿、海报、封面、PNG/PDF 物料
-- `web-artifacts-builder`：复杂 React artifact，多组件、状态管理、routing
 - `html-ppt`：演示型、展示型、PPT 风格、editorial 风格的静态 HTML 页面或 deck
 
 ### 演示文稿簇（含外部相关能力）
@@ -125,6 +123,74 @@
 - `deploy-to-vercel`：默认 Vercel 部署入口
 - `vercel-cli-with-tokens`：`VERCEL_TOKEN` / CI / 非交互 token 场景
 
+### 流程入口簇
+
+- `brainstorming`
+- `systematic-debugging`
+- `test-driven-development`
+- `verification-before-completion`
+- `writing-plans`
+- `using-git-worktrees`
+
+加规则原因：
+
+- `brainstorming` 的原始描述包含“修改行为”，容易误吞 bug 修复、回归修复、恢复已有行为这类任务
+- 真实使用中已经出现需要明确“不走创意功能设计流程”的案例
+- 工程修复流程本身不需要互斥规则，但需要防止被 `brainstorming` 的 HARD-GATE 拦住
+- `writing-plans` 和 `using-git-worktrees` 上游正文引用了部分本地未安装的执行 skill，需要明确 OpenCode 本地交接方式
+
+当前分工：
+
+- `brainstorming`：新功能、新组件、新能力、有意改变产品行为或 UX，需要先探索设计
+- `systematic-debugging`：bug、异常行为、测试失败、构建失败、回归修复，先查根因
+- `test-driven-development`：实现修复前建立失败测试或可复现检查
+- `verification-before-completion`：完成前运行验证命令并用证据支撑结论
+- `writing-plans`：已有明确规格或多步骤需求时，拆成可执行计划；小修不默认触发
+- `using-git-worktrees`：只有隔离有价值时使用；日常小修不默认创建 worktree
+
+### React 工程簇
+
+- `frontend-design`
+- `vercel-react-best-practices`
+- `vercel-composition-patterns`
+- `optimize`
+
+加规则原因：
+
+- `vercel-react-best-practices` 原始描述覆盖 writing / reviewing / refactoring React/Next.js code，范围偏宽
+- 它容易把纯视觉 UI 任务导向性能和工程重构
+- 需要保留它在 React / Next 性能、渲染、数据获取和 bundle 场景的价值，同时避免抢 `frontend-design`
+
+当前分工：
+
+- `frontend-design`：视觉、页面、产品界面、landing page、正常 UI 创建；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
+- `vercel-react-best-practices`：React / Next 性能、渲染、hydration、data fetching、bundle、性能导向 review/refactor
+- `vercel-composition-patterns`：组件 API、boolean props、compound components、可复用组件架构
+- `optimize`：更泛的 UI 性能、加载速度、动画流畅度、图片和 bundle 诊断
+
+### 内容研究 / 写作簇
+
+- `hv-analysis`
+- `khazix-writer`
+- `pdf`
+- `docx`
+- `pptx`
+- `xlsx`
+- `html-ppt`
+- `ppt-master`（外部相关能力）
+
+加规则原因：
+
+- `hv-analysis` 原始描述中的“研究一下 / 帮我分析 / 调研一下”容易覆盖轻量解释和普通分析
+- `khazix-writer` 可以接收 PDF、brief、新闻链接、语音转文字等素材，容易和文件格式 skill 或深度研究 skill 交叠
+- 这些任务必须优先按最终产物判断，而不是按输入材料判断
+
+当前分工：
+
+- `hv-analysis`：深度研究、横纵分析、竞品分析，负责研究内容生成和研究报告产出
+- `khazix-writer`：公众号文章、长文、稿子、续写扩写，最终产物是文章
+- 文件格式 skill：已有 PDF / DOCX / PPTX / XLSX / HTML deck 的处理、转换或编辑
+
 ---
 
 ## 明确保持默认的 Skill
@@ -136,8 +202,6 @@
 - `systematic-debugging`
 - `test-driven-development`
 - `verification-before-completion`
-- `writing-plans`
-- `using-git-worktrees`
 - `karpathy-guidelines`
 - `receiving-code-review`
 
@@ -150,7 +214,6 @@
 
 - `web-access`
 - `health`
-- `mindos-zh`
 - `mcp-builder`
 - `skill-creator`
 
@@ -161,9 +224,6 @@
 
 ### 研究 / 内容型
 
-- `brainstorming`
-- `hv-analysis`
-- `khazix-writer`
 - `luo-xiang-perspective`
 - `create-crush`
 
@@ -185,7 +245,6 @@
 - `optimize`
 - `polish`
 - `typeset`
-- `teach-impeccable`
 
 原因：
 
@@ -215,6 +274,44 @@
 
 - `html-ppt/SKILL.md`
 - `frontend-design/SKILL.md`
+- `SKILL-ROUTING-RULES.md`
+
+### `brainstorming` 抢工程修复流程
+
+曾出现过一个流程入口风险：
+
+- `brainstorming` 原始描述中的“修改行为”会覆盖一部分 bug 修复语义
+- 例如“恢复已有放大/翻页行为”本质是修复偏离预期，而不是重新设计行为
+- 如果误触发 `brainstorming`，它的 HARD-GATE 会要求设计审批、规格文档和实现计划，导致普通修复流程变重
+
+这个判断已经修正。
+
+当前正确理解：
+
+- 恢复既有预期行为 → `systematic-debugging` → `test-driven-development` → `verification-before-completion`
+- 设计新的预期行为 → `brainstorming`
+- `修改行为` 不是充分触发条件，必须判断是“修复偏离预期”还是“重新定义预期”
+
+这条已经纳入：
+
+- `brainstorming/SKILL.md`
+- `local-routing-overrides.json`
+- `SKILL-ROUTING-RULES.md`
+
+### 流程 / React / 内容写作边界过宽
+
+本轮补充修正了几类轻中度风险：
+
+- `writing-plans`：不再默认接管普通小修；在 OpenCode 中不假设必须使用未安装的 superpowers execution skills
+- `using-git-worktrees`：不再默认用于小 bug、只读调查、单文件改动；只有隔离有价值时触发
+- `vercel-react-best-practices`：不再抢纯视觉 `frontend-design`；只在 React / Next 性能和工程质量任务中触发
+- `hv-analysis`：不再抢简单解释、普通代码分析、SEO、公众号文章或格式交付任务
+- `khazix-writer`：不再仅因输入是 PDF / brief / 新闻链接 / 转写稿就触发，必须看最终产物是否是文章
+
+这些规则已经纳入：
+
+- 对应 skill 的 `SKILL.md`
+- `local-routing-overrides.json`
 - `SKILL-ROUTING-RULES.md`
 
 ---
@@ -261,7 +358,6 @@
    - `frontend-design`
    - `extract-design`
    - `canvas-design`
-   - `web-artifacts-builder`
    - `html-ppt`
 2. 演示文稿簇
    - `pptx`
@@ -273,12 +369,28 @@
    - `xlsx`
    - `pptx`
 4. SEO 簇
-   - `seo-audit`
-   - `schema-markup`
-   - `ai-seo`
+    - `seo-audit`
+    - `schema-markup`
+    - `ai-seo`
 5. Vercel 簇
-   - `deploy-to-vercel`
-   - `vercel-cli-with-tokens`
+    - `deploy-to-vercel`
+    - `vercel-cli-with-tokens`
+6. 流程入口簇
+   - `brainstorming`
+   - `systematic-debugging`
+   - `test-driven-development`
+   - `verification-before-completion`
+   - `writing-plans`
+   - `using-git-worktrees`
+7. React 工程簇
+   - `frontend-design`
+   - `vercel-react-best-practices`
+   - `vercel-composition-patterns`
+   - `optimize`
+8. 内容研究 / 写作簇
+   - `hv-analysis`
+   - `khazix-writer`
+   - 文档格式相关 skill
 
 这些组之外的大多数 skill，不需要为了形式统一继续补更多路由规则。
 
@@ -286,10 +398,10 @@
 
 以下这几类当前明确保持默认，不再继续硬加路由规则：
 
-- 工程 / 流程型：`systematic-debugging`、`test-driven-development`、`verification-before-completion`、`writing-plans`、`using-git-worktrees`、`karpathy-guidelines`、`receiving-code-review`
-- 平台 / 工具型：`web-access`、`health`、`mindos-zh`、`mcp-builder`、`skill-creator`
-- 研究 / 内容型：`brainstorming`、`hv-analysis`、`khazix-writer`、`luo-xiang-perspective`、`create-crush`
-- 设计辅助链：`adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset`、`teach-impeccable`
+- 工程 / 流程型：`systematic-debugging`、`test-driven-development`、`verification-before-completion`、`karpathy-guidelines`、`receiving-code-review`
+- 平台 / 工具型：`web-access`、`health`、`mcp-builder`、`skill-creator`
+- 研究 / 内容型：`luo-xiang-perspective`、`create-crush`
+- 设计辅助链：`adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset`
 
 理由很简单：
 

@@ -188,12 +188,6 @@ npx -y skills add vercel-labs/agent-skills@vercel-composition-patterns -g -y
 npx -y skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
 ```
 
-### 工具类
-
-```powershell
-npx -y skills add GeminiLight/MindOS@mindos-zh -g -y
-```
-
 ### 其他已确认来源的 Skill
 
 这些 skill 的来源已经确认，而且状态也已经核对过。
@@ -236,22 +230,23 @@ npx -y skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 - `mcp-builder`：来源已确认，已纳入管理系统，自动更新
 - `receiving-code-review`：来源已确认，已纳入管理系统，自动更新
 - `chinese-code-review`：来源已确认，已纳入管理系统，自动更新
-- `brainstorming`：来源已确认，已纳入管理系统，自动更新
-- `writing-plans`：来源已确认，已纳入管理系统，自动更新；轻量计划 skill，适合小中型任务，不替代 GSD
-- `using-git-worktrees`：来源已确认，已纳入管理系统，自动更新；并行开发隔离 skill，按需触发，不默认使用
+- `brainstorming`：来源已确认，已纳入管理系统，自动更新；本地 override 会保留“不要抢 bug 修复 / 恢复已有行为”的触发边界
+- `writing-plans`：来源已确认，已纳入管理系统，自动更新；本地 override 会保留 OpenCode 交接方式，避免依赖未安装的 superpowers execution skills
+- `using-git-worktrees`：来源已确认，已纳入管理系统，自动更新；本地 override 会保留“隔离有价值才触发”的边界，不作为日常小修默认流程
 
 定位说明：
 
-- `writing-plans` 只作为轻量实施计划补充。小中型、需求已明确的任务可以用它拆步骤；多阶段项目、复杂集成、里程碑规划仍优先使用 GSD 规划体系。
-- `using-git-worktrees` 只在需要隔离工作区时使用，例如并行任务、临时 hotfix、PR 检查或多方案实验；日常单任务开发不默认启用。
+- `writing-plans` 只作为实施计划补充。已有明确规格或多步骤需求时可以用它拆步骤；小修直接用 todo / 直接执行 / 验证命令，不默认写计划文档。
+- `using-git-worktrees` 只在需要隔离工作区时使用，例如并行任务、临时 hotfix、PR 检查、多方案实验或大型计划执行；日常单任务开发不默认启用。
+- `brainstorming` 只用于创造性产品 / 设计工作；bug、回归、测试失败、构建失败、恢复已有行为优先走 `systematic-debugging` → `test-driven-development` → `verification-before-completion`。
 
 当前状态：
 
 - `create-crush`：来源已确认，当前已是最新
 - `luo-xiang-perspective`：来源已确认，当前已是最新
 - `health`：来源已确认，但当前已改为手动管理，不参加统一自动更新
-- `hv-analysis`：来源已确认，已纳入管理系统
-- `khazix-writer`：来源已确认，已纳入管理系统
+- `hv-analysis`：来源已确认，已纳入管理系统；本地 override 会保留“研究内容生成和研究报告产出才触发；已有 PDF / 文档处理走格式 skill”的边界
+- `khazix-writer`：来源已确认，已纳入管理系统；本地 override 会保留“最终产物是公众号文章 / 长文 / 稿子才触发”的边界
 - `karpathy-guidelines`：来源已确认，已纳入管理系统
 
 #### `karpathy-guidelines`
@@ -289,6 +284,8 @@ npx -y skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 
 用途：公众号长文写作、扩写、续写、把素材整理成完整文章。
 
+使用边界：最终产物必须是公众号文章、长文、稿子、续写或扩写。不要仅因为输入是 PDF、brief、新闻链接或语音转文字就触发；如果最终要研究报告、Word/PDF/PPT、SEO 审计、表格或简单摘要，优先用对应 skill 或普通分析流程。
+
 适合你这样用：
 
 ```text
@@ -311,6 +308,8 @@ npx -y skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 #### `hv-analysis`
 
 用途：深度研究一个产品、公司、概念、技术或人物，做纵向历史梳理 + 横向竞品对比。
+
+使用边界：用于研究内容生成和研究报告产出。不要用于简单名词解释、普通代码分析、bug 排查、公众号文章写作、SEO 审计、已有 PDF / 文档处理、文档/PPT 转换或轻量问答；这些文件处理和格式转换任务走对应格式 skill。
 
 适合你这样用：
 
@@ -370,7 +369,6 @@ npx -y skills add anthropics/skills@skill-creator -g -y
 npx -y skills add anthropics/skills@docx -g -y
 npx -y skills add anthropics/skills@pptx -g -y
 npx -y skills add anthropics/skills@canvas-design -g -y
-npx -y skills add anthropics/skills@web-artifacts-builder -g -y
 ```
 
 当前状态：
@@ -382,7 +380,6 @@ npx -y skills add anthropics/skills@web-artifacts-builder -g -y
 - `docx`：来源已确认，已纳入管理系统，自动更新
 - `pptx`：来源已确认，已纳入管理系统，自动更新
 - `canvas-design`：来源已确认，已纳入管理系统，自动更新
-- `web-artifacts-builder`：来源已确认，已纳入管理系统，自动更新
 
 定位说明：
 
@@ -393,7 +390,6 @@ npx -y skills add anthropics/skills@web-artifacts-builder -g -y
 - `docx`：Word 文档创建和编辑
 - `pptx`：演示文稿创建和编辑
 - `canvas-design`：静态视觉稿、海报、PNG/PDF 设计产物
-- `web-artifacts-builder`：复杂 HTML artifact 和多组件前端演示
 
 ### 其他已确认来源的 Presentation Skills
 
@@ -470,9 +466,8 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 前端展示相关 skill 现在建议这样理解：
 
-- `frontend-design`：正常网页 / landing page / 产品界面
+- `frontend-design`：正常网页 / landing page / 产品界面；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
 - `html-ppt`：演示型、PPT 风格、editorial 风格的静态 HTML 页面或 deck
-- `web-artifacts-builder`：复杂 React artifact
 - `canvas-design`：静态视觉稿、海报、封面
 - `extract-design`：提取现有网站设计语言
 
@@ -480,7 +475,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 以下这类 skill 暂时不要直接用 `npx skills add ...` 覆盖更新：
 
-- 设计系大部分 skill，例如 `frontend-design`、`polish`、`audit`、`teach-impeccable`
+- 设计系大部分 skill，例如 `frontend-design`、`polish`、`audit`
 
 原因：
 
@@ -496,7 +491,6 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `vercel-cli-with-tokens`
 - `vercel-composition-patterns`
 - `vercel-react-best-practices`
-- `mindos-zh`
 - `create-crush`
 - `luo-xiang-perspective`
 - `hv-analysis`
@@ -524,13 +518,11 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `docx`
 - `pptx`
 - `canvas-design`
-- `web-artifacts-builder`
 - `html-ppt`
 
 ### 来源已大致确认，但不要盲更
 
 - `frontend-design`
-- `teach-impeccable`
 - `polish`
 - `audit`
 - 以及大概率同一设计体系里的：`adapt`、`animate`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`typeset`
