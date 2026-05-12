@@ -1,7 +1,7 @@
 ---
 name: html-ppt
 description: >-
-  HTML PPT Studio — author professional static HTML presentations in many styles, layouts, and animations, all driven by templates. Use when the user's goal clearly implies a browser-delivered, presentation-style HTML artifact: reveal-style slides, a static web presentation, a shareable online deck, presenter-mode slides, 小红书图文, a multi-slide HTML report, or even a single-page HTML site that is intentionally composed like a PPT or editorial presentation. The user does not need to say “HTML” verbatim if the requested delivery style makes it obvious. Do NOT use as the default for generic PPT or presentation requests; prefer `pptx` or `ppt-master` when an editable PowerPoint file is more likely.
+  HTML PPT Studio — author professional static HTML presentations in many styles, layouts, and animations, all driven by templates. Use when the user's goal clearly implies a browser-delivered, presentation-style HTML artifact: reveal-style slides, a static web presentation, a shareable online deck, presenter-mode slides, 小红书图文, a multi-slide HTML report, or even a single-page HTML site that is intentionally composed like a PPT or editorial presentation. The user does not need to say “HTML” verbatim if the requested delivery style makes it obvious. Do NOT use as the default for generic PPT or presentation requests; prefer `pptx` for editing existing decks (or the external `ppt-master` workflow when generating a new PPTX from PDF/DOCX/URL/Markdown — `ppt-master` runs manually from its own repo, it is not a skill in this system) when an editable PowerPoint file is more likely.
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -37,7 +37,7 @@ But these are valid matches for `html-ppt`:
 
 Do **not** use this as the default when the user only says "做个 PPT" or "做个演示文稿" without specifying HTML. In those cases:
 
-- If the user needs a `.pptx` or PowerPoint deliverable, prefer `pptx` or `ppt-master`
+- If the user needs a `.pptx` or PowerPoint deliverable, prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` is run manually, it is not a skill in this system)
 - If the user needs a normal product web page, application page, or non-presentation website UI, prefer `frontend-design`
 <!-- LOCAL ROUTING OVERRIDE END -->
 

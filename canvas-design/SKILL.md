@@ -21,7 +21,7 @@ Do **not** use this by default in these cases:
 
 - Web pages or app UI: prefer `frontend-design`
 - HTML slide decks: prefer `html-ppt`
-- `.pptx` or PowerPoint deliverables: prefer `pptx` or `ppt-master`
+- `.pptx` or PowerPoint deliverables: prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` runs manually, not a skill)
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 These are instructions for creating design philosophies - aesthetic movements that are then EXPRESSED VISUALLY. Output only .md files, .pdf files, and .png files.

@@ -22,10 +22,10 @@ Trigger it when the task clearly involves one of these goals:
 Do **not** use this by default in these cases:
 
 - Design extraction from a live site: prefer `extract-design`
-- Static poster, cover, or art output: prefer `canvas-design`
+- Static poster, cover, or art output: prefer `canvas-design` when available; otherwise handle inline with restrained, intentional output (`canvas-design` is registered on the OpenCode/Codex side only in this setup; Claude Code does not have it)
 - HTML/browser slide decks or explicitly presentation-style HTML artifacts: prefer `html-ppt`
-- PowerPoint or `.pptx` deliverables: prefer `pptx` or `ppt-master`
-- React/Next.js performance, rendering, data fetching, hydration, or bundle-size work where engineering quality is the main goal: prefer `vercel-react-best-practices`
+- PowerPoint or `.pptx` deliverables: prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` runs manually, not a skill)
+- React/Next.js performance, rendering, data fetching, hydration, or bundle-size work where engineering quality is the main goal: prefer `vercel-react-best-practices` when available; otherwise apply standard React/Next performance hygiene inline (`vercel-react-best-practices` is registered on the OpenCode/Codex side only in this setup; Claude Code does not have it)
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.

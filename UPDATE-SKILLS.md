@@ -61,6 +61,64 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - 上传到 GitHub 的备份目录可能不保留嵌套 `.git` 元数据，不要用备份目录判断 `web-access` 是否能更新
 - 真正执行 `git pull`、检查远端 HEAD、或处理脏工作区时，应以真实本地 skills 目录为准
 
+## Claude Code 主 skill 清单
+
+Claude Code 启动时扫描 `~/.claude/skills/` 下所有子目录，把每个 `SKILL.md` 注册成可用 skill。这个目录里挂的是软链接，指向 `~/.agents/skills/` 的对应目录。也就是说：
+
+- `~/.agents/skills/` 是统一 skill 仓库（46 个目录，给 OpenCode / Codex / Claude Code 共用）
+- `~/.claude/skills/` 只是 Claude Code 的"白名单视图"——挂多少软链，Claude Code 就看得到多少 skill
+- `manage-skills.ps1` 的 `check` 和 `apply-overrides` 模式完全不动 `~/.claude/skills/`；但 `update` 模式会调用 `npx -y skills add` 子进程，**skills CLI 会作为副作用在 `~/.claude/skills/` 创建软链**。同理 `install-and-register-skill.ps1` 在 `-SourceType skills-cli` 时也调用 skills CLI，也会创建软链
+- 所以"白名单视图"不是脚本自动维护的：跑完 update / install 之后必须用 `ls ~/.claude/skills/` 复查，手工 `rm` 不想暴露给 Claude Code 的软链（具体警示见下面"npx skills add 的副作用警示"段）
+
+**当前挂在 Claude Code 的 14 个主 skill**（截至 2026-05-13）：
+
+| 软链 | 用途 |
+|---|---|
+| `docx` | Word 文档读写、编辑、tracked changes、TOC |
+| `extract-design` | 从网站 URL 提取设计语言，生成 design tokens / Tailwind / shadcn |
+| `frontend-design` | 默认前端创建、UI 设计、产品界面 |
+| `health` | 检查 Claude Code 六层配置健康度 |
+| `html-ppt` | 浏览器 HTML 演示稿、reveal deck、小红书图文 |
+| `karpathy-guidelines` | 编码行为规范（最小改动、不过度设计） |
+| `pdf` | PDF 读取、OCR、表单、合并/拆分、生成 |
+| `pptx` | PowerPoint 文件读写、编辑、模板 |
+| `systematic-debugging` | 调试流程入口（先找根因再修） |
+| `test-driven-development` | TDD 流程入口（先写失败测试再实现） |
+| `verification-before-completion` | 完成前验证流程入口（凭证据宣布完成） |
+| `web-access` | 联网 / 网页抓取 / 真实浏览器交互 |
+| `webapp-testing` | Playwright 本地 Web app 验证（给 Claude 一双眼睛） |
+| `xlsx` | Excel / CSV 表格读写、公式、图表 |
+
+**剩下 32 个 skill 不挂 Claude Code**：它们都装在 `~/.agents/skills/`，由 OpenCode 和 Codex 主用，包括但不限于 `brainstorming`、`writing-plans`、`using-git-worktrees`、`hv-analysis`、`khazix-writer`、`seo-audit`、`schema-markup`、`ai-seo`、`canvas-design`、`deploy-to-vercel`、`vercel-*` 系列、设计辅助链 11 个（`adapt` / `animate` / `audit` / `clarify` / `critique` / `delight` / `distill` / `harden` / `optimize` / `polish` / `typeset`）、`luo-xiang-perspective`、`create-crush`、`mcp-builder`、`skill-creator`、`chinese-*` 系列、`receiving-code-review`。
+
+### 增删 Claude Code skill 的标准命令
+
+**加挂**（让 Claude Code 看到一个已经存在于 `~/.agents/skills/` 的 skill）：
+
+```bash
+# git bash
+ln -s /c/Users/Computer/.agents/skills/<skill-name> /c/Users/Computer/.claude/skills/<skill-name>
+```
+
+```powershell
+# PowerShell（如果 git bash 软链有兼容问题）
+cmd /c mklink /D "C:\Users\Computer\.claude\skills\<skill-name>" "C:\Users\Computer\.agents\skills\<skill-name>"
+```
+
+**撤掉**（不让 Claude Code 看到，`~/.agents/skills/` 本体保留给 OpenCode/Codex）：
+
+```bash
+rm /c/Users/Computer/.claude/skills/<skill-name>
+```
+
+### npx skills add 的副作用警示
+
+直接跑 `npx -y skills add owner/repo@skill -g -y` 或 `manage-skills.ps1 -Mode update -Only <skill>` 时，skills CLI **会自动**在 `~/.claude/skills/` 创建一条软链——也就是说**任何 update 都可能顺手把新 skill 注册到 Claude Code**。
+
+发生过的例子：2026-05-12 跑 `update -Only writing-plans`，writing-plans 被自动注册到 Claude Code（虽然你只想 update，并不想让它在 Claude Code 触发）。
+
+**应对**：跑完 update 之后检查 `ls ~/.claude/skills/` 是否多出意外的软链；多出来的用 `rm /c/Users/Computer/.claude/skills/<skill>` 撤掉。把白名单维护好。
+
 ## 新 Skill 安装与纳管
 
 以后如果你让 AI 帮你安装一个新 skill，推荐不要只停在“装上”，而是顺手把它纳入当前这套管理系统。

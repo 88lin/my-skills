@@ -24,7 +24,7 @@ Do **not** use this as the default for general document requests.
 
 - If the user wants a Word document, prefer `docx`
 - If the user wants a spreadsheet deliverable, prefer `xlsx`
-- If the user wants a PowerPoint deliverable, prefer `pptx` or `ppt-master`
+- If the user wants a PowerPoint deliverable, prefer `pptx` (or the external `ppt-master` workflow when generating a new PPTX from this PDF — `ppt-master` runs manually, not a skill)
 - If the user only asks for writing help, summarization, or structured content without a PDF requirement, use a more appropriate writing or document workflow first
 <!-- LOCAL ROUTING OVERRIDE END -->
 

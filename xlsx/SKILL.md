@@ -25,7 +25,7 @@ Do **not** use this as the default for every data-related task.
 - If the user only wants analysis, explanation, or insights and does not need a spreadsheet file, a general analysis workflow may be better first
 - If the user wants a Word document deliverable, prefer `docx`
 - If the user wants a PDF deliverable, prefer `pdf`
-- If the user wants a presentation deliverable, prefer `pptx`, `ppt-master`, or `html-ppt` depending on format
+- If the user wants a presentation deliverable, prefer `pptx` or `html-ppt` depending on format (the external `ppt-master` workflow can also generate a new PPTX from raw materials, but it runs manually outside the skill system)
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # Requirements for Outputs

@@ -22,7 +22,7 @@ Do **not** trigger it merely because the input is a PDF, brief, news link, trans
 - Research content generation and research report output -> `hv-analysis`
 - Existing PDF processing or final PDF file handling -> `pdf`
 - Editable Word document -> `docx`
-- PowerPoint / PPTX -> `pptx` or `ppt-master`
+- PowerPoint / PPTX -> `pptx` (or the external `ppt-master` workflow when starting from scratch — `ppt-master` runs manually, not a skill)
 - HTML presentation -> `html-ppt`
 - SEO / schema / AI-search work -> the relevant SEO skill
 - Short social posts, title generation, or simple summaries -> do not use this skill by default

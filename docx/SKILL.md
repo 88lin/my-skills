@@ -24,7 +24,7 @@ Do **not** use this as the default for every "write a report" style request.
 - If the user only wants help drafting text, planning structure, or improving prose, use a writing or documentation workflow first
 - If the user explicitly wants a PDF deliverable, prefer `pdf`
 - If the user explicitly wants a spreadsheet deliverable, prefer `xlsx`
-- If the user explicitly wants a presentation deliverable, prefer `pptx`, `ppt-master`, or `html-ppt` depending on format
+- If the user explicitly wants a presentation deliverable, prefer `pptx` or `html-ppt` depending on format (the external `ppt-master` workflow can also generate a new PPTX from this DOCX, but it runs manually outside the skill system)
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # DOCX creation, editing, and analysis
