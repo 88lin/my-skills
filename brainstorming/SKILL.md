@@ -37,12 +37,12 @@ A phrase like `修改行为` is not enough by itself. Distinguish between:
 首先了解当前项目的上下文，然后逐一提问来完善想法。一旦你理解了要构建的内容，就展示设计方案并获得用户批准。
 
 <HARD-GATE>
-在你展示设计方案并获得用户批准之前，不要调用任何实现技能、编写任何代码、搭建任何项目或采取任何实现行动。这适用于所有项目，无论看起来多简单。
+在你展示设计方案并获得用户批准之前，不要调用任何实现技能、编写任何代码、搭建任何项目或采取任何实现行动。这适用于所有真正进入 brainstorming 的项目；bug 修复、回归恢复、build 失败、恢复已有行为不属于 brainstorming 的适用范围，应当走 systematic-debugging → test-driven-development → verification-before-completion。
 </HARD-GATE>
 
 ## 反模式："这个太简单了，不需要设计"
 
-每个项目都要经过这个流程。一个待办事项列表、一个单函数工具、一个配置变更——全都需要。"简单"的项目恰恰是未经检验的假设造成最多浪费的地方。设计可以很简短（对于真正简单的项目几句话就够了），但你必须展示出来并获得批准。
+每个真正进入 brainstorming 的项目都要经过这个流程。一个待办事项列表、一个单函数工具、一个配置变更——只要是在设计新行为，全都需要。"简单"的项目恰恰是未经检验的假设造成最多浪费的地方。设计可以很简短（对于真正简单的项目几句话就够了），但你必须展示出来并获得批准。但如果用户的请求是修复偏离预期的既有行为，按上文边界，应当退出 brainstorming，转入调试流程。
 
 ## 检查清单
 
@@ -137,7 +137,7 @@ digraph brainstorming {
 
 - 将验证通过的设计（规格说明）写入 `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
   - （用户对规格位置的偏好优先于此默认值）
-- 如果可用，使用 elements-of-style:writing-clearly-and-concisely 技能
+- 写作风格：用简洁、具体的语言；避免冗余、含糊和形容词堆叠；每条规格条目自带验收标准
 - 将设计文档 commit 到 git
 
 **规格自检：**

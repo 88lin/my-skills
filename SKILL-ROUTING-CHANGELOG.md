@@ -7,7 +7,7 @@
 3. 哪些 skill 明确保持默认，不额外加规则
 4. 哪些判断已经经过人工确认
 
-更新时间：2026-05-12（已同步流程入口、React 工程、内容研究 / 写作边界）
+更新时间：2026-05-12（已同步流程入口、React 工程、内容研究 / 写作边界；本轮追加：设计辅助链与 frontend-design 的边界、writing-plans / brainstorming 去 superpowers/elements-of-style 死链、新增 bodyPatches override 机制）
 
 ---
 
@@ -313,6 +313,49 @@
 - 对应 skill 的 `SKILL.md`
 - `local-routing-overrides.json`
 - `SKILL-ROUTING-RULES.md`
+
+### 设计辅助链不再强制 invoke /frontend-design
+
+曾经的做法是设计链 9 个 skill（adapt / animate / audit / clarify / critique / delight / distill / polish / typeset）顶部都写 "## MANDATORY PREPARATION: Invoke /frontend-design"。在 OpenCode 这种 skill 描述被同时加载到上下文的环境里，每个局部设计任务都会被迫先扫一遍完整 frontend-design 上下文 + 询问 design context，污染单点任务。
+
+当前正确理解：
+
+- 局部任务（如 typeset 调字体、clarify 改文案、adapt 加断点）只需要本任务的最小上下文
+- 完整 frontend-design 上下文只在重新定义视觉方向 / 整体 UI 重做 / 新页面立项时加载
+- 每个设计链 skill 在自己的 `## Preparation` 段定义"最小上下文清单"
+- `harden`、`optimize` 本来就没有 invoke /frontend-design 的硬依赖，无需改动
+- `frontend-design` 自身的 `.impeccable.md` 强依赖也已软化：找不到时参考 `~/.agents/skills/frontend-design/impeccable-template.md` 并当面询问最小字段，不阻塞
+
+这条已经纳入：
+
+- 各设计链 skill 的 `SKILL.md` 主体
+- `frontend-design/SKILL.md` 的 Gathering order 段
+- 新增 `frontend-design/impeccable-template.md`
+- `SKILL-ROUTING-RULES.md` 新增"设计辅助链与 frontend-design 的边界"章节
+
+### writing-plans / brainstorming 去掉未安装上游依赖
+
+曾经的做法是 writing-plans 在主体里硬编码 "必需子技能：使用 superpowers:subagent-driven-development 或 superpowers:executing-plans"，brainstorming 在主体引用 "如果可用，使用 elements-of-style:writing-clearly-and-concisely 技能"。这些上游 skill 在 OpenCode / Codex / Claude Code 任何一个环境里都未安装。
+
+当前正确理解：
+
+- writing-plans 生成的计划文档不再要求特定执行子 skill；改为说"按当前 agent 环境可用的方式（todowrite、task、直接编辑、验证命令）逐任务推进"
+- brainstorming 的写作风格指引改为普通原则（"用简洁、具体的语言；避免冗余、含糊和形容词堆叠"），不再引用 elements-of-style 上游 skill
+- 修复通过新增的 `bodyPatches` override 机制实现，下次 `manage-skills.ps1 -Mode update` 拉新上游也会自动重新应用
+
+这条已经纳入：
+
+- `writing-plans/SKILL.md` 主体（通过 bodyPatches 回写）
+- `brainstorming/SKILL.md` 主体（通过 bodyPatches 回写）
+- `local-routing-overrides.json` 新增 `bodyPatches` 字段
+- `manage-skills.ps1` 新增 bodyPatches 应用逻辑
+- `LOCAL-ROUTING-OVERRIDES-USAGE.md` 增补 bodyPatches 字段说明
+
+**追加修订（同期）：**
+
+- writing-plans 执行交接的列表项再次中性化：去掉 `todowrite（OpenCode）/ TaskCreate（Claude Code）` 的环境绑定，改为 "用当前 agent 自带的任务清单 / todo 机制把计划落地为可勾选的进度（如果有这种工具的话）"；去掉 "每步完成后 commit" 的默认动作，改为 "是否在每步之间 commit，按用户偏好或项目 commit 策略决定，不要默认 commit"。
+- brainstorming HARD-GATE 与反模式段的 scope 收窄：HARD-GATE 的 "适用于所有项目" 措辞改为 "适用于所有真正进入 brainstorming 的项目；bug 修复、回归恢复、build 失败、恢复已有行为不属于 brainstorming 的适用范围，应当走 systematic-debugging → test-driven-development → verification-before-completion"；反模式段同样补一段 "如果用户的请求是修复偏离预期的既有行为，按上文边界，应当退出 brainstorming，转入调试流程"。
+- 这两条同样通过 `bodyPatches` 实现（writing-plans 第 2 条 patch 的 replace 文本被修订；brainstorming 新增 2 条 patch）；上游下次 update 不会冲掉。
 
 ---
 

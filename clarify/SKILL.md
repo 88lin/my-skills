@@ -7,9 +7,11 @@ argument-hint: "[target]"
 
 Identify and improve unclear, confusing, or poorly written interface text to make the product easier to understand and use.
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing. Additionally gather: audience technical level and users' mental state in context.
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：(1) 目标受众的技术水平和当时的心智状态；(2) 文案出现在哪些位置（按钮 / 错误 / 空状态 / 引导 / 标签）。
+
+仅当用户希望同时调整界面信息架构时，才加载 frontend-design。
 
 ---
 

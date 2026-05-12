@@ -38,6 +38,11 @@ $Config = Read-JsonFileUtf8 -Path $ConfigPath
 $Entries = @($Config.skills)
 
 $RoutingOverrides = @{}
+# Script-scoped scratchpad. Apply-RoutingOverrideToText appends a record here
+# for every bodyPatch whose `find` text is NOT present in the input. Callers
+# (check / update / apply-overrides) reset this before invoking, then read it
+# after to surface drift between upstream content and the patches.
+$script:CurrentApplyMissingPatches = @()
 if (Test-Path $OverridesPath) {
     try {
         $OverridesConfig = Read-JsonFileUtf8 -Path $OverridesPath
@@ -235,6 +240,45 @@ function Apply-RoutingOverrideToText {
         }
     }
 
+    if ($Override.PSObject.Properties.Name -contains 'bodyPatches' -and $null -ne $Override.bodyPatches) {
+        foreach ($Patch in @($Override.bodyPatches)) {
+            if ($null -eq $Patch) {
+                continue
+            }
+            if (-not ($Patch.PSObject.Properties.Name -contains 'find')) {
+                continue
+            }
+            if ([string]::IsNullOrWhiteSpace($Patch.find)) {
+                continue
+            }
+
+            $FindText = Get-NormalizedText -Text $Patch.find
+            $ReplaceText = if ($Patch.PSObject.Properties.Name -contains 'replace' -and $null -ne $Patch.replace) {
+                Get-NormalizedText -Text $Patch.replace
+            }
+            else {
+                ''
+            }
+
+            if ($Result.Contains($FindText)) {
+                $Result = $Result.Replace($FindText, $ReplaceText)
+            }
+            else {
+                # bodyPatch.find is not present in the input text.
+                # Record this miss so callers (check / update / apply-overrides)
+                # can surface drift. Otherwise upstream changes could silently
+                # re-introduce the content this patch was meant to remove.
+                $PreviewLen = [Math]::Min(80, $FindText.Length)
+                $Preview = $FindText.Substring(0, $PreviewLen).Replace("`n", ' \n ')
+                $ReasonText = if ($Patch.PSObject.Properties.Name -contains 'reason' -and $Patch.reason) { $Patch.reason } else { '(no reason field)' }
+                $script:CurrentApplyMissingPatches += [pscustomobject]@{
+                    Reason      = $ReasonText
+                    FindPreview = $Preview
+                }
+            }
+        }
+    }
+
     $Result = [regex]::Replace($Result, '(\n){3,}', "`n`n")
 
     return ($Result.TrimEnd("`r", "`n") + $TrailingNewlines)
@@ -307,14 +351,28 @@ function Invoke-ApplyOverrides {
         }
 
         try {
+            $script:CurrentApplyMissingPatches = @()
             $Changed = Apply-RoutingOverrideToLocalSkill -Entry $Entry
+            $MissingAfter = @($script:CurrentApplyMissingPatches)
+            $script:CurrentApplyMissingPatches = @()
+
+            # In apply-overrides mode, missing patches on LocalText are EXPECTED
+            # for the idempotent rerun case: after the first apply, patch.find
+            # no longer matches because the local content has already been
+            # replaced. So we don't promote missing to an error here; we just
+            # append a note. Use `check` mode to detect drift against upstream.
+            $Detail = '已应用本地 override'
+            if ($MissingAfter.Count -gt 0) {
+                $Detail += "; $($MissingAfter.Count) bodyPatch.find 在本地正文未匹配（幂等 rerun 时正常；如果是首次 apply 应改用 update -Only $($Entry.name) 重新从上游拉取）"
+            }
+
             $ApplyResults += [pscustomobject]@{
                 Name      = $Entry.name
                 Type      = $Entry.type
                 Installed = (Test-Path (Get-LocalSkillPath -Entry $Entry))
                 Action    = if ($Changed) { 'applied' } else { 'unchanged' }
                 Status    = 'up-to-date'
-                Detail    = '已应用本地 override'
+                Detail    = $Detail
             }
         }
         catch {
@@ -422,13 +480,24 @@ function Get-SkillStatus {
                     }
                 }
 
+                $script:CurrentApplyMissingPatches = @()
                 $ExpectedLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
-                $Status = if ((Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)) { 'up-to-date' } else { 'outdated' }
-                $Detail = if ($Status -eq 'up-to-date') {
-                    "$($Entry.reason); local override 已同步"
+                $MissingHere = @($script:CurrentApplyMissingPatches)
+                $script:CurrentApplyMissingPatches = @()
+
+                $HashMatches = (Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)
+                if ($MissingHere.Count -gt 0) {
+                    $FirstPreview = $MissingHere[0].FindPreview
+                    $Status = 'patch-stale'
+                    $Detail = "$($Entry.reason); $($MissingHere.Count) bodyPatch.find 在本地正文未匹配 (e.g. ""$FirstPreview"")；可能本地正文已替换、或 patch.find 需要按上游最新内容重写"
+                }
+                elseif ($HashMatches) {
+                    $Status = 'up-to-date'
+                    $Detail = "$($Entry.reason); local override 已同步"
                 }
                 else {
-                    "$($Entry.reason); local override 未同步，请运行 manage-skills.ps1 -Mode apply-overrides -Only $($Entry.name)"
+                    $Status = 'outdated'
+                    $Detail = "$($Entry.reason); local override 未同步，请运行 manage-skills.ps1 -Mode apply-overrides -Only $($Entry.name)"
                 }
 
                 return [pscustomobject]@{
@@ -493,11 +562,21 @@ function Get-SkillStatus {
 
                 $RemoteText = Get-WebText -Url $Entry.rawSkillUrl
                 $Override = Get-RoutingOverride -Entry $Entry
+
+                $script:CurrentApplyMissingPatches = @()
                 $ExpectedLocalText = Apply-RoutingOverrideToText -Text $RemoteText -Override $Override
+                # missing-on-remote: patch.find no longer matches upstream content.
+                # This is the dangerous case — without patches applying, upstream
+                # drift can silently re-introduce the content the patch removes.
+                $MissingFromRemote = @($script:CurrentApplyMissingPatches)
+
+                $script:CurrentApplyMissingPatches = @()
                 $ExpectedOverrideLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
+                $script:CurrentApplyMissingPatches = @()
+
                 $LocalVersion = Get-FrontMatterVersion -Text $LocalText
                 $RemoteVersion = Get-FrontMatterVersion -Text $RemoteText
-                $Status = if ((Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)) { 'up-to-date' } else { 'outdated' }
+                $HashMatches = (Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)
                 $OverrideInSync = if ($null -eq $Override) {
                     $true
                 }
@@ -517,6 +596,15 @@ function Get-SkillStatus {
 
                 if (-not $OverrideInSync) {
                     $VersionDetail += '; local override 未同步'
+                }
+
+                if ($MissingFromRemote.Count -gt 0) {
+                    $FirstPreview = $MissingFromRemote[0].FindPreview
+                    $VersionDetail += "; $($MissingFromRemote.Count) bodyPatch.find 在上游正文未匹配 (e.g. ""$FirstPreview"")；上游可能已改变，patch.find 需要重写"
+                    $Status = 'patch-stale'
+                }
+                else {
+                    $Status = if ($HashMatches) { 'up-to-date' } else { 'outdated' }
                 }
 
                 return [pscustomobject]@{

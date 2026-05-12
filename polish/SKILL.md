@@ -5,9 +5,11 @@ user-invocable: true
 argument-hint: "[target]"
 ---
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing. Additionally gather: quality bar (MVP vs flagship).
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：(1) 质量门槛是 MVP 还是 flagship；(2) 已知小瑕疵清单。
+
+仅当需要全面重审视觉方向时，才加载 frontend-design。
 
 ---
 

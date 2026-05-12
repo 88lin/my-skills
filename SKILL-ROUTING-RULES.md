@@ -656,6 +656,30 @@ OpenCode 中的本地边界：
 
 ---
 
+## 设计辅助链与 frontend-design 的边界
+
+设计辅助 skill 默认按"局部任务 + 最小上下文"工作，不再强制 invoke /frontend-design。
+
+涉及的 skill：
+
+- `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`polish`、`typeset`
+
+完整加载 frontend-design 只在以下情况：
+
+- 用户要做新页面、完整产品界面立项
+- 用户希望重新规划视觉方向、品牌调性或信息架构
+- 评审 / 审查结论确认需要回到设计阶段
+
+否则每个设计链 skill 各自只问本任务必需的最小字段——具体清单写在每个 skill 的 `## Preparation` 段。
+
+补充：
+
+- `harden` 和 `optimize` 本来就没有 invoke /frontend-design 的硬依赖，按常规局部任务流程运行即可
+- `optimize` 与 `vercel-react-best-practices` 的边界仍按现有规则：`optimize` 主要做 UI 性能、加载速度、动画流畅度；React/Next 性能、渲染、bundle、hydration 走 `vercel-react-best-practices`
+- frontend-design 的 design context 已改为软依赖：先读 `.impeccable.md`，没有就参考 `~/.agents/skills/frontend-design/impeccable-template.md` 模板并当面询问最小字段，不阻塞
+
+---
+
 ## 低优先级观察项
 
 这些不是当前必须处理的冲突点，先观察即可：

@@ -7,9 +7,11 @@ argument-hint: "[target] [context (mobile, tablet, print...)]"
 
 Adapt existing designs to work effectively across different contexts - different screen sizes, devices, platforms, or use cases.
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing. Additionally gather: target platforms/devices and usage contexts.
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：(1) 目标平台和设备；(2) 哪些断点已有、哪些缺失；(3) 触摸 vs 鼠标交互的差异预期。
+
+仅当用户希望重新设计跨设备版式 / 整体响应式架构时，才完整加载 frontend-design 的 spatial / responsive reference。
 
 ---
 

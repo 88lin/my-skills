@@ -47,7 +47,7 @@ Individual skills may require additional context — check the skill's preparati
 **Gathering order:**
 1. **Check current instructions (instant)**: If your loaded instructions already contain a **Design Context** section, proceed immediately.
 2. **Check .impeccable.md (fast)**: If not in instructions, read `.impeccable.md` from the project root. If it exists and contains the required context, proceed.
-3. **Ask for missing context**: If neither source has context, ask the user for the missing required context before doing design work. Do not infer audience, use cases, tone, or register from the codebase alone.
+3. **Fallback when neither exists**: Use the minimal template at `~/.agents/skills/frontend-design/impeccable-template.md` as a reference for what's missing, then ask the user **one short question covering the missing fields** (audience, use cases, brand tone, register) and wait briefly for a reply. If the user has not answered yet, only do **low-risk structural work** — layout scaffolding, semantic markup, accessibility plumbing, plain neutral defaults. Do **not** pick a tone, palette, typography direction, or motion vocabulary until the user responds. Do not infer audience, use cases, tone, or register from the codebase alone.
 
 ---
 

@@ -10,7 +10,24 @@
       "skill": "brainstorming",
       "localFolder": "brainstorming",
       "description": "在创造性产品或设计工作之前使用此技能：创建新功能、构建新组件、添加新能力，或有意改变既定产品行为。在实现前先探索用户意图、需求和设计。不要用于 bug 修复、测试失败、构建失败、回归修复、恢复已有行为，或预期行为已经明确的实现任务；这些情况优先使用 systematic-debugging、test-driven-development 和 verification-before-completion。",
-      "usageRule": "## Usage Rule\n\nUse this skill for creative product or design work, not routine bug fixes.\n\nTrigger it when the task clearly involves one of these goals:\n\n- Creating a new feature, component, workflow, or product surface\n- Adding a new capability where user intent, constraints, or success criteria are not yet clear\n- Intentionally changing established product behavior or UX\n- Exploring design alternatives before implementation\n\nDo **not** trigger this skill when the user is reporting a bug, test failure, build failure, regression, broken behavior, or asking to restore existing behavior. In those cases, prefer:\n\n- `systematic-debugging` to find the root cause before proposing a fix\n- `test-driven-development` to create a failing regression test or reproducible check before implementation\n- `verification-before-completion` before claiming the fix is complete\n\nIf a bug investigation reveals that the expected behavior is ambiguous or requires a new product or UX decision, pause and ask the user. Use this skill only after the task becomes a design decision rather than a repair.\n\nA phrase like `修改行为` is not enough by itself. Distinguish between:\n\n- Restoring intended existing behavior: debugging workflow\n- Designing a new intended behavior: brainstorming workflow"
+      "usageRule": "## Usage Rule\n\nUse this skill for creative product or design work, not routine bug fixes.\n\nTrigger it when the task clearly involves one of these goals:\n\n- Creating a new feature, component, workflow, or product surface\n- Adding a new capability where user intent, constraints, or success criteria are not yet clear\n- Intentionally changing established product behavior or UX\n- Exploring design alternatives before implementation\n\nDo **not** trigger this skill when the user is reporting a bug, test failure, build failure, regression, broken behavior, or asking to restore existing behavior. In those cases, prefer:\n\n- `systematic-debugging` to find the root cause before proposing a fix\n- `test-driven-development` to create a failing regression test or reproducible check before implementation\n- `verification-before-completion` before claiming the fix is complete\n\nIf a bug investigation reveals that the expected behavior is ambiguous or requires a new product or UX decision, pause and ask the user. Use this skill only after the task becomes a design decision rather than a repair.\n\nA phrase like `修改行为` is not enough by itself. Distinguish between:\n\n- Restoring intended existing behavior: debugging workflow\n- Designing a new intended behavior: brainstorming workflow",
+      "bodyPatches": [
+        {
+          "reason": "去掉对未安装的 elements-of-style:writing-clearly-and-concisely 上游 skill 的硬引用，改为普通写作原则",
+          "find": "- 如果可用，使用 elements-of-style:writing-clearly-and-concisely 技能",
+          "replace": "- 写作风格：用简洁、具体的语言；避免冗余、含糊和形容词堆叠；每条规格条目自带验收标准"
+        },
+        {
+          "reason": "HARD-GATE 的 scope 与 override 矛盾：override 明确把 bug 修复/回归排除在 brainstorming 之外，主体应反映同样边界",
+          "find": "在你展示设计方案并获得用户批准之前，不要调用任何实现技能、编写任何代码、搭建任何项目或采取任何实现行动。这适用于所有项目，无论看起来多简单。",
+          "replace": "在你展示设计方案并获得用户批准之前，不要调用任何实现技能、编写任何代码、搭建任何项目或采取任何实现行动。这适用于所有真正进入 brainstorming 的项目；bug 修复、回归恢复、build 失败、恢复已有行为不属于 brainstorming 的适用范围，应当走 systematic-debugging → test-driven-development → verification-before-completion。"
+        },
+        {
+          "reason": "反模式段同 scope 调整：每个真正进入 brainstorming 的项目都走流程，但 bug 修复不在适用范围内",
+          "find": "每个项目都要经过这个流程。一个待办事项列表、一个单函数工具、一个配置变更——全都需要。\"简单\"的项目恰恰是未经检验的假设造成最多浪费的地方。设计可以很简短（对于真正简单的项目几句话就够了），但你必须展示出来并获得批准。",
+          "replace": "每个真正进入 brainstorming 的项目都要经过这个流程。一个待办事项列表、一个单函数工具、一个配置变更——只要是在设计新行为，全都需要。\"简单\"的项目恰恰是未经检验的假设造成最多浪费的地方。设计可以很简短（对于真正简单的项目几句话就够了），但你必须展示出来并获得批准。但如果用户的请求是修复偏离预期的既有行为，按上文边界，应当退出 brainstorming，转入调试流程。"
+        }
+      ]
     },
     {
       "skill": "html-ppt",
@@ -88,7 +105,19 @@
       "skill": "writing-plans",
       "localFolder": "writing-plans",
       "description": "当已经有明确规格、需求或多步骤实现目标时使用，用来拆成可执行计划。不要作为普通 bug 修复、小改动或日常执行的默认入口；不要假设必须使用未安装的 superpowers execution skills。在 OpenCode 中，计划应交接给当前可用的 todo、task、验证命令和最小改动流程。",
-      "usageRule": "## Usage Rule\n\nUse this skill **on demand** for implementation planning, not as the default entry for every coding task.\n\nTrigger it when the task clearly involves one of these goals:\n\n- Turning an approved spec or clear multi-step requirement into an implementation plan\n- Coordinating several files, phases, or dependencies before coding\n- Creating a handoff document for another agent or future session\n- Breaking a medium or large project into verifiable steps\n\nDo **not** trigger it for:\n\n- A single straightforward code edit\n- Routine bug fixes where the next step is root-cause debugging\n- Small refactors that can be handled directly with a todo list\n- Tasks where the user asked to implement now rather than write a plan\n\nOpenCode compatibility:\n\n- Do not require `superpowers:subagent-driven-development` or `superpowers:executing-plans` unless those skills are actually installed and available\n- If the upstream workflow mentions missing execution skills, translate the handoff into OpenCode-native execution: `todowrite`, `task` when useful, direct edits, and verification commands\n- Do not create or commit plan documents by default unless the user asked for a saved plan or the task genuinely needs a durable handoff"
+      "usageRule": "## Usage Rule\n\nUse this skill **on demand** for implementation planning, not as the default entry for every coding task.\n\nTrigger it when the task clearly involves one of these goals:\n\n- Turning an approved spec or clear multi-step requirement into an implementation plan\n- Coordinating several files, phases, or dependencies before coding\n- Creating a handoff document for another agent or future session\n- Breaking a medium or large project into verifiable steps\n\nDo **not** trigger it for:\n\n- A single straightforward code edit\n- Routine bug fixes where the next step is root-cause debugging\n- Small refactors that can be handled directly with a todo list\n- Tasks where the user asked to implement now rather than write a plan\n\nOpenCode compatibility:\n\n- Do not require `superpowers:subagent-driven-development` or `superpowers:executing-plans` unless those skills are actually installed and available\n- If the upstream workflow mentions missing execution skills, translate the handoff into OpenCode-native execution: `todowrite`, `task` when useful, direct edits, and verification commands\n- Do not create or commit plan documents by default unless the user asked for a saved plan or the task genuinely needs a durable handoff",
+      "bodyPatches": [
+        {
+          "reason": "去掉计划文档模板里硬编码的 superpowers 子技能要求（OpenCode/Codex 都未安装上游 superpowers:* 链）",
+          "find": "> **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。",
+          "replace": "> **面向 AI 代理的工作者：** 按下述任务清单逐项执行；进度用复选框（`- [ ]`）跟踪。每个任务完成后运行对应的验证命令并核对预期输出，再进入下一项。"
+        },
+        {
+          "reason": "执行交接整段去掉 superpowers 引用，改为 OpenCode/Codex 通用流程",
+          "find": "## 执行交接\n\n保存计划后，提供执行选项：\n\n**\"计划已完成并保存到 `docs/superpowers/plans/<filename>.md`。两种执行方式：**\n\n**1. 子代理驱动（推荐）** - 每个任务调度一个新的子代理，任务间进行审查，快速迭代\n\n**2. 内联执行** - 在当前会话中使用 executing-plans 执行任务，批量执行并设有检查点\n\n**选哪种方式？\"**\n\n**如果选择子代理驱动：**\n- **必需子技能：** 使用 superpowers:subagent-driven-development\n- 每个任务一个新子代理 + 两阶段审查\n\n**如果选择内联执行：**\n- **必需子技能：** 使用 superpowers:executing-plans\n- 批量执行并设有检查点供审查",
+          "replace": "## 执行交接\n\n保存计划后，按当前 agent 环境可用的方式逐任务推进，不要假设某个特定的执行子 skill 必须存在：\n\n- 用当前 agent 自带的任务清单 / todo 机制把计划落地为可勾选的进度（如果有这种工具的话）\n- 如果当前 agent 支持子任务分发，可以一个子任务调度一个独立 agent 跑单步，跑完再回到主会话审查\n- 不支持时直接在当前会话内顺序执行，每步用计划里指定的命令验证，验证通过再进下一步\n- 是否在每步之间 commit，按用户偏好或项目 commit 策略决定，不要默认 commit\n\n如果 agent 环境装了专用的执行链 skill（例如 superpowers:subagent-driven-development 或 superpowers:executing-plans），可以用，但不是必需的。"
+        }
+      ]
     },
     {
       "skill": "using-git-worktrees",

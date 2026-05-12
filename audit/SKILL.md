@@ -5,9 +5,11 @@ user-invocable: true
 argument-hint: "[area (feature, page, component...)]"
 ---
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing.
+这是审查任务，**不要默认 invoke /frontend-design**。只需要确认审查范围：feature / page / component / 全站。
+
+不强制加载 frontend-design；仅当审查结论指向需要重新设计时再加载。
 
 ---
 

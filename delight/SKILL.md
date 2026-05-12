@@ -5,9 +5,11 @@ user-invocable: true
 argument-hint: "[target]"
 ---
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design. Follow its Context Gathering Protocol before proceeding. Additionally gather what is appropriate for the domain: playful, professional, quirky, elegant, or restrained.
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：当前域适合的调性——playful / professional / quirky / elegant / restrained 之一。
+
+仅当需要重新定义品牌情绪方向时，才加载 frontend-design。
 
 ---
 

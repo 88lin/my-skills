@@ -54,13 +54,20 @@
       "skill": "html-ppt",
       "localFolder": "html-ppt",
       "description": "...",
-      "usageRule": "## Usage Rule\n..."
+      "usageRule": "## Usage Rule\n...",
+      "bodyPatches": [
+        {
+          "reason": "为什么要打这个补丁",
+          "find": "上游 SKILL.md 里要替换的精确文本",
+          "replace": "你想要的替换文本"
+        }
+      ]
     }
   ]
 }
 ```
 
-每个 override 主要有 4 个字段：
+每个 override 最多有 5 个字段：
 
 - `skill`
   - skill 名称
@@ -69,7 +76,46 @@
 - `description`
   - 要覆盖进 frontmatter 的 description
 - `usageRule`
-  - 要写回 `SKILL.md` 的 `## Usage Rule` 段落
+  - 要写回 `SKILL.md` 顶部 `<!-- LOCAL ROUTING OVERRIDE START --> ... END -->` 块的 `## Usage Rule` 段落
+- `bodyPatches`（可选）
+  - 数组；用来对 SKILL.md **正文段落**做精确替换
+  - 每项包含：
+    - `reason`：人类可读的注释，说明为什么打这个补丁（仅给维护者看，不写入文件）
+    - `find`：上游 SKILL.md 里要被替换的**精确文本**（区分大小写、空格、换行）
+    - `replace`：替换后的文本
+
+### bodyPatches 的能力边界
+
+`description` 和 `usageRule` 都只能改 frontmatter 和顶部 Usage Rule 块。`bodyPatches` 用来补足正文段落级覆盖能力，典型场景：
+
+- 上游 SKILL.md 主体里硬编码了未安装的子 skill 引用（例如 `superpowers:*`、`elements-of-style:*`）
+- 上游某段流程描述与本地路由结论冲突（例如某 skill 主体里强制 invoke 另一个 skill）
+- 上游模板在本地环境跑不动（例如硬编码沙箱路径）
+
+### bodyPatches 的行为
+
+- 应用顺序按数组顺序，每条 patch 独立替换
+- 如果 `find` 文本在输入正文里**不存在**，脚本不会改写该段，但会在内部 `$script:CurrentApplyMissingPatches` 里记录一条 "missing" 事件，并按调用模式给出不同反馈：
+  - `check` 模式：脚本会用上游 RemoteText（skills-cli）或本地 LocalText（manual）跑一次 patches；只要任一 `patch.find` 没匹配到，状态会标成 **`patch-stale`**，Detail 给出 missing 数量和 find 文本预览。这是判断"上游漂移导致补丁失效"的主要途径
+  - `update` 模式：拉完上游 → apply → 复检；如果上游内容已变到 `patch.find` 不能匹配，最终状态会从 `up-to-date` 变成 `patch-stale`，Action 标为 `failed`，update 不会被误判为成功
+  - `apply-overrides` 模式：missing 在幂等 rerun 时是**预期**行为（本地已经替换过，find 自然找不到）；脚本不会因此报错或改 Status，但会把 missing 数量附在 Detail 里。如果你是**首次 apply** 却也看到 missing，应改用 `update -Only <skill>` 重新从上游拉
+- patch 用普通字符串匹配（不是 regex）；换行符要在 JSON 里写成 `\n`，引号写成 `\"`，反斜杠写成 `\\`；反引号、中文、emoji 直接写
+- 当 check 或 update 标 `patch-stale` 时，建议处理顺序：
+  1. 看 `manage-skills.ps1 -Mode check -Only <skill>` 输出的 find 预览
+  2. `curl` 当前上游 `rawSkillUrl` 看 `patch.find` 对应段落已改成什么样
+  3. 改 `local-routing-overrides.json` 里的 `patch.find`（必要时也改 `replace`）
+  4. 跑 `manage-skills.ps1 -Mode update -Only <skill>` 拉上游 + 应用新 patch
+  5. 再跑一次 check 确认 `up-to-date`
+
+### bodyPatches vs usageRule：选哪个？
+
+| 想改的位置 | 用什么 |
+|---|---|
+| frontmatter `description` | `description` 字段 |
+| 顶部的 Usage Rule 块 | `usageRule` 字段 |
+| 主体任何其他段落 | `bodyPatches` |
+
+如果你只是想给 skill 加一条本地触发边界，**先试 usageRule**；只有当本地规则需要直接修改上游正文（比如改流程、删死引用）时才用 `bodyPatches`。
 
 ---
 

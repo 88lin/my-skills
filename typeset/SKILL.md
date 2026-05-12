@@ -13,9 +13,11 @@ Brand: use a font direction that reflects the brand lane (display serif + sans b
 
 Product: system fonts and familiar sans stacks are legitimate. One well-tuned family typically carries the whole UI. Prefer fixed `rem` scale with a 1.125-1.2 ratio between more closely-spaced steps.
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing.
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：(1) 当前页面是 brand 还是 product UI；(2) 现有字体栈和品牌字体偏好。
+
+仅当本次实际要调整整体设计方向时，才完整加载 frontend-design。本文件第 55 行的 typography reference 链接是软引用，按需取阅即可。
 
 ---
 

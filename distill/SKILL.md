@@ -7,9 +7,11 @@ argument-hint: "[target]"
 
 Remove unnecessary complexity from designs, revealing the essential elements and creating clarity through ruthless simplification.
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding; if no design context exists yet, ask the user for the missing context before continuing.
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：(1) 哪些元素是必须保留的核心信息；(2) 哪些是装饰性可裁剪。
+
+仅当用户希望重新设计信息架构时，才加载 frontend-design。
 
 ---
 

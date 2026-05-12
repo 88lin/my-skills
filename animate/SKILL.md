@@ -5,9 +5,11 @@ user-invocable: true
 argument-hint: "[target]"
 ---
 
-## MANDATORY PREPARATION
+## Preparation
 
-Invoke /frontend-design. Follow its Context Gathering Protocol before proceeding. Additionally gather performance constraints, motion sensitivity requirements, and whether this is a brand surface or product UI.
+这是局部任务，**不要默认 invoke /frontend-design**。只需要确认：(1) 动效是 brand surface 还是 product UI；(2) 性能预算；(3) 是否需要支持 prefers-reduced-motion。
+
+仅当需要重新规划整体交互/动效方向时，才加载 frontend-design 的 motion reference。
 
 ---
 

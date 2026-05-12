@@ -76,7 +76,7 @@ OpenCode compatibility:
 ```markdown
 # [功能名称] 实现计划
 
-> **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
+> **面向 AI 代理的工作者：** 按下述任务清单逐项执行；进度用复选框（`- [ ]`）跟踪。每个任务完成后运行对应的验证命令并核对预期输出，再进入下一项。
 
 **目标：** [一句话描述要构建什么]
 
@@ -160,20 +160,11 @@ git commit -m "feat: add specific feature"
 
 ## 执行交接
 
-保存计划后，提供执行选项：
+保存计划后，按当前 agent 环境可用的方式逐任务推进，不要假设某个特定的执行子 skill 必须存在：
 
-**"计划已完成并保存到 `docs/superpowers/plans/<filename>.md`。两种执行方式：**
+- 用当前 agent 自带的任务清单 / todo 机制把计划落地为可勾选的进度（如果有这种工具的话）
+- 如果当前 agent 支持子任务分发，可以一个子任务调度一个独立 agent 跑单步，跑完再回到主会话审查
+- 不支持时直接在当前会话内顺序执行，每步用计划里指定的命令验证，验证通过再进下一步
+- 是否在每步之间 commit，按用户偏好或项目 commit 策略决定，不要默认 commit
 
-**1. 子代理驱动（推荐）** - 每个任务调度一个新的子代理，任务间进行审查，快速迭代
-
-**2. 内联执行** - 在当前会话中使用 executing-plans 执行任务，批量执行并设有检查点
-
-**选哪种方式？"**
-
-**如果选择子代理驱动：**
-- **必需子技能：** 使用 superpowers:subagent-driven-development
-- 每个任务一个新子代理 + 两阶段审查
-
-**如果选择内联执行：**
-- **必需子技能：** 使用 superpowers:executing-plans
-- 批量执行并设有检查点供审查
+如果 agent 环境装了专用的执行链 skill（例如 superpowers:subagent-driven-development 或 superpowers:executing-plans），可以用，但不是必需的。
