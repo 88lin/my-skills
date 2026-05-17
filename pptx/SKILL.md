@@ -23,7 +23,7 @@ Do **not** use this as the default for all slide or presentation requests.
 
 - If the user wants an HTML or browser-based deck, prefer `html-ppt`
 - If the user wants a new editable PPTX generated from source materials like PDF, DOCX, URL, or Markdown, the external `ppt-master` workflow is the better fit — it lives outside the skill system and must be invoked manually from its own repo
-- If the user only wants a normal web UI or page, prefer `frontend-design`
+- If the user only wants a normal web UI or page, prefer `impeccable`
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # PPTX Skill

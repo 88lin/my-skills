@@ -27,7 +27,7 @@ Important: the mere presence of the word `HTML` is **not** enough.
 - `做一个普通企业官网`
 - `做一个常规产品 landing page`
 
-These are still usually **website/UI** requests, so they should normally go to `frontend-design` unless the real goal is clearly presentation-style composition.
+These are still usually **website/UI** requests, so they should normally go to `impeccable` unless the real goal is clearly presentation-style composition.
 
 But these are valid matches for `html-ppt`:
 
@@ -38,7 +38,7 @@ But these are valid matches for `html-ppt`:
 Do **not** use this as the default when the user only says "做个 PPT" or "做个演示文稿" without specifying HTML. In those cases:
 
 - If the user needs a `.pptx` or PowerPoint deliverable, prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` is run manually, it is not a skill in this system)
-- If the user needs a normal product web page, application page, or non-presentation website UI, prefer `frontend-design`
+- If the user needs a normal product web page, application page, or non-presentation website UI, prefer `impeccable`
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # html-ppt — HTML PPT Studio

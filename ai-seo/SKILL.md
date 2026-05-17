@@ -1,9 +1,9 @@
 ---
 name: ai-seo
 description: >-
-  Use this skill when the task is specifically about AI search, AI Overviews, LLM citations, answer-engine optimization, or improving visibility in AI-generated answers. Good fit for AEO, GEO, LLMO, AI citations, zero-click AI visibility, and optimization for ChatGPT, Perplexity, Claude, Gemini, or similar systems. Do NOT use as the default for broad SEO audits or for pure schema-markup implementation.
+  Use this skill when the task is specifically about AI search, AI Overviews, LLM citations, answer-engine optimization, or improving visibility in AI-generated answers. Good fit for AEO, GEO, LLMO, AI citations, zero-click AI visibility, and optimization for ChatGPT, Perplexity, Claude, Gemini, or similar systems. Do NOT use as the default for broad SEO audits or for pure schema implementation.
 metadata:
-  version: 1.2.0
+  version: 2.0.0
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -21,7 +21,7 @@ Trigger it when the task clearly involves one of these goals:
 Do **not** use this as the default SEO skill.
 
 - For broad SEO diagnosis, prefer `seo-audit`
-- For structured data implementation, prefer `schema-markup`
+- For structured data implementation, prefer `schema`
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # AI SEO
@@ -31,7 +31,7 @@ You are an expert in AI search optimization — the practice of making content d
 ## Before Starting
 
 **Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
+If `.agents/product-marketing.md` exists (or `.claude/product-marketing.md`, or the legacy `product-marketing-context.md` filename, in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
 
 Gather this context (ask if not provided):
 
@@ -303,7 +303,7 @@ Structured data helps AI systems understand your content. Key schemas:
 | Reviews | `Review`, `AggregateRating` | Trust signals |
 | Organization | `Organization` | Entity recognition |
 
-Content with proper schema shows 30-40% higher AI visibility. For implementation, use the **schema-markup** skill.
+Content with proper schema shows 30-40% higher AI visibility. For implementation, use the **schema** skill.
 
 ---
 
@@ -396,7 +396,7 @@ Monthly manual check:
 - Fair and balanced (AI penalizes obviously biased comparisons)
 - Specific criteria with ratings or scores
 - Updated pricing and feature data
-- Cite the competitor-alternatives skill for building these pages
+- Cite the competitors skill for building these pages
 
 ### Documentation / Help Content
 
@@ -455,8 +455,8 @@ For implementation, see the [tools registry](../../tools/REGISTRY.md).
 ## Related Skills
 
 - **seo-audit**: For traditional technical and on-page SEO audits
-- **schema-markup**: For implementing structured data that helps AI understand your content
+- **schema**: For implementing structured data that helps AI understand your content
 - **content-strategy**: For planning what content to create
-- **competitor-alternatives**: For building comparison pages that get cited
+- **competitors**: For building comparison pages that get cited
 - **programmatic-seo**: For building SEO pages at scale
 - **copywriting**: For writing content that's both human-readable and AI-extractable

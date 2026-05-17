@@ -7,7 +7,7 @@
 3. 哪些 skill 明确保持默认，不额外加规则
 4. 哪些判断已经经过人工确认
 
-更新时间：2026-05-12（已同步流程入口、React 工程、内容研究 / 写作边界；本轮追加：设计辅助链与 frontend-design 的边界、writing-plans / brainstorming 去 superpowers/elements-of-style 死链、新增 bodyPatches override 机制）
+更新时间：2026-05-17（已同步流程入口、React 工程、内容研究 / 写作边界；本轮追加：impeccable 上游更新与子命令边界、schema 上游重命名、writing-plans / brainstorming 去 superpowers/elements-of-style 死链、新增 bodyPatches override 机制）
 
 ---
 
@@ -32,7 +32,7 @@
 
 ### 前端展示簇
 
-- `frontend-design`
+- `impeccable`
 - `extract-design`
 - `canvas-design`
 - `html-ppt`
@@ -45,7 +45,7 @@
 
 当前分工：
 
-- `frontend-design`：正常网页 / UI / landing page / 产品界面；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
+- `impeccable`：正常网页 / UI / landing page / 产品界面；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
 - `extract-design`：提取现有网站设计语言、颜色、字体、spacing、tokens
 - `canvas-design`：静态视觉稿、海报、封面、PNG/PDF 物料
 - `html-ppt`：演示型、展示型、PPT 风格、editorial 风格的静态 HTML 页面或 deck
@@ -95,7 +95,7 @@
 ### SEO 簇
 
 - `seo-audit`
-- `schema-markup`
+- `schema`
 - `ai-seo`
 
 加规则原因：
@@ -106,7 +106,7 @@
 当前分工：
 
 - `seo-audit`：默认 SEO 入口，泛 SEO 审计和诊断
-- `schema-markup`：结构化数据 / JSON-LD / rich results
+- `schema`：结构化数据 / JSON-LD / rich results
 - `ai-seo`：AI 搜索可见性 / AI Overviews / LLM citations / AEO / GEO / LLMO
 
 ### Vercel 簇
@@ -150,23 +150,22 @@
 
 ### React 工程簇
 
-- `frontend-design`
+- `impeccable`
 - `vercel-react-best-practices`
 - `vercel-composition-patterns`
-- `optimize`
 
 加规则原因：
 
 - `vercel-react-best-practices` 原始描述覆盖 writing / reviewing / refactoring React/Next.js code，范围偏宽
 - 它容易把纯视觉 UI 任务导向性能和工程重构
-- 需要保留它在 React / Next 性能、渲染、数据获取和 bundle 场景的价值，同时避免抢 `frontend-design`
+- 需要保留它在 React / Next 性能、渲染、数据获取和 bundle 场景的价值，同时避免抢 `impeccable`
 
 当前分工：
 
-- `frontend-design`：视觉、页面、产品界面、landing page、正常 UI 创建；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
+- `impeccable`：视觉、页面、产品界面、landing page、正常 UI 创建；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
 - `vercel-react-best-practices`：React / Next 性能、渲染、hydration、data fetching、bundle、性能导向 review/refactor
 - `vercel-composition-patterns`：组件 API、boolean props、compound components、可复用组件架构
-- `optimize`：更泛的 UI 性能、加载速度、动画流畅度、图片和 bundle 诊断
+- `impeccable optimize`：UI 体感性能、加载速度、动画流畅度、图片重量和布局稳定性；不要当作独立 skill
 
 ### 内容研究 / 写作簇
 
@@ -234,6 +233,8 @@
 
 ### 设计辅助链
 
+已折叠进 `impeccable` 的子命令 / reference 体系，不再保留独立 skill 目录：
+
 - `adapt`
 - `animate`
 - `audit`
@@ -260,7 +261,7 @@
 曾出现过一次关键误判：
 
 - 把 `html-ppt` 错当成“只适合真正的 slides/deck”
-- 进而把 `PPT 风格单页网站` 这类请求一律推给 `frontend-design`
+- 进而把 `PPT 风格单页网站` 这类请求一律推给 `impeccable`
 
 这个判断已经修正。
 
@@ -273,7 +274,7 @@
 这条已经纳入：
 
 - `html-ppt/SKILL.md`
-- `frontend-design/SKILL.md`
+- `impeccable/SKILL.md`
 - `SKILL-ROUTING-RULES.md`
 
 ### `brainstorming` 抢工程修复流程
@@ -304,7 +305,7 @@
 
 - `writing-plans`：不再默认接管普通小修；在 OpenCode 中不假设必须使用未安装的 superpowers execution skills
 - `using-git-worktrees`：不再默认用于小 bug、只读调查、单文件改动；只有隔离有价值时触发
-- `vercel-react-best-practices`：不再抢纯视觉 `frontend-design`；只在 React / Next 性能和工程质量任务中触发
+- `vercel-react-best-practices`：不再抢纯视觉 `impeccable`；只在 React / Next 性能和工程质量任务中触发
 - `hv-analysis`：不再抢简单解释、普通代码分析、SEO、公众号文章或格式交付任务
 - `khazix-writer`：不再仅因输入是 PDF / brief / 新闻链接 / 转写稿就触发，必须看最终产物是否是文章
 
@@ -314,24 +315,22 @@
 - `local-routing-overrides.json`
 - `SKILL-ROUTING-RULES.md`
 
-### 设计辅助链不再强制 invoke /frontend-design
+### 设计辅助链折叠进 impeccable
 
-曾经的做法是设计链 9 个 skill（adapt / animate / audit / clarify / critique / delight / distill / polish / typeset）顶部都写 "## MANDATORY PREPARATION: Invoke /frontend-design"。在 OpenCode 这种 skill 描述被同时加载到上下文的环境里，每个局部设计任务都会被迫先扫一遍完整 frontend-design 上下文 + 询问 design context，污染单点任务。
+曾经的做法是保留一组独立设计辅助 skill（adapt / animate / audit / clarify / critique / delight / distill / harden / optimize / polish / typeset），并通过文档规则限制它们不要强制 invoke /impeccable。
 
 当前正确理解：
 
-- 局部任务（如 typeset 调字体、clarify 改文案、adapt 加断点）只需要本任务的最小上下文
-- 完整 frontend-design 上下文只在重新定义视觉方向 / 整体 UI 重做 / 新页面立项时加载
-- 每个设计链 skill 在自己的 `## Preparation` 段定义"最小上下文清单"
-- `harden`、`optimize` 本来就没有 invoke /frontend-design 的硬依赖，无需改动
-- `frontend-design` 自身的 `.impeccable.md` 强依赖也已软化：找不到时参考 `~/.agents/skills/frontend-design/impeccable-template.md` 并当面询问最小字段，不阻塞
+- 这些能力已经由上游 `pbakaus/impeccable` 的 `reference/*.md` 和 `$impeccable <command>` 子命令统一承接
+- 继续保留独立目录会造成两套规则源，并且旧独立版还残留旧前端设计入口时代的文案
+- 本地只保留 `impeccable` 一个设计主入口，靠 override 维护它和 `extract-design`、`canvas-design`、`html-ppt`、`vercel-react-best-practices` 等 skill 的边界
 
 这条已经纳入：
 
-- 各设计链 skill 的 `SKILL.md` 主体
-- `frontend-design/SKILL.md` 的 Gathering order 段
-- 新增 `frontend-design/impeccable-template.md`
-- `SKILL-ROUTING-RULES.md` 新增"设计辅助链与 frontend-design 的边界"章节
+- 删除旧设计辅助链独立目录
+- 从 `skills-sources.json` 移除对应条目
+- 扩展 `impeccable` 的本地 `Usage Rule`
+- `SKILL-ROUTING-RULES.md` 新增 "Impeccable 子命令边界" 章节
 
 ### writing-plans / brainstorming 去掉未安装上游依赖
 
@@ -398,7 +397,7 @@
 当前真正需要路由治理的，主要只有这几组：
 
 1. 前端展示簇
-   - `frontend-design`
+   - `impeccable`
    - `extract-design`
    - `canvas-design`
    - `html-ppt`
@@ -413,7 +412,7 @@
    - `pptx`
 4. SEO 簇
     - `seo-audit`
-    - `schema-markup`
+    - `schema`
     - `ai-seo`
 5. Vercel 簇
     - `deploy-to-vercel`
@@ -426,10 +425,9 @@
    - `writing-plans`
    - `using-git-worktrees`
 7. React 工程簇
-   - `frontend-design`
+   - `impeccable`
    - `vercel-react-best-practices`
    - `vercel-composition-patterns`
-   - `optimize`
 8. 内容研究 / 写作簇
    - `hv-analysis`
    - `khazix-writer`
@@ -444,7 +442,7 @@
 - 工程 / 流程型：`systematic-debugging`、`test-driven-development`、`verification-before-completion`、`karpathy-guidelines`、`receiving-code-review`
 - 平台 / 工具型：`web-access`、`health`、`mcp-builder`、`skill-creator`
 - 研究 / 内容型：`luo-xiang-perspective`、`create-crush`
-- 设计辅助链：`adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset`
+- 设计辅助链：已归并到 `impeccable`，不再作为独立 skill 组维护
 
 理由很简单：
 

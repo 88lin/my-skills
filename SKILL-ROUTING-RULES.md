@@ -43,7 +43,7 @@
 - 它更像正常产品网页/UI
 - 还是更像演示稿式的展示页面
 
-如果最终交付物是一个**正常网站 / 产品页面 / 应用界面**，优先归 `frontend-design`。
+如果最终交付物是一个**正常网站 / 产品页面 / 应用界面**，优先归 `impeccable`。
 如果最终交付物是一个**展示型、演示型、PPT 风格的静态 HTML 页面或 deck**，`html-ppt` 可以是合理选择。
 
 ### 3. 关键词命中不等于应该触发
@@ -94,7 +94,7 @@
 - `html-ppt`
 - `ppt-master`（外部相关能力）
 - `canvas-design`
-- `schema-markup`
+- `schema`
 - `ai-seo`
 - `vercel-cli-with-tokens`
 - `brainstorming`
@@ -137,7 +137,7 @@
 
 ### 设计与前端默认入口
 
-- `frontend-design`
+- `impeccable`
 
 适用：
 
@@ -157,10 +157,12 @@
 
 判断口诀：
 
-- 正常产品网页 / landing page / 应用界面 / 复杂交互 Web app → `frontend-design`
+- 正常产品网页 / landing page / 应用界面 / 复杂交互 Web app → `impeccable`
 - 演示型、PPT 风格、editorial 风格静态 HTML 页面 → `html-ppt`
 - 静态视觉物料 → `canvas-design`
 - 提取现有网站设计语言 → `extract-design`
+
+`impeccable` 也是原设计辅助链的统一入口。旧的 `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset` 独立 skill 已删除；`bolder`、`quieter`、`colorize`、`layout`、`onboard`、`overdrive`、`live`、`teach`、`document`、`extract` 等上游命令也通过 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令承接。
 
 ### SEO 默认入口
 
@@ -176,7 +178,7 @@
 
 不要默认切到这些：
 
-- 结构化数据：`schema-markup`
+- 结构化数据：`schema`
 - AI 搜索优化：`ai-seo`
 
 ### Vercel 默认入口
@@ -283,12 +285,12 @@ OpenCode 中的本地边界：
 
 - 纯视觉 UI 创建
 - landing page 或产品界面的美术方向
-- 普通 frontend-design 任务
+- 普通 impeccable 任务
 - 没有性能证据支撑的大范围重构
 
 相邻 skill 边界：
 
-- 视觉和产品界面质量 → `frontend-design`
+- 视觉和产品界面质量 → `impeccable`
 - 组件 API、boolean props、compound components → `vercel-composition-patterns`
 - 最小改动和避免过度设计 → `karpathy-guidelines`
 
@@ -399,7 +401,7 @@ OpenCode 中的本地边界：
 
 - `ppt-master` 当前按外部独立仓库管理，不是这个仓库收录的普通 skill 目录成员，也不在这个仓库的普通 skills 镜像 / override 自动回写范围内
 
-### `schema-markup`
+### `schema`
 
 只在这些情况触发：
 
@@ -519,17 +521,17 @@ OpenCode 中的本地边界：
 
 ## 常见冲突对照
 
-### 1. `frontend-design` vs `extract-design` vs `canvas-design`
+### 1. `impeccable` vs `extract-design` vs `canvas-design`
 
 默认顺序：
 
-1. 普通网页/UI：`frontend-design`
+1. 普通网页/UI：`impeccable`
 2. 提取设计语言：`extract-design`
 3. 静态海报/封面：`canvas-design`
 
 一句话判断：
 
-- 做网页：`frontend-design`
+- 做网页：`impeccable`
 - 拆现有网站设计：`extract-design`
 - 做视觉物料：`canvas-design`
 
@@ -549,21 +551,21 @@ OpenCode 中的本地边界：
 
 补充：
 
-- `做一个 PPT 风格的单页网站`：如果重点是展示型静态 HTML 页面，`html-ppt` 可以是合适选择；如果重点是正常产品网站体验，归 `frontend-design`
+- `做一个 PPT 风格的单页网站`：如果重点是展示型静态 HTML 页面，`html-ppt` 可以是合适选择；如果重点是正常产品网站体验，归 `impeccable`
 - `做一套浏览器里翻页的 slides`：归 `html-ppt`
 
-### 3. `seo-audit` vs `schema-markup` vs `ai-seo`
+### 3. `seo-audit` vs `schema` vs `ai-seo`
 
 默认顺序：
 
 1. 泛 SEO 问题：`seo-audit`
-2. 结构化数据：`schema-markup`
+2. 结构化数据：`schema`
 3. AI 搜索和引用：`ai-seo`
 
 一句话判断：
 
 - SEO 先查病：`seo-audit`
-- schema 落地：`schema-markup`
+- schema 落地：`schema`
 - AI 可见性：`ai-seo`
 
 ### 4. `deploy-to-vercel` vs `vercel-cli-with-tokens`
@@ -614,23 +616,23 @@ OpenCode 中的本地边界：
 - OpenCode 中不要因为上游正文提到未安装的 execution skill 就阻塞
 - 可以把计划交接翻译成 `todowrite`、`task`、直接编辑和验证命令
 
-### 7. `frontend-design` vs `vercel-react-best-practices` vs `vercel-composition-patterns`
+### 7. `impeccable` vs `vercel-react-best-practices` vs `vercel-composition-patterns`
 
 默认顺序：
 
-1. 视觉 / 页面 / 产品界面 / 交互功能实现：`frontend-design`
+1. 视觉 / 页面 / 产品界面 / 交互功能实现：`impeccable`
 2. React / Next 性能、渲染、数据获取、bundle：`vercel-react-best-practices`
 3. 组件 API、组合模式、boolean props：`vercel-composition-patterns`
 
 一句话判断：
 
-- 看起来如何、页面如何设计、交互功能如何实现：`frontend-design`
+- 看起来如何、页面如何设计、交互功能如何实现：`impeccable`
 - 跑得快不快、渲染/加载是否健康：`vercel-react-best-practices`
 - 组件 API 是否可扩展：`vercel-composition-patterns`
 
 补充：
 
-- 复杂交互 React demo、mini-app、多组件 Web app，如果目标是 UI / 功能实现，归 `frontend-design`
+- 复杂交互 React demo、mini-app、多组件 Web app，如果目标是 UI / 功能实现，归 `impeccable`
 - 如果目标是 React / Next 性能、渲染、bundle、hydration 或 data fetching，才归 `vercel-react-best-practices`
 
 ### 8. `hv-analysis` vs `khazix-writer` vs 文档格式 skill
@@ -656,43 +658,41 @@ OpenCode 中的本地边界：
 
 ---
 
-## 设计辅助链与 frontend-design 的边界
+## Impeccable 子命令边界
 
-设计辅助 skill 默认按"局部任务 + 最小上下文"工作，不再强制 invoke /frontend-design。
+旧设计辅助链不再作为独立 skill 目录存在。下列请求都归 `impeccable`，并按其子命令或 reference 文件执行：
 
-涉及的 skill：
+- `craft`：先 shape 再端到端构建功能
+- `shape`：实现前做 UX/UI 方案
+- `teach`：建立 PRODUCT.md / DESIGN.md 设计上下文
+- `document`：从现有前端代码生成或刷新 DESIGN.md
+- `extract`：从当前前端项目中抽取可复用设计系统资产；不要用于 live-site 设计语言提取
+- `adapt`：响应式、跨设备、断点、触摸目标
+- `animate`：动效、过渡、micro-interactions
+- `audit`：前端技术质量检查、a11y、性能、响应式、anti-patterns
+- `critique`：UX / 视觉层级 / 信息架构评审
+- `clarify`：UX copy、错误文案、标签、说明
+- `distill`：简化、去噪、减少复杂度
+- `harden`：错误状态、i18n、文本溢出、边界数据
+- `optimize`：UI 体感性能、加载速度、动画流畅度、图片重量和布局稳定性
+- `polish`：上线前细节、对齐、间距、一致性
+- `bolder`：放大保守或无记忆点的设计
+- `quieter`：压低过度刺激或过强的设计
+- `onboard`：首次使用、空状态、激活路径
+- `colorize`：给单调 UI 增加有策略的色彩
+- `typeset`：字体、层级、字号、可读性
+- `layout`：间距、节奏、视觉层级和版式
+- `delight`：愉悦感、人格化细节、记忆点
+- `overdrive`：把已成立的方向推到更强表达
+- `live`：浏览器里选择元素并生成视觉变体
 
-- `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`polish`、`typeset`
+边界仍然保留：
 
-完整加载 frontend-design 只在以下情况：
-
-- 用户要做新页面、完整产品界面立项
-- 用户希望重新规划视觉方向、品牌调性或信息架构
-- 评审 / 审查结论确认需要回到设计阶段
-
-否则每个设计链 skill 各自只问本任务必需的最小字段——具体清单写在每个 skill 的 `## Preparation` 段。
-
-补充：
-
-- `harden` 和 `optimize` 本来就没有 invoke /frontend-design 的硬依赖，按常规局部任务流程运行即可
-- `optimize` 与 `vercel-react-best-practices` 的边界仍按现有规则：`optimize` 主要做 UI 性能、加载速度、动画流畅度；React/Next 性能、渲染、bundle、hydration 走 `vercel-react-best-practices`
-- frontend-design 的 design context 已改为软依赖：先读 `.impeccable.md`，没有就参考 `~/.agents/skills/frontend-design/impeccable-template.md` 模板并当面询问最小字段，不阻塞
-
----
-
-## 低优先级观察项
-
-这些不是当前必须处理的冲突点，先观察即可：
-
-- `clarify`
-- `critique`
-- `audit`
-- `polish`
-- `typeset`
-- `adapt`
-- `animate`
-- `harden`
-- `optimize`
+- 设计语言提取 / tokens / CSS variables / Tailwind config → `extract-design`
+- 静态海报、封面、PNG/PDF 视觉物料 → `canvas-design`
+- HTML/browser slide deck → `html-ppt`
+- React / Next 性能、渲染、bundle、hydration、data fetching → `vercel-react-best-practices`
+- 组件 API、compound components、boolean props → `vercel-composition-patterns`
 
 原因：
 

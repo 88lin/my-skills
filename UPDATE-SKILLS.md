@@ -65,31 +65,34 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 Claude Code 启动时扫描 `~/.claude/skills/` 下所有子目录，把每个 `SKILL.md` 注册成可用 skill。这个目录里挂的是软链接，指向 `~/.agents/skills/` 的对应目录。也就是说：
 
-- `~/.agents/skills/` 是统一 skill 仓库（46 个目录，给 OpenCode / Codex / Claude Code 共用）
+- `~/.agents/skills/` 是统一 skill 仓库（35 个目录，给 OpenCode / Codex / Claude Code 共用）
 - `~/.claude/skills/` 只是 Claude Code 的"白名单视图"——挂多少软链，Claude Code 就看得到多少 skill
 - `manage-skills.ps1` 的 `check` 和 `apply-overrides` 模式完全不动 `~/.claude/skills/`；但 `update` 模式会调用 `npx -y skills add` 子进程，**skills CLI 会作为副作用在 `~/.claude/skills/` 创建软链**。同理 `install-and-register-skill.ps1` 在 `-SourceType skills-cli` 时也调用 skills CLI，也会创建软链
 - 所以"白名单视图"不是脚本自动维护的：跑完 update / install 之后必须用 `ls ~/.claude/skills/` 复查，手工 `rm` 不想暴露给 Claude Code 的软链（具体警示见下面"npx skills add 的副作用警示"段）
 
-**当前挂在 Claude Code 的 14 个主 skill**（截至 2026-05-13）：
+**当前挂在 Claude Code 的 17 个主 skill**（截至 2026-05-17）：
 
 | 软链 | 用途 |
 |---|---|
+| `ai-seo` | AI 搜索、AI Overviews、LLM 引用优化 |
 | `docx` | Word 文档读写、编辑、tracked changes、TOC |
 | `extract-design` | 从网站 URL 提取设计语言，生成 design tokens / Tailwind / shadcn |
-| `frontend-design` | 默认前端创建、UI 设计、产品界面 |
+| `impeccable` | 默认前端设计入口，含 craft / shape / audit / critique / polish / adapt 等子命令 |
 | `health` | 检查 Claude Code 六层配置健康度 |
 | `html-ppt` | 浏览器 HTML 演示稿、reveal deck、小红书图文 |
 | `karpathy-guidelines` | 编码行为规范（最小改动、不过度设计） |
 | `pdf` | PDF 读取、OCR、表单、合并/拆分、生成 |
 | `pptx` | PowerPoint 文件读写、编辑、模板 |
+| `seo-audit` | 默认 SEO 诊断、技术 SEO / 页面 SEO 审计 |
 | `systematic-debugging` | 调试流程入口（先找根因再修） |
 | `test-driven-development` | TDD 流程入口（先写失败测试再实现） |
+| `using-git-worktrees` | 需要隔离工作区时使用 Git worktree |
 | `verification-before-completion` | 完成前验证流程入口（凭证据宣布完成） |
 | `web-access` | 联网 / 网页抓取 / 真实浏览器交互 |
 | `webapp-testing` | Playwright 本地 Web app 验证（给 Claude 一双眼睛） |
 | `xlsx` | Excel / CSV 表格读写、公式、图表 |
 
-**剩下 32 个 skill 不挂 Claude Code**：它们都装在 `~/.agents/skills/`，由 OpenCode 和 Codex 主用，包括但不限于 `brainstorming`、`writing-plans`、`using-git-worktrees`、`hv-analysis`、`khazix-writer`、`seo-audit`、`schema-markup`、`ai-seo`、`canvas-design`、`deploy-to-vercel`、`vercel-*` 系列、设计辅助链 11 个（`adapt` / `animate` / `audit` / `clarify` / `critique` / `delight` / `distill` / `harden` / `optimize` / `polish` / `typeset`）、`luo-xiang-perspective`、`create-crush`、`mcp-builder`、`skill-creator`、`chinese-*` 系列、`receiving-code-review`。
+**剩下 18 个 skill 不挂 Claude Code**：它们都装在 `~/.agents/skills/`，由 OpenCode 和 Codex 主用，包括但不限于 `brainstorming`、`writing-plans`、`hv-analysis`、`khazix-writer`、`schema`、`canvas-design`、`deploy-to-vercel`、`vercel-*` 系列、`luo-xiang-perspective`、`create-crush`、`mcp-builder`、`skill-creator`、`chinese-*` 系列、`receiving-code-review`。旧的设计辅助链独立目录已折叠进 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令。
 
 ### 增删 Claude Code skill 的标准命令
 
@@ -197,7 +200,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 如果你判断某个 skill 只是想记录来源，但不适合自动更新，可以这样登记为手动管理：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\install-and-register-skill.ps1" -SourceType manual -Skill frontend-design -LocalFolder frontend-design -SkipInstall -Reason "本地定制版本，不自动覆盖更新"
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\install-and-register-skill.ps1" -SourceType manual -Skill impeccable -LocalFolder impeccable -SkipInstall -Reason "本地定制版本，不自动覆盖更新"
 ```
 
 ### 预览模式
@@ -405,14 +408,14 @@ npx -y skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 
 ```powershell
 npx -y skills add coreyhaines31/marketingskills@seo-audit -g -y
-npx -y skills add coreyhaines31/marketingskills@schema-markup -g -y
+npx -y skills add coreyhaines31/marketingskills@schema -g -y
 npx -y skills add coreyhaines31/marketingskills@ai-seo -g -y
 ```
 
 当前状态：
 
 - `seo-audit`：来源已确认，已更新到最新
-- `schema-markup`：来源已确认，当前已是最新
+- `schema`：来源已确认，当前已是最新
 - `ai-seo`：来源已确认，已更新到最新
 
 ### Anthropic Skills 精选
@@ -479,7 +482,7 @@ npx -y skills add lewislulu/html-ppt-skill@html-ppt -g -y
 - 适合浏览器直接打开的网页演示稿
 - 适合分享稿、技术演讲 slides、静态 HTML deck
 - 也适合演示型、PPT 风格、editorial 风格的静态单页页面
-- 不适合作为普通产品官网或常规应用页面的默认 skill；那类优先仍看 `frontend-design`
+- 不适合作为普通产品官网或常规应用页面的默认 skill；那类优先仍看 `impeccable`
 
 更新命令：
 
@@ -524,7 +527,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 前端展示相关 skill 现在建议这样理解：
 
-- `frontend-design`：正常网页 / landing page / 产品界面；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
+- `impeccable`：正常网页 / landing page / 产品界面；复杂交互 Web app / React demo / mini-app 的 UI / 功能实现
 - `html-ppt`：演示型、PPT 风格、editorial 风格的静态 HTML 页面或 deck
 - `canvas-design`：静态视觉稿、海报、封面
 - `extract-design`：提取现有网站设计语言
@@ -533,12 +536,12 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 以下这类 skill 暂时不要直接用 `npx skills add ...` 覆盖更新：
 
-- 设计系大部分 skill，例如 `frontend-design`、`polish`、`audit`
+- `impeccable`
 
 原因：
 
-- 这批 skill 很像本地混合定制版本，不是单一上游的干净安装。
-- 如果直接覆盖，可能把你现在这套可用的依赖关系弄乱。
+- `impeccable` 当前是从 `pbakaus/impeccable` 的 `.agents/skills/impeccable` 镜像过来的本地全局安装。
+- 它还承载本地 `local-routing-overrides.json` 里的触发边界，不能直接用 `npx skills add` 覆盖。
 
 ## 安全 / 风险分类
 
@@ -566,7 +569,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `writing-plans`
 - `using-git-worktrees`
 - `seo-audit`
-- `schema-markup`
+- `schema`
 - `ai-seo`
 - `extract-design`
 - `webapp-testing`
@@ -578,19 +581,13 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `canvas-design`
 - `html-ppt`
 
-### 来源已大致确认，但不要盲更
+### 来源已确认，但不要盲更
 
-- `frontend-design`
-- `polish`
-- `audit`
-- 以及大概率同一设计体系里的：`adapt`、`animate`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`typeset`
+- `impeccable`：来源为 `pbakaus/impeccable` 的 `.agents/skills/impeccable` 生成目录，作为本地全局 skill 镜像管理。
 
-原因：这套设计 skill 很像基于 Anthropic 和 `impeccable` 生态做过本地定制，不适合自动覆盖更新。
+原因：`impeccable` 既包含上游 `SKILL.md`、`reference/`、`scripts/`，也叠加了本地路由 override。更新时应从已审查的上游包同步，再运行 `apply-overrides` 和 `check`。
 
-当前保留的 Impeccable 拆分增强项：
-
-- `animate`：来源为 `pbakaus/impeccable` 的 `reference/animate.md`，已改成本地独立 skill，手动纳管，不自动更新。
-- `delight`：来源为 `pbakaus/impeccable` 的 `reference/delight.md`，已改成本地独立 skill，手动纳管，不自动更新。
+当前不再保留 Impeccable 拆分增强项：旧的 `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset` 独立目录已删除，统一使用 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令。
 
 ### 这个文件里当前没有未确认来源项
 
@@ -636,6 +633,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `normalize`：低频设计系统一致性 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `extract`：低频组件/tokens 提取 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `find-skills`：开放生态 skill 发现入口，与当前本地纳管流程重叠，已删除本地目录并从 `skills-sources.json` 移除。
+- `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset`：已折叠进 `impeccable` 的 reference/sub-command 体系，独立目录和 `skills-sources.json` 条目已删除。
 
 ## 怎么判断该用哪种更新方式
 

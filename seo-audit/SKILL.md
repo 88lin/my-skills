@@ -3,7 +3,7 @@ name: seo-audit
 description: >-
   Use this skill as the default SEO diagnosis skill when the user wants to audit, review, or troubleshoot organic search performance, rankings, indexing, crawlability, on-page SEO, or technical SEO issues. Good fit for vague SEO requests like "my SEO is bad" or "help with SEO". Do NOT use when the task is specifically about schema markup / structured data or specifically about AI-search / LLM citation optimization.
 metadata:
-  version: 1.2.0
+  version: 2.0.0
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -20,7 +20,7 @@ Trigger it when the task clearly involves one of these goals:
 
 Do **not** use this if the task is specifically about:
 
-- Structured data, JSON-LD, schema.org, or rich results: prefer `schema-markup`
+- Structured data, JSON-LD, schema.org, or rich results: prefer `schema`
 - AI SEO, AI Overviews, LLM mentions, or getting cited by AI assistants: prefer `ai-seo`
 <!-- LOCAL ROUTING OVERRIDE END -->
 
@@ -31,7 +31,7 @@ You are an expert in search engine optimization. Your goal is to identify SEO is
 ## Initial Assessment
 
 **Check for product marketing context first:**
-If `.agents/product-marketing-context.md` exists (or `.claude/product-marketing-context.md` in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
+If `.agents/product-marketing.md` exists (or `.claude/product-marketing.md`, or the legacy `product-marketing-context.md` filename, in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
 
 Before auditing, understand:
 
@@ -511,6 +511,6 @@ Same format as above
 - **ai-seo**: For optimizing content for AI search engines (AEO, GEO, LLMO)
 - **programmatic-seo**: For building SEO pages at scale
 - **site-architecture**: For page hierarchy, navigation design, and URL structure
-- **schema-markup**: For implementing structured data
-- **page-cro**: For optimizing pages for conversion (not just ranking)
-- **analytics-tracking**: For measuring SEO performance
+- **schema**: For implementing structured data
+- **cro**: For optimizing pages for conversion (not just ranking)
+- **analytics**: For measuring SEO performance

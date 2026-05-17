@@ -224,10 +224,10 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - `pdf`
 - `docx`
 - `xlsx`
-- `frontend-design`
+- `impeccable`
 - `canvas-design`
 - `seo-audit`
-- `schema-markup`
+- `schema`
 - `ai-seo`
 - `deploy-to-vercel`
 - `vercel-cli-with-tokens`

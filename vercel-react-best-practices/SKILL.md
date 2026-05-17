@@ -1,7 +1,7 @@
 ---
 name: vercel-react-best-practices
 description: >-
-  React and Next.js performance and engineering-quality guidelines from Vercel Engineering. Use when the task is specifically about React/Next performance, data fetching, server/client rendering, bundle size, hydration, or performance-oriented code review/refactoring. Do NOT use as the default for purely visual UI design or normal frontend creation; prefer frontend-design unless performance or React architecture quality is part of the task.
+  React and Next.js performance and engineering-quality guidelines from Vercel Engineering. Use when the task is specifically about React/Next performance, data fetching, server/client rendering, bundle size, hydration, or performance-oriented code review/refactoring. Do NOT use as the default for purely visual UI design or normal frontend creation; prefer impeccable unless performance or React architecture quality is part of the task.
 license: MIT
 metadata:
   author: vercel
@@ -22,7 +22,7 @@ Trigger it when the task clearly involves one of these goals:
 
 Do **not** use this as the default for every frontend task.
 
-- For purely visual UI creation, landing pages, product surfaces, hierarchy, layout, or aesthetics, prefer `frontend-design`
+- For purely visual UI creation, landing pages, product surfaces, hierarchy, layout, or aesthetics, prefer `impeccable`
 - For flexible component API design, boolean prop proliferation, compound components, or reusable component architecture, prefer `vercel-composition-patterns`
 - For generic minimal-change coding discipline, use `karpathy-guidelines` rather than forcing performance refactors
 

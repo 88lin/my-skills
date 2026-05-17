@@ -19,7 +19,7 @@ Trigger it when the task clearly involves one of these goals:
 
 Do **not** use this by default in these cases:
 
-- Web pages or app UI: prefer `frontend-design`
+- Web pages or app UI: prefer `impeccable`
 - HTML slide decks: prefer `html-ppt`
 - `.pptx` or PowerPoint deliverables: prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` runs manually, not a skill)
 <!-- LOCAL ROUTING OVERRIDE END -->
