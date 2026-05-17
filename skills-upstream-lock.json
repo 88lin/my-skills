@@ -1,0 +1,14 @@
+{
+    "skills":  {
+                   "impeccable":  {
+                                      "repo":  "https://github.com/pbakaus/impeccable.git",
+                                      "branch":  "main",
+                                      "sourceSubdir":  ".agents/skills/impeccable",
+                                      "sourceKind":  "git-cache",
+                                      "sourcePath":  "C:\\Users\\Computer\\.agents\\external\\impeccable-upstream",
+                                      "commit":  "4af581e23f17d112d8f9d6b7a5b7ff37823494e1",
+                                      "localPatches":  "impeccable-local-patches.json",
+                                      "updatedAt":  "2026-05-17T19:05:13.6726924+08:00"
+                                  }
+               }
+}

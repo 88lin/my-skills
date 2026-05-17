@@ -1,0 +1,52 @@
+{
+  "patches": [
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: ordinary small UI work should not be blocked by missing product context.",
+      "find": "Before any design work or file edits:",
+      "replace": "Before substantial design work or frontend file edits:"
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: context loading is preferred first, but not always a hard gate.",
+      "find": "1. Load context (PRODUCT.md / DESIGN.md) via the loader script.",
+      "replace": "1. Try to load context (PRODUCT.md / DESIGN.md) via the loader script."
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: make missing context a risk decision rather than a universal blocker.",
+      "find": "Skipping these produces generic output that ignores the project.",
+      "replace": "Skipping available context produces generic output that ignores the project. Missing context is not always a blocker: use the rules below to decide whether to continue or teach first."
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: PRODUCT.md is preferred for substantial work, not required for every frontend task.",
+      "find": "- **PRODUCT.md**: required. Users, brand, tone, anti-references, strategic principles.",
+      "replace": "- **PRODUCT.md**: preferred for substantial design work. Users, brand, tone, anti-references, strategic principles."
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local path: installed skill lives under the user's global .agents tree.",
+      "find": "node .agents/skills/impeccable/scripts/load-context.mjs",
+      "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/load-context.mjs\""
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: teach is required for explicit teach/craft/shape or high-foundation design work, not minor UI changes.",
+      "find": "If PRODUCT.md is missing, empty, or placeholder (`[TODO]` markers, <200 chars): run `$impeccable teach`, then resume the user's original task with the fresh context. If the original task was `$impeccable craft`, resume into `$impeccable shape` before any implementation work.",
+      "replace": "If PRODUCT.md is missing, empty, or placeholder (`[TODO]` markers, <200 chars), do not automatically block every task on `$impeccable teach`.\n\n- Run `$impeccable teach` first when the user explicitly invokes `teach`, when the original task is `craft` or `shape`, or when the request needs a complete product/brand/design-system foundation (new product surface, full redesign, brand direction, onboarding strategy, or long-lived design system work). Then resume the original task with the fresh context. If the original task was `$impeccable craft`, resume into `$impeccable shape` before implementation work.\n- For small or low-risk UI work (minor polish, spacing, copy labels, local layout fixes, simple component tweaks, screenshots-to-code, or existing-behavior preservation), continue using the repository, user prompt, and visible UI as context. Ask at most one focused question if the missing product context would change the decision."
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: register can be inferred from the current task when PRODUCT.md is unavailable.",
+      "find": "Identify before designing. Priority: (1) cue in the task itself (\"landing page\" vs \"dashboard\"); (2) the surface in focus (the page, file, or route being worked on); (3) `register` field in PRODUCT.md. First match wins.",
+      "replace": "Identify before designing. Priority: (1) cue in the task itself (\"landing page\" vs \"dashboard\"); (2) the surface in focus (the page, file, or route being worked on); (3) `register` field in PRODUCT.md when available. First match wins."
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Local default: legacy or missing PRODUCT.md should not block small low-risk UI work.",
+      "find": "If PRODUCT.md lacks the `register` field (legacy), infer it once from its \"Users\" and \"Product Purpose\" sections, then cache the inferred value for the session. Suggest the user run `$impeccable teach` to add the field explicitly.",
+      "replace": "If PRODUCT.md exists but lacks the `register` field (legacy), infer it once from its \"Users\" and \"Product Purpose\" sections, then cache the inferred value for the session. Suggest the user run `$impeccable teach` to add the field explicitly. If PRODUCT.md is unavailable and the task is small, infer the register from the task and surface instead of stopping."
+    }
+  ]
+}
