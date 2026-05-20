@@ -2,9 +2,8 @@
 name: web-access
 license: MIT
 github: https://github.com/eze-is/web-access
-description:
-  所有联网操作必须通过此 skill 处理，包括：搜索、网页抓取、登录后操作、网络交互等。
-  触发场景：用户要求搜索信息、查看网页内容、访问需要登录的网站、操作网页界面、抓取社交媒体内容（小红书、微博、推特等）、读取动态渲染页面、以及任何需要真实浏览器环境的网络任务。
+description: >-
+  联网 / 网页操作的统一入口；由内部决策矩阵在 WebSearch、WebFetch、curl、Jina 和浏览器 CDP 等工具中选择最合适的执行方式。适合：需要登录态的站点、动态 JS 渲染页面、抓取小红书 / 微博 / 微信公众号等反爬严格平台、需要真实浏览器交互或多步骤网络工作流、以及检索本机浏览器书签/历史。单次公开 URL 抓取或纯关键词搜索可以直接用 WebSearch / WebFetch，不必先经过此 skill。 / Unified entry point for web and network tasks; the internal decision matrix selects WebSearch, WebFetch, curl, Jina, or browser CDP. Best fit when the task needs login state, dynamic JS rendering, scraping sites that block static fetches (小红书 / 微博 / 微信公众号), real browser interaction, or multi-step web workflows. A single public URL fetch or a plain keyword search can go straight to WebSearch / WebFetch without invoking this skill.
 metadata:
   author: 一泽Eze
   version: "2.5.3"
