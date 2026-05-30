@@ -162,7 +162,7 @@
 - 静态视觉物料 → `canvas-design`
 - 提取现有网站设计语言 → `extract-design`
 
-`impeccable` 也是原设计辅助链的统一入口。旧的 `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset` 独立 skill 已删除；`bolder`、`quieter`、`colorize`、`layout`、`onboard`、`overdrive`、`live`、`teach`、`document`、`extract` 等上游命令也通过 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令承接。
+`impeccable` 也是原设计辅助链的统一入口。旧的 `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset` 独立 skill 已删除；`bolder`、`quieter`、`colorize`、`layout`、`onboard`、`overdrive`、`live`、`init`、`document`、`extract` 等上游命令也通过 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令承接。`teach` 仅作为 `init` 的 deprecated alias 兼容旧说法。
 
 ### SEO 默认入口
 
@@ -664,7 +664,7 @@ OpenCode 中的本地边界：
 
 - `craft`：先 shape 再端到端构建功能
 - `shape`：实现前做 UX/UI 方案
-- `teach`：建立 PRODUCT.md / DESIGN.md 设计上下文
+- `init`：建立 PRODUCT.md / DESIGN.md / live config 设计上下文；`teach` 仅作为 deprecated alias
 - `document`：从现有前端代码生成或刷新 DESIGN.md
 - `extract`：从当前前端项目中抽取可复用设计系统资产；不要用于 live-site 设计语言提取
 - `adapt`：响应式、跨设备、断点、触摸目标

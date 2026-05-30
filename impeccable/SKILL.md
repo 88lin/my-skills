@@ -1,7 +1,7 @@
 ---
 name: impeccable
 description: >-
-  Unified Impeccable frontend design skill. Use when the goal is to design, build, redesign, or improve a frontend interface — normal web pages, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, empty states, responsive behavior, typography, spacing, layout, color, motion, UX copy, accessibility, or UI-perceived performance. Also use for Impeccable command-style requests aimed at frontend work, such as `impeccable craft`, `shape`, `teach`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, or `live`. Do NOT use for backend or non-frontend code audits, documentation, or reviews; live-site design-language extraction; static poster or cover art; HTML slide decks; PowerPoint / PDF / Word / spreadsheet deliverables; or React/Next performance engineering when specialized skills exist.
+  Unified Impeccable frontend design skill. Use when the goal is to design, build, redesign, or improve a frontend interface — normal web pages, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, empty states, responsive behavior, typography, spacing, layout, color, motion, UX copy, accessibility, or UI-perceived performance. Also use for Impeccable command-style requests aimed at frontend work, such as `impeccable craft`, `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, `live` (`teach` is only a deprecated alias for `init`). Do NOT use for backend or non-frontend code audits, documentation, or reviews; live-site design-language extraction; static poster or cover art; HTML slide decks; PowerPoint / PDF / Word / spreadsheet deliverables; or React/Next performance engineering when specialized skills exist.
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -12,7 +12,7 @@ Use this skill as the unified **Impeccable frontend design** entry point.
 Trigger it when the task clearly involves one of these goals:
 
 - Designing, building, or redesigning a normal web page, app screen, component, dashboard, landing page, or product surface
-- Running Impeccable sub-command style work such as `craft`, `shape`, `teach`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, or `live`
+- Running Impeccable sub-command style work such as `impeccable craft`, `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, `live`; `teach` is only a deprecated alias for `init`
 - Improving visual hierarchy, layout, spacing, typography, color, motion, interaction quality, UX copy, empty states, onboarding, responsive behavior, accessibility, or UI-perceived performance
 - Building a complex interactive web app, React demo, mini-app, or multi-component frontend experience when the main goal is UI and feature implementation
 - Creating a new page or UI while using another website as visual inspiration, as long as the goal is implementation rather than design-system extraction
@@ -20,111 +20,104 @@ Trigger it when the task clearly involves one of these goals:
 
 The old standalone design helper skills (`adapt`, `animate`, `audit`, `clarify`, `critique`, `delight`, `distill`, `harden`, `optimize`, `polish`, `typeset`) are now represented as Impeccable reference files and sub-command flows under this skill. Route those requests here instead of expecting separate skill directories.
 
+Local context policy:
+
+- Missing `PRODUCT.md` should trigger `init` first for `init`, `craft`, `shape`, new product surfaces, full redesigns, brand direction, onboarding strategy, or durable design-system work
+- For small low-risk UI work (minor polish, spacing, copy labels, local layout fixes, simple component tweaks, screenshots-to-code, or existing-behavior preservation), do not block solely on missing `PRODUCT.md`; continue using repo context, the user prompt, and visible UI, asking at most one focused question if the missing context would change the decision
+
 Treat broad command words carefully:
 
 - `extract` belongs here only when the user means Impeccable's project/design-system extraction from frontend UI code; live-site design-language extraction still belongs to `extract-design`
 - `document` belongs here only when generating or refreshing Impeccable `DESIGN.md` context; Word/PDF/PPT/spreadsheet documents belong to the format skills
-- `optimize` belongs here for UI-perceived performance, animation smoothness, layout stability, image weight, and frontend experience; React/Next architecture, rendering, hydration, data fetching, or bundle-size engineering belongs to `vercel-react-best-practices`
+- `optimize` belongs here for UI-perceived performance, animation/render smoothness, or frontend UX speed; React/Next architecture or rendering performance reviews can belong to `vercel-react-best-practices`
+- Flexible React component API design, boolean prop proliferation, compound components, or reusable component architecture belongs to `vercel-composition-patterns`
+- `live` belongs here only for Impeccable's live browser variant mode, not generic web browsing
 
-Do **not** use this by default in these cases:
-
-- Design extraction from a live site, design tokens, CSS variables, Tailwind config, Figma variables, or shadcn theme extraction: prefer `extract-design`
-- Static poster, cover, or raster/PDF visual artwork: prefer `canvas-design` when available; otherwise handle inline with restrained, intentional output
-- HTML/browser slide decks or explicitly presentation-style HTML artifacts: prefer `html-ppt`
-- PowerPoint or `.pptx` deliverables: prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials)
-- Existing PDF, Word, spreadsheet, or other file-format processing: prefer the corresponding format skill
-- React/Next.js performance, server/client rendering, hydration, data fetching, or bundle-size engineering where code architecture is the main concern: prefer `vercel-react-best-practices`
-- Flexible React component API design, boolean prop proliferation, compound components, or reusable component architecture: prefer `vercel-composition-patterns`
-
-If the user says a removed helper name directly, such as `用 polish` or `跑 audit`, interpret that as the matching Impeccable sub-command/reference flow inside this skill. If they say one of the newer Impeccable command names directly, such as `跑 layout`, `用 bolder`, `colorize 这个页面`, `impeccable live`, or `teach this project`, route it here when the target is frontend UI/design work.
+Do **not** use this skill just because the task mentions a website if the real deliverable is a document, PPT, spreadsheet, SEO audit, schema markup, PDF, static poster, or pure backend change.
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 Designs and iterates production-grade frontend interfaces. Real working code, committed design choices, exceptional craft.
 
 ## Setup
 
-Before substantial design work or frontend file edits:
+You MUST do these steps before proceeding:
 
-1. Try to load context (PRODUCT.md / DESIGN.md) via the loader script.
-2. Identify the register and load the matching register reference (brand.md or product.md).
-3. **If the user invoked a sub-command (e.g. `craft`, `shape`, `audit`), load its reference file too.** This is non-negotiable: `craft` without `craft.md` loaded means you'll skip the shape-and-confirm step the user expects.
+1. Run `node "C:/Users/Computer/.agents/skills/impeccable/scripts/context.mjs"` once per session. If you've already seen its output in this conversation, do not re-run it. The script either prints the project's PRODUCT.md (and DESIGN.md when present) as a markdown block, or tells you it's missing. Follow whatever it prints. **If it reports `NO_PRODUCT_MD`, apply the local missing-context policy: run `init` first for `init`, `craft`, `shape`, new product surfaces, full redesigns, brand direction, onboarding strategy, or durable design-system work; for small low-risk UI work (minor polish, spacing, copy labels, local layout fixes, simple component tweaks, screenshots-to-code, or existing-behavior preservation), continue using the repository, user prompt, and visible UI as context. Ask at most one focused question if missing product context would materially change the decision.** If the output ends with an `UPDATE_AVAILABLE` directive, follow it (ask the user once about updating, then continue). It never blocks the current task.
+2. If the user invoked a sub-command (`craft`, `shape`, `audit`, `polish`, ...), you MUST read `reference/<command>.md` next. Non-optional. The reference defines the command's flow; without it you will skip steps the user expects.
+3. Familiarize yourself with any existing design system, conventions, and components in the code. Read at least one project file (CSS / tokens / theme / a representative component or page). **Required even when you've loaded a sub-command reference in step 2.** Don't reinvent the wheel; use what's there when it works, branch out when the UX wins.
+4. Read the matching register reference. **This is non-optional; skipping it produces generic output.** If the project is marketing, a landing page, a campaign, long-form content, or a portfolio (design IS the product), read `reference/brand.md`. If it is app UI, admin, a dashboard, or a tool (design SERVES the product), read `reference/product.md`. Pick by first match: (1) task cue ("landing page" vs "dashboard"); (2) surface in focus (the page, file, or route being worked on); (3) `register` field in PRODUCT.md.
+5. **If the project is brand-new (no existing CSS tokens / theme / committed brand colors found in step 3)**, run `node "C:/Users/Computer/.agents/skills/impeccable/scripts/palette.mjs"` to receive a brand seed color and composition guidance. This is the anchor for your primary brand color. Compose the rest of the palette (bg, surface, ink, accent, muted) around it per the script's instructions. Use OKLCH throughout. **Skip this step only if step 3 found committed brand colors in existing tokens; in that case identity-preservation wins.**
 
-Skipping available context produces generic output that ignores the project. Missing context is not always a blocker: use the rules below to decide whether to continue or teach first.
+## Design guidance
 
-### 1. Context gathering
+Produce ready-to-ship, production-grade code, not prototypes or starting points. Take no shortcuts unless the user asks for them (when in doubt, ask). Don't stop until arriving at a complete implementation (beautiful, responsive, fast, precise, bug-free, on brand). You take attention to detail seriously: every page, section or component crafted is battle tested using the tools available to you (browser screenshotting, computer use, etc). GPT is capable of extraordinary work. Don't hold back.
 
-Two files, case-insensitive. The loader looks at the project root by default and falls back to `.agents/context/` and `docs/` if the root is clean. Override with `IMPECCABLE_CONTEXT_DIR=path/to/dir` (absolute or relative to cwd).
+### General rules
 
-- **PRODUCT.md**: preferred for substantial design work. Users, brand, tone, anti-references, strategic principles.
-- **DESIGN.md**: optional, strongly recommended. Colors, typography, elevation, components.
+#### Color
 
-Load both in one call:
+- **Verify contrast.** Body text must hit ≥4.5:1 against its background; large text (≥18px or bold ≥14px) needs ≥3:1. Placeholder text needs the same 4.5:1, not the muted-gray default. The most common failure: muted gray body text on a tinted near-white. If the contrast is even close, bump the body color toward the ink end of the ramp; light gray "for elegance" is the single biggest reason AI designs feel hard to read.
+- Gray text on a colored background looks washed out. Use a darker shade of the background's own hue, or a transparency of the text color.
 
-```bash
-node "C:/Users/Computer/.agents/skills/impeccable/scripts/load-context.mjs"
-```
+#### Typography
 
-Consume the full JSON output. Never pipe through `head`, `tail`, `grep`, or `jq`. The output's `contextDir` field tells you where the files were resolved from.
+- Cap body line length at 65–75ch.
+- Hierarchy through scale + weight contrast (≥1.25 ratio between steps). Avoid flat scales.
+- Cap font-family count at 3 (display + body + optional mono). More than 3 reads as indecision, not richness. One well-tuned family with weight contrast usually beats three competing typefaces.
+- Don't pair fonts that are similar but not identical (two geometric sans-serifs, two humanist sans-serifs). Pair on a contrast axis (serif + sans, geometric + humanist) or use one family in multiple weights.
+- No all-caps body copy. Reserve uppercase for short labels (≤4 words), section eyebrows (used sparingly per the Absolute bans), and badges. Sentences in ALL CAPS are unreadable at body sizes.
+- Hero / display heading ceiling: clamp() max ≤ 6rem (~96px). Above that the page is shouting, not designing.
+- Display heading letter-spacing floor: ≥ -0.04em. Anything tighter and letters touch; cramped, not "designed".
+- Use `text-wrap: balance` on h1–h3 for even line lengths; `text-wrap: pretty` on long prose to reduce orphans.
 
-If the output is already in this session's conversation history, don't re-run. Exceptions requiring a fresh load: you just ran `$impeccable teach` or `$impeccable document` (they rewrite the files), or the user manually edited one.
+Two hard typographic ceilings you currently miss:
+- Hero clamp() max ≤ 6rem. 8–11rem (128–176px) reads as comically loud, not bold.
+- Display letter-spacing ≥ -0.04em. Your default of -0.05 to -0.085em on display H1s makes the letters touch and reads as cramped. -0.02 to -0.03em is plenty for tight grotesque display; -0.04em is the floor.
 
-`$impeccable live` already warms context via `live.mjs`. If you've run `live.mjs`, don't also run `load-context.mjs` this session.
+#### Layout
 
-If PRODUCT.md is missing, empty, or placeholder (`[TODO]` markers, <200 chars), do not automatically block every task on `$impeccable teach`.
+- Vary spacing for rhythm.
+- Cards are the lazy answer. Use them only when they're truly the best affordance. Nested cards are always wrong.
+- Flexbox for 1D, Grid for 2D. Don't default to Grid when `flex-wrap` would be simpler.
+- For responsive grids without breakpoints: `repeat(auto-fit, minmax(280px, 1fr))`.
+- Build a semantic z-index scale (dropdown → sticky → modal-backdrop → modal → toast → tooltip). Never arbitrary values like 999 or 9999.
 
-- Run `$impeccable teach` first when the user explicitly invokes `teach`, when the original task is `craft` or `shape`, or when the request needs a complete product/brand/design-system foundation (new product surface, full redesign, brand direction, onboarding strategy, or long-lived design system work). Then resume the original task with the fresh context. If the original task was `$impeccable craft`, resume into `$impeccable shape` before implementation work.
-- For small or low-risk UI work (minor polish, spacing, copy labels, local layout fixes, simple component tweaks, screenshots-to-code, or existing-behavior preservation), continue using the repository, user prompt, and visible UI as context. Ask at most one focused question if the missing product context would change the decision.
+#### Motion
+- Motion should be intentional, and not be an afterthought. consider it as part of the build.
+- Don't animate CSS layout properties unless truly needed.
+- Ease out with exponential curves (ease-out-quart / quint / expo). No bounce, no elastic.
+- Use libraries for more advanced motion needs (e.g. motion, gsap, anime.js, lenis etc)
+- Reduced motion is not optional. Every animation needs a `@media (prefers-reduced-motion: reduce)` alternative: typically a crossfade or instant transition.
+- Staggering the items within one list is legitimate. The tell is the uniform reflex (one identical entrance applied to every section), not motion itself; each reveal should fit what it reveals. Suppressing the reflex is never a reason to ship a page with no motion at all.
+- Reveal animations must enhance an already-visible default. Don't gate content visibility on a class-triggered transition; transitions pause on hidden tabs and headless renderers, so the reveal never fires and the section ships blank.
+- Premium motion materials are not just transform/opacity. Blur, backdrop-filter, clip-path, mask, and shadow/glow are part of the palette when they materially improve the effect and stay smooth.
 
-If DESIGN.md is missing: nudge once per session (*"Run `$impeccable document` for more on-brand output"*), then proceed.
+#### Interaction
 
-### 2. Register
+- Dropdowns rendered with `position: absolute` inside an `overflow: hidden` or `overflow: auto` container will be clipped. Use the native `<dialog>` / popover API, `position: fixed`, or a portal to escape the stacking context.
 
-Every design task is **brand** (marketing, landing, campaign, long-form content, portfolio: design IS the product) or **product** (app UI, admin, dashboard, tool: design SERVES the product).
+### Copy
 
-Identify before designing. Priority: (1) cue in the task itself ("landing page" vs "dashboard"); (2) the surface in focus (the page, file, or route being worked on); (3) `register` field in PRODUCT.md when available. First match wins.
+- Every word earns its place. No restated headings, no intros that repeat the title.
+- **No em dashes.** Use commas, colons, semicolons, periods, or parentheses. Also not `--`.
+- **No aphoristic-cadence body copy as a default voice.** Don't fall into the rhythm of "serious statement, then punchy short negation" as the page's recurring voice. If three or more section copy blocks on the page land on a short rebuttal-shaped sentence, rewrite. Specific, not aphoristic.
+- **No marketing buzzwords.** The streamline / empower / supercharge / leverage / unleash / transform / seamless / world-class / enterprise-grade / next-generation / cutting-edge / game-changer / mission-critical family of phrases. Pick a specific noun and a verb that describes what the product literally does.
+- Button labels: verb + object. "Save changes" beats "OK"; "Delete project" beats "Yes". The label should say what will happen.
+- Link text needs standalone meaning. "View pricing plans" beats "Click here"; screen readers announce links out of context.
 
-If PRODUCT.md exists but lacks the `register` field (legacy), infer it once from its "Users" and "Product Purpose" sections, then cache the inferred value for the session. Suggest the user run `$impeccable teach` to add the field explicitly. If PRODUCT.md is unavailable and the task is small, infer the register from the task and surface instead of stopping.
+### New projects only (when no prior work exists)
 
-Load the matching reference: [reference/brand.md](reference/brand.md) or [reference/product.md](reference/product.md). The shared design laws below apply to both.
+#### Color & Theme
 
-## Shared design laws
-
-Apply to every design, both registers. Match implementation complexity to the aesthetic vision: maximalism needs elaborate code, minimalism needs precision. Interpret creatively. Vary across projects; never converge on the same choices. GPT is capable of extraordinary work. Don't hold back.
-
-### Color
-
-- Use OKLCH. Reduce chroma as lightness approaches 0 or 100; high chroma at extremes looks garish.
-- Never use `#000` or `#fff`. Tint every neutral toward the brand hue (chroma 0.005–0.01 is enough).
+- Use OKLCH.
+- **The cream / sand / beige body bg is the saturated AI default of 2026.** The whole warm-neutral band (OKLCH L 0.84-0.97, C < 0.06, hue 40-100) reads as cream/sand/paper/parchment regardless of what you call it. Token names like `--paper`, `--cream`, `--sand`, `--bone`, `--flour`, `--linen`, `--parchment`, `--wheat`, `--biscuit`, `--ivory` are tells in themselves. If the brief is "warm, traditional, family-coastal-Italian" or "magazine-warm" or "editorial-restraint", DO NOT translate that into a near-white warm-tinted bg; that's the AI move. Pick: (a) a saturated brand color as the body (terracotta, oxblood, deep ochre, near-black), (b) a true off-white at chroma 0 (or chroma toward the brand's own hue, not toward warmth-by-default), or (c) a darker mid-tone tinted neutral that's clearly the brand's own. "Warmth" in the brand is carried by accent + typography + imagery, not by body bg.
+- Tinted neutrals: add 0.005–0.015 chroma toward the brand's hue. Don't default-tint toward warm or cool "because the brand feels that way"; that's the cross-project monoculture move.
+- When picking a theme: Dark vs. light is never a default. Not dark "because tools look cool dark." Not light "to be safe.".Before choosing, write one sentence of physical scene: who uses this, where, under what ambient light, in what mood. If the sentence doesn't force the answer, it's not concrete enough. Add detail until it does.
 - Pick a **color strategy** before picking colors. Four steps on the commitment axis:
   - **Restrained**: tinted neutrals + one accent ≤10%. Product default; brand minimalism.
   - **Committed**: one saturated color carries 30–60% of the surface. Brand default for identity-driven pages.
   - **Full palette**: 3–4 named roles, each used deliberately. Brand campaigns; product data viz.
   - **Drenched**: the surface IS the color. Brand heroes, campaign pages.
-- The "one accent ≤10%" rule is Restrained only. Committed / Full palette / Drenched exceed it on purpose. Don't collapse every design to Restrained by reflex.
-
-### Theme
-
-Dark vs. light is never a default. Not dark "because tools look cool dark." Not light "to be safe."
-
-Before choosing, write one sentence of physical scene: who uses this, where, under what ambient light, in what mood. If the sentence doesn't force the answer, it's not concrete enough. Add detail until it does.
-
-"Observability dashboard" does not force an answer. "SRE glancing at incident severity on a 27-inch monitor at 2am in a dim room" does. Run the sentence, not the category.
-
-### Typography
-
-- Cap body line length at 65–75ch.
-- Hierarchy through scale + weight contrast (≥1.25 ratio between steps). Avoid flat scales.
-
-### Layout
-
-- Vary spacing for rhythm. Same padding everywhere is monotony.
-- Cards are the lazy answer. Use them only when they're truly the best affordance. Nested cards are always wrong.
-- Don't wrap everything in a container. Most things don't need one.
-
-### Motion
-
-- Don't animate CSS layout properties.
-- Ease out with exponential curves (ease-out-quart / quint / expo). No bounce, no elastic.
 
 ### Absolute bans
 
@@ -135,12 +128,17 @@ Match-and-refuse. If you're about to write any of these, rewrite the element wit
 - **Glassmorphism as default.** Blurs and glass cards used decoratively. Rare and purposeful, or nothing.
 - **The hero-metric template.** Big number, small label, supporting stats, gradient accent. SaaS cliché.
 - **Identical card grids.** Same-sized cards with icon + heading + text, repeated endlessly.
-- **Modal as first thought.** Modals are usually laziness. Exhaust inline / progressive alternatives first.
+- **Tiny uppercase tracked eyebrow above every section.** The 2023-era kicker (small all-caps text with wide tracking, "ABOUT" "PROCESS" "PRICING" above each heading) is now the saturated AI scaffold; it appears on 55-95% of generations regardless of brief, which is the definition of a tell. One named kicker as a deliberate brand system is voice; an eyebrow on every section is AI grammar. Choose a different cadence.
+- **Numbered section markers as default scaffolding (01 / 02 / 03).** Putting `01 · About / 02 · Process / 03 · Pricing` above every section is the eyebrow trope one tier deeper: reach for it because "landing pages do this" and you're scaffolding by reflex. Numbers earn their place when the section actually IS a sequence (a real 3-step process, an ordered flow, a typed timeline) and the order carries information the reader needs. One deliberate numbered sequence on one page is voice; numbered eyebrows on every section across the site is AI grammar.
+- **Text that overflows its container.** Long heading words plus large clamp scales plus narrow grids cause headline overflow on tablet/mobile. Test the heading copy at every breakpoint; if it overflows, reduce the clamp max or rewrite the copy. The viewport is part of the design.
 
-### Copy
+**Codex-specific defects** (your most-frequent giveaways; refuse-and-rewrite):
 
-- Every word earns its place. No restated headings, no intros that repeat the title.
-- **No em dashes.** Use commas, colons, semicolons, periods, or parentheses. Also not `--`.
+- **`border: 1px solid X` + `box-shadow: 0 Npx Mpx ...` with M ≥ 16px** on the same element. The "ghost-card" pattern: 1px border plus soft wide drop shadow on buttons and cards. Don't pair them. Pick one (a single solid border at the brand color, OR a defined shadow at no more than 8px blur), never both as decoration.
+- **`border-radius: 32px+` on cards / sections / inputs.** You over-round. Cards top out at 12–16px; full-pill is fine for tags/buttons. Picking 24/28/32/40px on a card is the codex tell; no brand wants "insanely rounded".
+- **Hand-drawn / sketchy SVG illustrations.** Class names like `loose-sketch`, `*-sketch`, `doodle`, `wavy`; `feTurbulence` / `feDisplacementMap` "paper grain" filters; 5-to-30 path crude scenes meant to depict a tangible subject (an otter, a table-and-fork, an album cover). All of these read as amateurish, not whimsical. If you can't render the scene with real assets, ship no illustration. Don't attempt sketchy SVG as a fallback.
+- **`repeating-linear-gradient(...)` stripe backgrounds.** Diagonal stripes in `body:before` or section backgrounds are pure codex decoration. Don't.
+- **"X theater" / "actually X" / "not just X, it's Y" copy.** "Productivity theater", "engagement theater", "growth theater": instant AI slop. Choose a specific noun, not a meta-criticism phrase.
 
 ### The AI slop test
 
@@ -148,7 +146,7 @@ If someone could look at this interface and say "AI made that" without doubt, it
 
 **Category-reflex check.** Run at two altitudes; the second one catches what the first one misses.
 
-- **First-order:** if someone could guess the theme + palette from the category alone ("observability → dark blue", "healthcare → white + teal", "finance → navy + gold", "crypto → neon on black"), it's the first training-data reflex. Rework the scene sentence and color strategy until the answer isn't obvious from the domain.
+- **First-order:** if someone could guess the theme + palette from the category alone, it's the first training-data reflex. Rework the scene sentence and color strategy until the answer isn't obvious from the domain.
 - **Second-order:** if someone could guess the aesthetic family from category-plus-anti-references ("AI workflow tool that's not SaaS-cream → editorial-typographic", "fintech that's not navy-and-gold → terminal-native dark mode"), it's the trap one tier deeper. The first reflex was avoided; the second wasn't. Rework until both answers are not obvious. The brand register's [reflex-reject aesthetic lanes](reference/brand.md) list catches the currently-saturated families.
 
 ## Commands
@@ -157,7 +155,7 @@ If someone could look at this interface and say "AI made that" without doubt, it
 |---|---|---|---|
 | `craft [feature]` | Build | Shape, then build a feature end-to-end | [reference/craft.md](reference/craft.md) |
 | `shape [feature]` | Build | Plan UX/UI before writing code | [reference/shape.md](reference/shape.md) |
-| `teach` | Build | Set up PRODUCT.md and DESIGN.md context | [reference/teach.md](reference/teach.md) |
+| `init` | Build | Set up project context: PRODUCT.md, DESIGN.md, live config, next steps | [reference/init.md](reference/init.md) |
 | `document` | Build | Generate DESIGN.md from existing project code | [reference/document.md](reference/document.md) |
 | `extract [target]` | Build | Pull reusable tokens and components into design system | [reference/extract.md](reference/extract.md) |
 | `critique [target]` | Evaluate | UX design review with heuristic scoring | [reference/critique.md](reference/critique.md) |
@@ -183,20 +181,35 @@ Plus two management commands: `pin <command>` and `unpin <command>`, detailed be
 
 ### Routing rules
 
-1. **No argument**: render the table above as the user-facing command menu, grouped by category. Ask what they'd like to do.
+1. **No argument**: the user is asking "what should I do?" Make the menu context-aware instead of static. Setup has already run `context.mjs`; if that reported `NO_PRODUCT_MD`, recommend `init` as the first option for foundation-level work, but do not auto-run it when the user only asked for the menu. Otherwise run `node "C:/Users/Computer/.agents/skills/impeccable/scripts/context-signals.mjs"` once and read its JSON, then lead with the **2-3 highest-value next commands**, each with a one-line reason pulled from the signals, followed by the full menu (the table above, grouped by category). **Never auto-run a command; the recommendation is a suggestion the user confirms.**
+
+   Reason over the signals; there is no score to obey:
+   - `setup.hasDesign` false while `setup.hasCode` true → `document` (capture the visual system).
+   - `critique.latest` is `null` → the project has never been critiqued; for a set-up project with a real surface, offering `$impeccable critique <surface>` is a strong default.
+   - `critique.latest` with a low `score` or non-zero `p0` / `p1` → `polish` (it reads that snapshot as its backlog), or re-run `critique` if the snapshot looks stale.
+   - `git.changedFiles` pointing at one surface → scope `audit` or `polish` to those files specifically, naming them.
+   - `devServer.running` true → `live` is available for in-browser iteration; if false, don't lead with `live`.
+   - Otherwise group by intent exactly as init's "Recommend starting points" step does (build new / improve what's there / iterate visually), tailored to `setup.register`.
+
+   **If `scan.targets` is non-empty, run `node "C:/Users/Computer/.agents/skills/impeccable/scripts/detect.mjs" --json <scan.targets joined by spaces>` once** (the bundled detector over local files: no network, no npx). `scan.via` tells you what they are: `git-changes` (the markup/style files in your dirty tree, the most relevant set), `source-dir` (e.g. `src`, `app`), `html`, or `root`. Fold the hits into your picks: many quality / contrast hits → `audit` or `polish`; a specific slop family → the matching command (gradient text or eyebrows → `quieter` / `typeset`, flat or gray palette → `colorize`, and so on). It's a real, current signal that beats guessing. If detect errors or the tree is large and slow, skip it and recommend the user run `audit` themselves; never block the suggestion on it.
+
+   Keep it to 2-3 pointed picks with the exact command to type. The menu stays the fallback; the recommendation is the lede.
 2. **First word matches a command**: load its reference file and follow its instructions. Everything after the command name is the target.
-3. **First word doesn't match**: general design invocation. Apply the setup steps, shared design laws, and the loaded register reference, using the full argument as context.
+3. **First word doesn't match, but the intent clearly maps to one command** (e.g. "fix the spacing" → `layout`, "rewrite this error message" → `clarify`, "the colors feel flat" → `colorize`): load that command's reference and proceed as if invoked. If two commands could fit, ask once which.
+4. **No clear command match**: general design invocation. Apply the setup steps, the General rules, and the loaded register reference, using the full argument as context.
 
 Setup (context gathering, register) is already loaded by then; sub-commands don't re-invoke `$impeccable`.
 
-If the first word is `craft`, setup still runs first, but [reference/craft.md](reference/craft.md) owns the rest of the flow. If setup invokes `teach` as a blocker, finish teach, refresh context, then resume the original command and target.
+If the first word is `craft`, setup still runs first, but [reference/craft.md](reference/craft.md) owns the rest of the flow. If setup invokes `init` as a blocker, finish init, refresh context, then resume the original command and target.
+
+`teach` is a deprecated alias for `init`: if the user types it, load [reference/init.md](reference/init.md) and proceed as if they ran `init`.
 
 ## Pin / Unpin
 
 **Pin** creates a standalone shortcut so `$<command>` invokes `$impeccable <command>` directly. **Unpin** removes it. The script writes to every harness directory present in the project.
 
 ```bash
-node .agents/skills/impeccable/scripts/pin.mjs <pin|unpin> <command>
+node "C:/Users/Computer/.agents/skills/impeccable/scripts/pin.mjs" <pin|unpin> <command>
 ```
 
 Valid `<command>` is any command from the table above. Report the script's result concisely. Confirm the new shortcut on success, relay stderr verbatim on error.
