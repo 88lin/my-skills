@@ -2,6 +2,11 @@
 name: writing-plans
 description: >-
   当已经有明确规格、需求或多步骤实现目标时使用，用来拆成可执行计划。不要作为普通 bug 修复、小改动或日常执行的默认入口；不要假设必须使用未安装的 superpowers execution skills。在 OpenCode 中，计划应交接给当前可用的 todo、task、验证命令和最小改动流程。
+version: "1.0.0"
+license: MIT
+metadata:
+  hermes:
+    tags: [planning, documentation]
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->

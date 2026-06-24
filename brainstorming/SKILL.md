@@ -2,6 +2,11 @@
 name: brainstorming
 description: >-
   在创造性产品或设计工作之前使用此技能：创建新功能、构建新组件、添加新能力，或有意改变既定产品行为。在实现前先探索用户意图、需求和设计。不要用于 bug 修复、测试失败、构建失败、回归修复、恢复已有行为，或预期行为已经明确的实现任务；这些情况优先使用 systematic-debugging、test-driven-development 和 verification-before-completion。
+version: "1.0.0"
+license: MIT
+metadata:
+  hermes:
+    tags: [design, planning]
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->

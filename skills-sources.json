@@ -127,9 +127,9 @@
       "localFolder": "karpathy-guidelines",
       "type": "skills-cli",
       "autoUpdate": true,
-      "repo": "forrestchang/andrej-karpathy-skills",
+      "repo": "multica-ai/andrej-karpathy-skills",
       "skill": "karpathy-guidelines",
-      "rawSkillUrl": "https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/main/skills/karpathy-guidelines/SKILL.md"
+      "rawSkillUrl": "https://raw.githubusercontent.com/multica-ai/andrej-karpathy-skills/main/skills/karpathy-guidelines/SKILL.md"
     },
     {
       "name": "khazix-writer",

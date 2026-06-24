@@ -2,6 +2,11 @@
 name: test-driven-development
 description: >-
   在实现新功能、有意的行为变更，或非平凡 bug 修复时使用——先写一个会失败的测试，再写实现代码。例外：一次性原型、生成代码、配置文件、单行 trivial 修改、纯文案/排版/样式调整，以及没有可测行为的改动。 / Use when implementing new features, intentional behavior changes, or non-trivial bug fixes — write a failing test before implementation. Exceptions: throwaway prototypes, generated code, config files, trivial single-line patches, copy / typography / pure style edits, and changes with no testable behavior.
+version: "1.0.0"
+license: MIT
+metadata:
+  hermes:
+    tags: [testing, development]
 ---
 
 # 测试驱动开发（TDD）

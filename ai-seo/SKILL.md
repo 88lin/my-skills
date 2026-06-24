@@ -3,7 +3,7 @@ name: ai-seo
 description: >-
   Use this skill when the task is specifically about AI search, AI Overviews, LLM citations, answer-engine optimization, or improving visibility in AI-generated answers. Good fit for AEO, GEO, LLMO, AI citations, zero-click AI visibility, and optimization for ChatGPT, Perplexity, Claude, Gemini, or similar systems. Do NOT use as the default for broad SEO audits or for pure schema implementation.
 metadata:
-  version: 2.0.1
+  version: 2.1.0
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -331,6 +331,10 @@ Add these machine-readable files to your site root:
 **`/llms.txt`** — Context file for AI systems (see [llmstxt.org](https://llmstxt.org))
 
 If you don't have one yet, add an `llms.txt` that gives AI systems a quick overview of what your product does, who it's for, and links to key pages (including your pricing).
+
+**`/okf/` — Open Knowledge Format bundle (Google-backed, v0.1)**
+
+Google [introduced OKF](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing) in June 2026 — a markdown spec for representing site content as a directory of cross-linked files with YAML frontmatter, agent-readable without scraping. Built primarily for data-team catalog metadata; the site-readable-by-agents repurposing was popularized by Suganthan Mohanadasan. No confirmed AI-search ranking signal today — treat it as protocol-layer registration like early schema.org. **For the full breakdown, implementation paths (free generator, WordPress plugin, by-hand), hosting guidance, and when to skip, see [references/okf.md](references/okf.md).**
 
 ### Schema Markup for AI
 

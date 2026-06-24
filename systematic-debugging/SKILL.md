@@ -2,6 +2,11 @@
 name: systematic-debugging
 description: >-
   遇到 bug、测试失败、构建失败、生产事故或异常行为时使用；在提出修复方案之前先找根因，不要凭直觉打补丁。 / Use for bugs, test failures, build failures, production incidents, or unexpected behavior — investigate the root cause before proposing a fix; do not patch symptoms.
+version: "1.0.0"
+license: MIT
+metadata:
+  hermes:
+    tags: [debugging]
 ---
 
 # 系统化调试

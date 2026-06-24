@@ -258,7 +258,7 @@ npx -y skills add xiaoheizi8/crush-skills@create-crush -g -y
 npx -y skills add YixiaJack/luo-xiang-skill@luo-xiang-perspective -g -y
 npx -y skills add KKKKhazix/khazix-skills@hv-analysis -g -y
 npx -y skills add KKKKhazix/khazix-skills@khazix-writer -g -y
-npx -y skills add forrestchang/andrej-karpathy-skills@karpathy-guidelines -g -y
+npx -y skills add multica-ai/andrej-karpathy-skills@karpathy-guidelines -g -y
 ```
 
 注意：`health` 已转为手动管理，当前不要再用 `npx -y skills add tw93/Waza@health -g -y` 直接覆盖，见后面的单独说明。
