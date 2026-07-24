@@ -7,19 +7,13 @@
       "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/context.mjs\""
     },
     {
-      "path": "SKILL.md",
-      "reason": "Local path: palette helper lives under the user's global .agents tree.",
-      "find": "node .agents/skills/impeccable/scripts/palette.mjs",
-      "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/palette.mjs\""
-    },
-    {
-      "path": "SKILL.md",
+      "path": "reference/routing.md",
       "reason": "Local path: context signals helper lives under the user's global .agents tree.",
       "find": "node .agents/skills/impeccable/scripts/context-signals.mjs",
       "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/context-signals.mjs\""
     },
     {
-      "path": "SKILL.md",
+      "path": "reference/routing.md",
       "reason": "Local path: bundled detector lives under the user's global .agents tree.",
       "find": "node .agents/skills/impeccable/scripts/detect.mjs --json <scan.targets joined by spaces>",
       "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/detect.mjs\" --json <scan.targets joined by spaces>"
@@ -29,18 +23,6 @@
       "reason": "Local path: pin helper lives under the user's global .agents tree.",
       "find": "node .agents/skills/impeccable/scripts/pin.mjs <pin|unpin> <command>",
       "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/pin.mjs\" <pin|unpin> <command>"
-    },
-    {
-      "path": "SKILL.md",
-      "reason": "Local default: missing PRODUCT.md is a foundation-risk decision, not a universal blocker for small UI work.",
-      "find": "**If it reports `NO_PRODUCT_MD`, stop and follow `reference/init.md` before doing anything else.**",
-      "replace": "**If it reports `NO_PRODUCT_MD`, apply the local missing-context policy: run `init` first for `init`, `craft`, `shape`, new product surfaces, full redesigns, brand direction, onboarding strategy, or durable design-system work; for small low-risk UI work (minor polish, spacing, copy labels, local layout fixes, simple component tweaks, screenshots-to-code, or existing-behavior preservation), continue using the repository, user prompt, and visible UI as context. Ask at most one focused question if missing product context would materially change the decision.**"
-    },
-    {
-      "path": "SKILL.md",
-      "reason": "Local default: no-argument Impeccable should recommend init instead of forcing setup when the user only asked for options.",
-      "find": "Setup has already run `context.mjs`; if that reported `NO_PRODUCT_MD` you are already in init (setup), so finish that and skip this.",
-      "replace": "Setup has already run `context.mjs`; if that reported `NO_PRODUCT_MD`, recommend `init` as the first option for foundation-level work, but do not auto-run it when the user only asked for the menu."
     }
   ]
 }

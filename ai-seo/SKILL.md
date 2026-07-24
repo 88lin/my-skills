@@ -3,7 +3,7 @@ name: ai-seo
 description: >-
   Use this skill when the task is specifically about AI search, AI Overviews, LLM citations, answer-engine optimization, or improving visibility in AI-generated answers. Good fit for AEO, GEO, LLMO, AI citations, zero-click AI visibility, and optimization for ChatGPT, Perplexity, Claude, Gemini, or similar systems. Do NOT use as the default for broad SEO audits or for pure schema implementation.
 metadata:
-  version: 2.1.0
+  version: 2.2.0
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -400,6 +400,8 @@ Not all content is equally citable. Prioritize these formats:
 - Content without dates or author attribution
 - PDF-only content (harder for AI to parse)
 
+**Citation ≠ recommendation.** Getting cited means your content was useful to consult; getting *recommended* — onto the buyer's actual shortlist — is governed by web-wide consensus (reviews, forums, analysts, press) and is largely independent of your own content. Self-promotional "best [category]" listicles can even backfire for emerging brands: in one 100-query B2B study, 69% of the AI Overview citations that self-promotional listicles earned came in answers that recommended competitors instead of the publishing brand. See [references/citations-vs-recommendations.md](references/citations-vs-recommendations.md) for the visibility ladder (retrieved → cited → mentioned → recommended), stage-dependent buyer's-guide strategy, what earns recommendations, and the attribution blind spot.
+
 ---
 
 ## Monitoring AI Visibility
@@ -412,6 +414,7 @@ Not all content is equally citable. Prioritize these formats:
 | Brand citation rate | How often you're cited in AI answers | AI visibility tools (see below) |
 | Share of AI voice | Your citations vs. competitors | Peec AI, Otterly, ZipTie |
 | Citation sentiment | How AI describes your brand | Manual review + monitoring tools |
+| Recommendation rate | Whether you're on the shortlist, not just cited (see [citations-vs-recommendations.md](references/citations-vs-recommendations.md)) | Prompt tracking + mention framing |
 | Source attribution | Which of your pages get cited | Track referral traffic from AI sources |
 
 ### AI Visibility Monitoring Tools
