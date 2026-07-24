@@ -1,7 +1,30 @@
 ---
 name: officecli
-description: Create, analyze, proofread, and modify Office documents (.docx, .xlsx, .pptx) using the officecli CLI tool. Use when the user wants to create, inspect, check formatting, find issues, add charts, or modify Office documents.
+description: >-
+  Use this skill only when the user explicitly asks for `officecli`, needs officecli command guidance, or requires its distinctive low-level Office capabilities such as OpenXML inspection, schema validation, `view issues`, raw XML editing, or one CLI workflow spanning DOCX/XLSX/PPTX. Do NOT auto-trigger it for ordinary Word, spreadsheet, or PowerPoint creation and editing; route those tasks to `docx`, `xlsx`, or `pptx` based on the deliverable.
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill **on demand as an Office CLI/tooling layer**, not as the default owner of every Office document task.
+
+Trigger it when one of these is true:
+
+- The user explicitly asks to use `officecli` or wants officecli commands
+- The task needs officecli-specific inspection or repair such as `validate`, `view issues`, raw OpenXML access, XPath-style edits, or resident/batch CLI operation
+- One coordinated CLI workflow must operate across DOCX, XLSX, and PPTX files
+- A format-specific skill deliberately selects officecli as its implementation tool
+
+For ordinary file work, route by final deliverable instead:
+
+- Word document creation or editing -> `docx`
+- Spreadsheet creation or editing -> `xlsx`
+- PowerPoint creation or editing -> `pptx`
+- PDF processing -> `pdf`
+
+Do not load `officecli` merely because an Office file is present. Use it only when its tooling capabilities are part of the requested workflow.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # officecli
 

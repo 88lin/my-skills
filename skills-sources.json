@@ -159,6 +159,13 @@
       "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
     },
     {
+      "name": "officecli",
+      "localFolder": "officecli",
+      "type": "manual",
+      "autoUpdate": false,
+      "reason": "Specialized cross-format Office CLI; keep manual and route only for explicit officecli, OpenXML, validation, or cross-format CLI work"
+    },
+    {
       "name": "pdf",
       "localFolder": "pdf",
       "type": "skills-cli",

@@ -224,6 +224,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - `pdf`
 - `docx`
 - `xlsx`
+- `officecli`
 - `impeccable`
 - `canvas-design`
 - `seo-audit`

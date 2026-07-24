@@ -103,6 +103,7 @@
 - `vercel-react-best-practices`
 - `hv-analysis`
 - `khazix-writer`
+- `officecli`
 
 ### 5. 不是所有 skill 都要加路由规则
 
@@ -444,6 +445,23 @@ OpenCode 中的本地边界：
 
 - 普通 Vercel 部署
 
+### `officecli`
+
+只在这些情况触发：
+
+- 用户显式要求使用 `officecli` 或需要具体命令
+- 需要 `validate`、`view issues`、原始 OpenXML、XPath 式编辑等 officecli 专属能力
+- 需要一个 CLI 工作流同时处理 DOCX / XLSX / PPTX
+- 某个格式 skill 已明确选择 officecli 作为实现工具
+
+不要默认用于：
+
+- 普通 Word 创建或编辑：优先 `docx`
+- 普通表格创建或编辑：优先 `xlsx`
+- 普通 PowerPoint 创建或编辑：优先 `pptx`
+
+判断关键不是“有没有 Office 文件”，而是“用户是否需要 officecli 这层工具能力”。
+
 ---
 
 ## 格式驱动 Skill
@@ -514,6 +532,7 @@ OpenCode 中的本地边界：
 6. 流程入口簇
 7. React 工程簇
 8. 内容研究 / 写作簇
+9. Office 格式 / 工具簇
 
 除了这些之外，不要轻易再扩张本地路由规则范围。
 
@@ -656,6 +675,20 @@ OpenCode 中的本地边界：
 - `hv-analysis` 的 PDF 研究报告指“先做研究内容，再生成报告”
 - `pdf` 指“已有 PDF 的读取、OCR、拆分、合并、表单、转换、编辑或最终 PDF 文件处理”
 
+### 9. `officecli` vs `docx` vs `xlsx` vs `pptx`
+
+默认顺序：
+
+1. 明确的 Word / Excel / PowerPoint 交付物：按格式使用 `docx` / `xlsx` / `pptx`
+2. 明确要求 officecli 命令、OpenXML、校验修复或跨格式 CLI：使用 `officecli`
+
+一句话判断：
+
+- 目标是把文件做好：格式 skill 优先
+- 目标是用 officecli 检查、修复或自动化：`officecli`
+
+不要因为 `officecli` 同时支持三种格式，就让它接管所有 Office 文件任务。
+
 ---
 
 ## Impeccable 子命令边界
@@ -711,6 +744,8 @@ OpenCode 中的本地边界：
 - 格式型 skill 已经改成格式明确再触发
 - 已按真实误触发风险补上 `brainstorming` 与工程修复流程的边界
 - 已收窄 `writing-plans`、`using-git-worktrees`、`vercel-react-best-practices`、`hv-analysis`、`khazix-writer` 的触发边界
+- 已把 `officecli` 收窄为按需工具层，普通 Office 文件继续按最终格式路由
+- `workctl` 与 `workctl-operator` 均已停用，不再提供 Work Agent 平台入口
 - 剩下主要是设计链内部的柔性交集，不属于必须马上修的错误
 
 如果后面再装新 skill，优先按这份文档判断它属于：

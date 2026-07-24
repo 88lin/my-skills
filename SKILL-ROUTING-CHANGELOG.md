@@ -7,7 +7,7 @@
 3. 哪些 skill 明确保持默认，不额外加规则
 4. 哪些判断已经经过人工确认
 
-更新时间：2026-05-17（已同步流程入口、React 工程、内容研究 / 写作边界；本轮追加：impeccable 上游更新与子命令边界、schema 上游重命名、writing-plans / brainstorming 去 superpowers/elements-of-style 死链、新增 bodyPatches override 机制）
+更新时间：2026-07-25（本轮追加：用户确认不使用 Work Agent，删除 workctl-operator 及其活动登记）
 
 ---
 
@@ -190,6 +190,23 @@
 - `khazix-writer`：公众号文章、长文、稿子、续写扩写，最终产物是文章
 - 文件格式 skill：已有 PDF / DOCX / PPTX / XLSX / HTML deck 的处理、转换或编辑
 
+### Office 格式 / 工具簇
+
+- `docx`
+- `xlsx`
+- `pptx`
+- `officecli`
+
+加规则原因：
+
+- `officecli` 原始描述覆盖所有 DOCX / XLSX / PPTX 创建、检查和修改，容易抢走格式 skill
+- officecli 的独特价值是 CLI、OpenXML、校验修复和跨格式自动化，不是成为所有 Office 文件的默认入口
+
+当前分工：
+
+- `docx` / `xlsx` / `pptx`：按最终交付格式负责普通文件创建和编辑
+- `officecli`：用户显式要求 officecli，或任务需要 OpenXML、`validate`、`view issues`、XPath 式编辑、跨格式 CLI 时按需触发
+
 ---
 
 ## 明确保持默认的 Skill
@@ -255,6 +272,38 @@
 ---
 
 ## 已纠正的重要错误
+
+### `officecli` 抢格式 skill
+
+曾经的问题：
+
+- `officecli` 的描述把 DOCX / XLSX / PPTX 的普通创建、检查和修改全部纳入触发范围
+- 这会和已经按最终格式治理好的 `docx`、`xlsx`、`pptx` 重复
+
+当前处理：
+
+- 保留 officecli 的低层校验、OpenXML 和跨格式 CLI 能力
+- 将它改成按需工具层；普通 Office 文件继续按最终交付格式路由
+- 把它登记为 `manual`，用 `local-routing-overrides.json` 保留本地触发边界
+
+### `workctl` 与 `workctl-operator` 重复
+
+曾经的问题：
+
+- 同一 bundle 同时暴露旧的 `workctl` 根技能和更完整的 `workctl-operator`
+- 两者描述覆盖相同的 CLI 发现、认证和业务操作，属于真正重复入口
+
+2026-07-24 的处理：
+
+- 保留内容更完整、reference 分层更清楚的 `workctl-operator`
+- 退出旧 `workctl` 根入口，并清理 Claude / Codex 的重复副本
+- `workctl-operator` 暂按 `manual` 纳管，等待确认稳定更新路径后再自动化
+
+2026-07-25 的最终处理：
+
+- 用户确认不使用 Work Agent 平台
+- 删除 `workctl-operator` 活动目录、Claude 入口与来源登记
+- 保留外部治理备份，避免不可恢复删除
 
 ### `html-ppt` 边界判断过窄
 
@@ -432,6 +481,11 @@
    - `hv-analysis`
    - `khazix-writer`
    - 文档格式相关 skill
+9. Office 格式 / 工具簇
+   - `docx`
+   - `xlsx`
+   - `pptx`
+   - `officecli`
 
 这些组之外的大多数 skill，不需要为了形式统一继续补更多路由规则。
 

@@ -48,6 +48,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 - `ppt-master`：作为外部相关能力出现在路由文档里，边界复杂但已经说明清楚
 - `web-access`：真实目录是独立 Git 仓库，GitHub 备份里缺少 `.git` 不代表它不能正常更新
+- `officecli`：保留为手动管理的低层 Office CLI，不让它覆盖普通格式 skill
 
 以后只有出现真实误触发、真实漏触发、高冲突新 skill、或上游结构大改时，再重新修改规则。记录问题时至少写清：用户原话、期望触发的 skill、实际触发的 skill、造成的影响。
 
@@ -65,24 +66,31 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 Claude Code 启动时扫描 `~/.claude/skills/` 下所有子目录，把每个 `SKILL.md` 注册成可用 skill。这个目录里挂的是软链接，指向 `~/.agents/skills/` 的对应目录。也就是说：
 
-- `~/.agents/skills/` 是统一 skill 仓库（35 个目录，给 OpenCode / Codex / Claude Code 共用）
+- `~/.agents/skills/` 是统一 skill 仓库（当前 37 个目录，给 OpenCode / Codex / Claude Code 共用）
 - `~/.claude/skills/` 只是 Claude Code 的"白名单视图"——挂多少软链，Claude Code 就看得到多少 skill
 - `manage-skills.ps1` 的 `check` 和 `apply-overrides` 模式完全不动 `~/.claude/skills/`；但 `update` 模式会调用 `npx -y skills add` 子进程，**skills CLI 会作为副作用在 `~/.claude/skills/` 创建软链**。同理 `install-and-register-skill.ps1` 在 `-SourceType skills-cli` 时也调用 skills CLI，也会创建软链
 - 所以"白名单视图"不是脚本自动维护的：跑完 update / install 之后必须用 `ls ~/.claude/skills/` 复查，手工 `rm` 不想暴露给 Claude Code 的软链（具体警示见下面"npx skills add 的副作用警示"段）
 
-**当前挂在 Claude Code 的 17 个主 skill**（截至 2026-05-17）：
+**当前挂在 Claude Code 的 26 个入口**（截至 2026-07-24；以磁盘现场为准）：
 
 | 软链 | 用途 |
 |---|---|
 | `ai-seo` | AI 搜索、AI Overviews、LLM 引用优化 |
+| `brainstorming` | 新功能、新能力和新产品行为的设计探索 |
+| `chinese-code-review` | 显式调用的中文 review 沟通参考 |
+| `chinese-commit-conventions` | 显式调用的中文 commit 规范参考 |
+| `chinese-documentation` | 显式调用的中文文档排版参考 |
 | `docx` | Word 文档读写、编辑、tracked changes、TOC |
 | `extract-design` | 从网站 URL 提取设计语言，生成 design tokens / Tailwind / shadcn |
 | `impeccable` | 默认前端设计入口，含 craft / shape / audit / critique / polish / adapt 等子命令 |
 | `health` | 检查 Claude Code 六层配置健康度 |
 | `html-ppt` | 浏览器 HTML 演示稿、reveal deck、小红书图文 |
 | `karpathy-guidelines` | 编码行为规范（最小改动、不过度设计） |
+| `mcp-builder` | MCP 服务器构建方法论 |
+| `officecli` | 显式 officecli、OpenXML、校验修复和跨格式 CLI |
 | `pdf` | PDF 读取、OCR、表单、合并/拆分、生成 |
 | `pptx` | PowerPoint 文件读写、编辑、模板 |
+| `receiving-code-review` | 收到 code review 后的技术核验流程 |
 | `seo-audit` | 默认 SEO 诊断、技术 SEO / 页面 SEO 审计 |
 | `systematic-debugging` | 调试流程入口（先找根因再修） |
 | `test-driven-development` | TDD 流程入口（先写失败测试再实现） |
@@ -90,9 +98,10 @@ Claude Code 启动时扫描 `~/.claude/skills/` 下所有子目录，把每个 `
 | `verification-before-completion` | 完成前验证流程入口（凭证据宣布完成） |
 | `web-access` | 联网 / 网页抓取 / 真实浏览器交互 |
 | `webapp-testing` | Playwright 本地 Web app 验证（给 Claude 一双眼睛） |
+| `writing-plans` | 明确多步骤需求的实施计划 |
 | `xlsx` | Excel / CSV 表格读写、公式、图表 |
 
-**剩下 18 个 skill 不挂 Claude Code**：它们都装在 `~/.agents/skills/`，由 OpenCode 和 Codex 主用，包括但不限于 `brainstorming`、`writing-plans`、`hv-analysis`、`khazix-writer`、`schema`、`canvas-design`、`deploy-to-vercel`、`vercel-*` 系列、`luo-xiang-perspective`、`create-crush`、`mcp-builder`、`skill-creator`、`chinese-*` 系列、`receiving-code-review`。旧的设计辅助链独立目录已折叠进 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令。
+未挂 Claude Code 的技能仍保留在 `~/.agents/skills/`，由 OpenCode / Codex 使用。不要用旧的固定“挂载 / 未挂载”名单推断现场；更新或安装后应直接检查 `~/.claude/skills/`。旧设计辅助链独立目录已折叠进 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令。
 
 ### 增删 Claude Code skill 的标准命令
 
@@ -589,9 +598,10 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 当前不再保留 Impeccable 拆分增强项：旧的 `adapt`、`animate`、`audit`、`clarify`、`critique`、`delight`、`distill`、`harden`、`optimize`、`polish`、`typeset` 独立目录已删除，统一使用 `impeccable/reference/*.md` 和 `$impeccable <command>` 子命令。
 
-### 这个文件里当前没有未确认来源项
+### 手动管理，不参加统一自动更新
 
-- `none currently tracked in this file`
+- `health`
+- `officecli`
 
 ### 单独说明：`health`
 
@@ -599,6 +609,13 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - 当前状态：已改为手动管理，不参加统一 `skills-cli` 自动更新
 - 原因：当前 `tw93/Waza` 的 `skills` CLI 识别结果与本地 `health` 条目不一致，继续走统一自动更新会报错
 - 当前策略：保留本地已安装版本，先停止自动更新，等确认安全更新路径后再恢复自动化
+
+### 单独说明：`officecli`
+
+- 本地目录：`C:\Users\Computer\.agents\skills\officecli`
+- 当前状态：手动管理，不参加统一自动更新
+- 使用策略：只在显式 officecli、OpenXML、校验修复或跨格式 CLI 场景触发；普通 Office 文件按 `docx` / `xlsx` / `pptx` 路由
+- 原因：它有独特工具能力，但原始描述过宽；直接盲更可能冲掉本地触发边界
 
 ### 单独说明：`extract-design`
 
@@ -621,6 +638,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 ### 已移除且不再纳管
 
+- `workctl`、`workctl-operator`：用户确认不使用 Work Agent 平台，两个入口均已退出活动 skills。
 - `overdrive`：低频炫技视觉 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `quieter`：低频视觉降噪 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `colorize`：低频配色增强 skill，已删除本地目录并从 `skills-sources.json` 移除。
