@@ -479,7 +479,7 @@ For tactical guidance on SaaS product pages, blog content, comparison/alternativ
 
 ## Tool Integrations
 
-For implementation, see the [tools registry](../../tools/REGISTRY.md).
+For implementation, use the relevant SEO and analytics tools available in the current environment.
 
 | Tool | Use For |
 |------|---------|
@@ -505,7 +505,3 @@ For implementation, see the [tools registry](../../tools/REGISTRY.md).
 
 - **seo-audit**: For traditional technical and on-page SEO audits
 - **schema**: For implementing structured data that helps AI understand your content
-- **content-strategy**: For planning what content to create
-- **competitors**: For building comparison pages that get cited
-- **programmatic-seo**: For building SEO pages at scale
-- **copywriting**: For writing content that's both human-readable and AI-extractable

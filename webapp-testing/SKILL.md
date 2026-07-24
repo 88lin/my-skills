@@ -1,8 +1,19 @@
 ---
 name: webapp-testing
-description: Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.
+description: >-
+  Use this skill only for explicit browser/runtime verification of a local web application, or when interactive behavior cannot be established from code and static checks. Do NOT auto-trigger for copy changes, isolated CSS/style edits, small component maintenance, or routine frontend fixes; those use direct inspection and the smallest relevant static check unless the user requests browser testing.
 license: Complete terms in LICENSE.txt
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use browser testing proportionally, not as a default completion gate.
+
+Trigger this skill only when the user explicitly requests browser verification, when reproducing a runtime-only UI bug, or when interaction, responsive behavior, rendering, or console output cannot be established from code and static checks.
+
+For small copy, style, token, or existing-component edits, do not start a server or Playwright by default. Read static HTML directly when sufficient, reuse an already-running server when available, and start a local server only when the targeted runtime scenario requires it. Capture screenshots only when visual evidence is relevant. Test the smallest scenario that answers the question instead of running a broad browser suite.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # Web Application Testing
 

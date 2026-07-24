@@ -64,15 +64,6 @@
       "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/docx/SKILL.md"
     },
     {
-      "name": "extract-design",
-      "localFolder": "extract-design",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "Manavarya09/design-extract",
-      "skill": "extract-design",
-      "rawSkillUrl": "https://raw.githubusercontent.com/Manavarya09/design-extract/main/skills/extract-design/SKILL.md"
-    },
-    {
       "name": "html-ppt",
       "localFolder": "html-ppt",
       "type": "skills-cli",
@@ -202,15 +193,6 @@
       "repo": "anthropics/skills",
       "skill": "webapp-testing",
       "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
-    },
-    {
-      "name": "writing-plans",
-      "localFolder": "writing-plans",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "writing-plans",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/writing-plans/SKILL.md"
     },
     {
       "name": "xlsx",

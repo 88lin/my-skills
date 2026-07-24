@@ -1,13 +1,23 @@
 ---
 name: systematic-debugging
 description: >-
-  遇到 bug、测试失败、构建失败、生产事故或异常行为时使用；在提出修复方案之前先找根因，不要凭直觉打补丁。 / Use for bugs, test failures, build failures, production incidents, or unexpected behavior — investigate the root cause before proposing a fix; do not patch symptoms.
+  用于根因不明确、难以稳定复现、反复修复失败、跨组件故障、生产事故或复杂测试/构建失败的系统化调试。普通且原因清楚的小 bug 不自动触发，直接做最小调查、修复和与风险相称的验证。
 version: "1.0.0"
 license: MIT
 metadata:
   hermes:
     tags: [debugging]
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill for complex or uncertain failures, not every bug.
+
+Trigger it when the root cause is unclear, reproduction is unstable, several attempted fixes failed, multiple components are involved, or the issue is a production incident or a difficult build/test failure.
+
+For a small bug with an obvious cause and narrow blast radius, inspect the relevant code, confirm the cause, apply the smallest fix, and run one proportionate check. Do not require a separate TDD skill, a dedicated verification skill, a full four-phase ceremony, or new tests when an existing targeted check is sufficient.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 系统化调试
 
@@ -182,7 +192,7 @@ metadata:
    - 尽可能用自动化测试
    - 没有测试框架就写一次性测试脚本
    - 修复前必须先有测试
-   - 使用 `test-driven-development` 技能来编写规范的失败测试
+   - 为当前问题编写最小的失败测试或复现脚本
 
 2. **实施单一修复**
    - 修复已定位的根本原因
@@ -288,10 +298,6 @@ metadata:
 - **`root-cause-tracing.md`** - 沿调用栈反向追踪 bug，找到最初的触发点
 - **`defense-in-depth.md`** - 找到根因后，在多个层级添加校验
 - **`condition-based-waiting.md`** - 用条件轮询替代硬编码等待时间
-
-**相关技能：**
-- **test-driven-development** - 用于创建失败测试用例（第四阶段，第 1 步）
-- **verification-before-completion** - 在宣称成功之前验证修复确实有效
 
 ## 实际效果
 

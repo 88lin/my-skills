@@ -1,5 +1,20 @@
 # Skill Routing Changelog
 
+## 2026-07-25：第二轮精简与治理修复
+
+- 删除 `writing-plans`：正文仍依赖已移除的 brainstorming/worktree/TDD/频繁 commit 流程，且与 agent 自带计划能力重复
+- 删除 `extract-design`：上游仓库失效，现有流程会为轻量网站样式检查默认生成 8 个文件并运行截图
+- `systematic-debugging` 保持上游正文和自动更新，只用本地 description/Usage Rule 收窄到复杂、根因不明确或反复失败的故障
+- `webapp-testing` 改成显式或运行时确有必要才触发，不再作为普通前端小改的默认完成门槛
+- `web-access` 已恢复上游原始 description 和正文，移除本地 Usage Rule/override，并恢复独立 Git 自动更新
+- 不再统一改写上游 frontmatter；辅助校验器不接受的扩展字段在没有真实运行故障时保留上游原样
+- 上游正文默认保持原样；只对已删除依赖、真实断链、无效命令/依赖或已确认兼容故障维护最小 `bodyPatches`
+- `systematic-debugging` 移除对已删除 `test-driven-development` 和 `verification-before-completion` 的硬依赖与相关推荐
+- `ai-seo` 修复独立安装后的工具注册表断链；`ai-seo`、`seo-audit`、`schema` 的 Related Skills 只保留当前已安装项
+- `docx`、`xlsx`、`pptx`、`pdf` 的 description 明确 Codex 第一方 artifact skill 优先；本地 skill 保留为显式调用、后备和其他客户端入口
+- 复核后保留 `systematic-debugging` 的窄触发：以是否需要系统化根因调查为判断，不按所有 bug 自动触发
+- 在删除前文档的基础上重新整理路由、更新和 override 说明：恢复最终产物优先、无需标准关键词、冲突对照、Claude 入口副作用、补丁漂移与恢复流程，同时删除过时静态清单和重复示例
+
 这份文档记录本地 skills 路由治理的关键决策，重点回答 4 个问题：
 
 1. 哪些 skill 加了路由规则

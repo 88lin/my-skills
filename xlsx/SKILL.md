@@ -1,7 +1,7 @@
 ---
 name: xlsx
 description: >-
-  Use this skill when a spreadsheet file is the explicit input or the most likely required output. Good fit for reading, editing, fixing, cleaning, charting, converting, or generating .xlsx, .xlsm, .csv, or .tsv files. The user does not need to say '.xlsx' verbatim if the request clearly implies a workbook or spreadsheet handoff with tabs, formulas, columns, charts, or CSV/XLSX delivery. Use when the final deliverable should be a spreadsheet file, not just an analysis.
+  Use this skill when a spreadsheet file is the explicit input or the most likely required output. Good fit for reading, editing, cleaning, charting, converting, or generating .xlsx, .xlsm, .csv, or .tsv files. In Codex, prefer an available first-party spreadsheet artifact skill; use this local skill when explicitly requested, as a fallback, or in clients without that capability. Do not trigger for analysis alone when no spreadsheet file is required.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 

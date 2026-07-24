@@ -1,7 +1,7 @@
 ---
 name: impeccable
 description: >-
-  Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, redesign an existing page or component, establish a visual/UX direction or design system, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly run an Impeccable command such as `craft`, `shape`, `audit`, or `polish`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, live-site design-language extraction, static artwork, or HTML slide decks.
+  Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, redesign an existing page or component, establish a visual/UX direction or design system, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly run an Impeccable command such as `craft`, `shape`, `audit`, or `polish`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, external-site design inspection without an implementation deliverable, static artwork, or HTML slide decks.
 metadata:
   upstream-version: "4.0.2"
 ---
@@ -44,7 +44,7 @@ The old standalone design helper skills (`adapt`, `animate`, `audit`, `clarify`,
 
 Boundary rules:
 
-- Live-site design-language extraction belongs to `extract-design`
+- Inspecting an external site's design language without building a UI is handled directly with targeted web access and analysis
 - Static poster, cover, PNG, or PDF artwork belongs to `canvas-design`
 - HTML or browser slide decks belong to `html-ppt`
 - Word, PDF, PowerPoint, and spreadsheet deliverables belong to their format skills
