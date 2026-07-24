@@ -10,15 +10,6 @@
       "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/ai-seo/SKILL.md"
     },
     {
-      "name": "brainstorming",
-      "localFolder": "brainstorming",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "brainstorming",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/brainstorming/SKILL.md"
-    },
-    {
       "name": "canvas-design",
       "localFolder": "canvas-design",
       "type": "skills-cli",
@@ -64,15 +55,6 @@
       "rawSkillUrl": "https://raw.githubusercontent.com/xiaoheizi8/crush-skills/main/SKILL.md"
     },
     {
-      "name": "deploy-to-vercel",
-      "localFolder": "deploy-to-vercel",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "vercel-labs/agent-skills",
-      "skill": "deploy-to-vercel",
-      "rawSkillUrl": "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/deploy-to-vercel/SKILL.md"
-    },
-    {
       "name": "docx",
       "localFolder": "docx",
       "type": "skills-cli",
@@ -89,13 +71,6 @@
       "repo": "Manavarya09/design-extract",
       "skill": "extract-design",
       "rawSkillUrl": "https://raw.githubusercontent.com/Manavarya09/design-extract/main/skills/extract-design/SKILL.md"
-    },
-    {
-      "name": "health",
-      "localFolder": "health",
-      "type": "manual",
-      "autoUpdate": false,
-      "reason": "Current upstream/skills-cli resolution for tw93/Waza no longer matches local health entry; kept manual to avoid update failures until a safe dedicated update path is verified"
     },
     {
       "name": "html-ppt",
@@ -121,15 +96,6 @@
       "type": "manual",
       "autoUpdate": false,
       "reason": "Local mirror of pbakaus/impeccable .agents skill; update from reviewed upstream bundle, do not overwrite blindly"
-    },
-    {
-      "name": "karpathy-guidelines",
-      "localFolder": "karpathy-guidelines",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "multica-ai/andrej-karpathy-skills",
-      "skill": "karpathy-guidelines",
-      "rawSkillUrl": "https://raw.githubusercontent.com/multica-ai/andrej-karpathy-skills/main/skills/karpathy-guidelines/SKILL.md"
     },
     {
       "name": "khazix-writer",
@@ -211,15 +177,6 @@
       "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
     },
     {
-      "name": "skill-creator",
-      "localFolder": "skill-creator",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "skill-creator",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/skill-creator/SKILL.md"
-    },
-    {
       "name": "systematic-debugging",
       "localFolder": "systematic-debugging",
       "type": "skills-cli",
@@ -227,60 +184,6 @@
       "repo": "jnMetaCode/superpowers-zh",
       "skill": "systematic-debugging",
       "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
-    },
-    {
-      "name": "test-driven-development",
-      "localFolder": "test-driven-development",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "test-driven-development",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/test-driven-development/SKILL.md"
-    },
-    {
-      "name": "using-git-worktrees",
-      "localFolder": "using-git-worktrees",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "using-git-worktrees",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/using-git-worktrees/SKILL.md"
-    },
-    {
-      "name": "vercel-cli-with-tokens",
-      "localFolder": "vercel-cli-with-tokens",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "vercel-labs/agent-skills",
-      "skill": "vercel-cli-with-tokens",
-      "rawSkillUrl": "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/vercel-cli-with-tokens/SKILL.md"
-    },
-    {
-      "name": "vercel-composition-patterns",
-      "localFolder": "vercel-composition-patterns",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "vercel-labs/agent-skills",
-      "skill": "vercel-composition-patterns",
-      "rawSkillUrl": "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/composition-patterns/SKILL.md"
-    },
-    {
-      "name": "vercel-react-best-practices",
-      "localFolder": "vercel-react-best-practices",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "vercel-labs/agent-skills",
-      "skill": "vercel-react-best-practices",
-      "rawSkillUrl": "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/react-best-practices/SKILL.md"
-    },
-    {
-      "name": "verification-before-completion",
-      "localFolder": "verification-before-completion",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "verification-before-completion",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/verification-before-completion/SKILL.md"
     },
     {
       "name": "web-access",

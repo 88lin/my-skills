@@ -23,6 +23,18 @@
       "reason": "Local path: pin helper lives under the user's global .agents tree.",
       "find": "node .agents/skills/impeccable/scripts/pin.mjs <pin|unpin> <command>",
       "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/pin.mjs\" <pin|unpin> <command>"
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Keep low-risk frontend maintenance lightweight; browser and screenshot validation should be proportional to design risk.",
+      "find": "- Iterate with tools available to you (e.g. visual understanding, browser screenshots) until you think this meets the bar.",
+      "replace": "- Match validation effort to risk. Use browser screenshots or interactive checks only for new surfaces, substantial redesigns, responsive or layout behavior, motion, or interaction changes that cannot be verified from code, or when the user explicitly asks. For clear low-risk maintenance, prefer static inspection and the smallest relevant existing check; do not start a server, browser, screenshot loop, or deployment solely to prove a copy, spacing, color, typography, or straightforward CSS change."
+    },
+    {
+      "path": "SKILL.md",
+      "reason": "Keep the upstream version as allowed metadata so Codex skill validation accepts the frontmatter.",
+      "find": "version: 4.0.2",
+      "replace": "metadata:\n  upstream-version: \"4.0.2\""
     }
   ]
 }

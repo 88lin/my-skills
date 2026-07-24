@@ -1,40 +1,54 @@
 ---
 name: impeccable
 description: >-
-  Unified Impeccable frontend design skill. Use when the goal is to design, build, redesign, or improve a frontend interface — web pages, landing pages, dashboards, product UI, app shells, components, forms, settings, onboarding, empty states, responsive behavior, typography, spacing, layout, color, motion, UX copy, accessibility, or UI-perceived performance. Also use for Impeccable command-style requests aimed at frontend work, such as `impeccable craft`, `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, `live` (`teach` is only a deprecated alias for `init`). Do NOT use for backend or non-frontend code audits, docs, or reviews; live-site design-language extraction; static poster or cover art; HTML slide decks; PowerPoint / PDF / Word / spreadsheet deliverables; or specialized React/Next performance work.
-version: 4.0.2
+  Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, redesign an existing page or component, establish a visual/UX direction or design system, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly run an Impeccable command such as `craft`, `shape`, `audit`, or `polish`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, live-site design-language extraction, static artwork, or HTML slide decks.
+metadata:
+  upstream-version: "4.0.2"
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
-Use this skill as the unified **Impeccable frontend design** entry point.
+Use this skill as the frontend design entry point only when design judgment materially affects the outcome.
 
-Trigger it when the task clearly involves one of these goals:
+Trigger it for:
 
-- Designing, building, or redesigning a normal web page, app screen, component, dashboard, landing page, or product surface
-- Running Impeccable sub-command style work such as `impeccable craft`, `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, `live`; `teach` is only a deprecated alias for `init`
-- Improving visual hierarchy, layout, spacing, typography, color, motion, interaction quality, UX copy, empty states, onboarding, responsive behavior, accessibility, or UI-perceived performance
-- Building a complex interactive web app, React demo, mini-app, or multi-component frontend experience when the main goal is UI and feature implementation
-- Creating a new page or UI while using another website as visual inspiration, as long as the goal is implementation rather than design-system extraction
-- Reviewing or refining an existing frontend surface from a design, UX, craft, or interface-quality perspective
+- Designing or building a new page, product surface, component, dashboard, landing page, or app screen where visual or UX direction must be established
+- Substantially redesigning an existing interface, interaction model, responsive system, onboarding flow, or design system
+- Performing a design-focused critique, audit, polish, accessibility pass, or visual quality review
+- Explicit Impeccable command requests such as `craft`, `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, or `live`
 
-The old standalone design helper skills (`adapt`, `animate`, `audit`, `clarify`, `critique`, `delight`, `distill`, `harden`, `optimize`, `polish`, `typeset`) are now represented as Impeccable reference files and sub-command flows under this skill. Route those requests here instead of expecting separate skill directories.
+Do not auto-trigger it for routine frontend maintenance when the requested outcome is already clear, including:
 
-Local context policy:
+- Copy, label, icon, or content replacement
+- Isolated spacing, color, typography, token, or straightforward CSS changes
+- Small edits to an existing component that do not introduce a new visual direction or interaction model
+- Bug fixes, regression fixes, or restoring established behavior
+- Generic website or React code work whose primary goal is not interface design
 
-- Missing `PRODUCT.md` should trigger `init` first for `init`, `craft`, `shape`, new product surfaces, full redesigns, brand direction, onboarding strategy, or durable design-system work
-- For small low-risk UI work (minor polish, spacing, copy labels, local layout fixes, simple component tweaks, screenshots-to-code, or existing-behavior preservation), do not block solely on missing `PRODUCT.md`; continue using repo context, the user prompt, and visible UI, asking at most one focused question if the missing context would change the decision
+### Small-change fast path
 
-Treat broad command words carefully:
+When the desired result is clear and local, inspect the relevant code and edit it directly.
 
-- `extract` belongs here only when the user means Impeccable's project/design-system extraction from frontend UI code; live-site design-language extraction still belongs to `extract-design`
-- `document` belongs here only when generating or refreshing Impeccable `DESIGN.md` context; Word/PDF/PPT/spreadsheet documents belong to the format skills
-- `optimize` belongs here for UI-perceived performance, animation/render smoothness, or frontend UX speed; React/Next architecture or rendering performance reviews can belong to `vercel-react-best-practices`
-- Flexible React component API design, boolean prop proliferation, compound components, or reusable component architecture belongs to `vercel-composition-patterns`
-- `live` belongs here only for Impeccable's live browser variant mode, not generic web browsing
+- Do not require `PRODUCT.md` or `DESIGN.md`
+- Do not load an Impeccable command playbook or `craft-floor.md`
+- Do not start a development server, browser, Playwright session, screenshot loop, or external deployment by default
+- Use only the smallest relevant existing static check when one is useful
+- Use one targeted browser or viewport check only when layout, responsive behavior, motion, or interaction cannot be established from code, or when the user explicitly requests visual verification
 
-Do **not** use this skill just because the task mentions a website if the real deliverable is a document, PPT, spreadsheet, SEO audit, schema markup, PDF, static poster, or pure backend change.
+### Full design path
+
+For new surfaces, substantial redesigns, new interaction systems, durable design-system work, or explicit Impeccable commands, follow the normal Impeccable workflow. Missing `PRODUCT.md` should trigger `init` only when strategic product or design context is genuinely required.
+
+The old standalone design helper skills (`adapt`, `animate`, `audit`, `clarify`, `critique`, `delight`, `distill`, `harden`, `optimize`, `polish`, `typeset`) remain represented as Impeccable reference files and command flows.
+
+Boundary rules:
+
+- Live-site design-language extraction belongs to `extract-design`
+- Static poster, cover, PNG, or PDF artwork belongs to `canvas-design`
+- HTML or browser slide decks belong to `html-ppt`
+- Word, PDF, PowerPoint, and spreadsheet deliverables belong to their format skills
+- React performance or component architecture without a design deliverable is ordinary engineering work, not an Impeccable trigger
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 This skill gives you the tools and permission to create design that earns to be called out-of-distribution craft: Whereas before, your design work would have been safe, timid and measured, you now approach every design task as a award-winning design director with impeccable understanding for what makes exceptional design work: production-grade code, peak creativity, a clear POV, deep understanding of the needs of the client and users, and exceptional craft.
@@ -42,7 +56,7 @@ This skill gives you the tools and permission to create design that earns to be 
 Core principles:
 - Go all out. No hedging, no shortcuts. The deliverable must be complete (except assets the user must provide).
 - Dream big and bold. Distinct, beautiful, outstanding and highly inspiring work.
-- Iterate with tools available to you (e.g. visual understanding, browser screenshots) until you think this meets the bar.
+- Match validation effort to risk. Use browser screenshots or interactive checks only for new surfaces, substantial redesigns, responsive or layout behavior, motion, or interaction changes that cannot be verified from code, or when the user explicitly asks. For clear low-risk maintenance, prefer static inspection and the smallest relevant existing check; do not start a server, browser, screenshot loop, or deployment solely to prove a copy, spacing, color, typography, or straightforward CSS change.
 
 ## Setup
 

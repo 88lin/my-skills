@@ -42,7 +42,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 - `manage-skills.ps1`：只在出现真实检查、更新、override 回写错误时修改，不为了“更优雅”重构
 - `local-routing-overrides.json`：只给真冲突、真误触发、真需要保住本地规则的 skill 新增 override
-- `skills-sources.json`：不要轻易改变现有 `manual` / `skills-cli` / `git` 分类，尤其保留 `health` 当前 `manual` 策略
+- `skills-sources.json`：不要轻易改变现有 `manual` / `skills-cli` / `git` 分类
 
 这些点当前可以继续观察，不作为必须修复项：
 
@@ -66,26 +66,23 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 Claude Code 启动时扫描 `~/.claude/skills/` 下所有子目录，把每个 `SKILL.md` 注册成可用 skill。这个目录里挂的是软链接，指向 `~/.agents/skills/` 的对应目录。也就是说：
 
-- `~/.agents/skills/` 是统一 skill 仓库（当前 37 个目录，给 OpenCode / Codex / Claude Code 共用）
+- `~/.agents/skills/` 是统一 skill 仓库（实际数量以 `skills-sources.json` 为准，给 OpenCode / Codex / Claude Code 共用）
 - `~/.claude/skills/` 只是 Claude Code 的"白名单视图"——挂多少软链，Claude Code 就看得到多少 skill
 - `manage-skills.ps1` 的 `check` 和 `apply-overrides` 模式完全不动 `~/.claude/skills/`；但 `update` 模式会调用 `npx -y skills add` 子进程，**skills CLI 会作为副作用在 `~/.claude/skills/` 创建软链**。同理 `install-and-register-skill.ps1` 在 `-SourceType skills-cli` 时也调用 skills CLI，也会创建软链
 - 所以"白名单视图"不是脚本自动维护的：跑完 update / install 之后必须用 `ls ~/.claude/skills/` 复查，手工 `rm` 不想暴露给 Claude Code 的软链（具体警示见下面"npx skills add 的副作用警示"段）
 
-**当前挂在 Claude Code 的 26 个入口**（截至 2026-07-24；以磁盘现场为准）：
+**当前挂在 Claude Code 的入口**（以磁盘现场为准）：
 
 | 软链 | 用途 |
 |---|---|
 | `ai-seo` | AI 搜索、AI Overviews、LLM 引用优化 |
-| `brainstorming` | 新功能、新能力和新产品行为的设计探索 |
 | `chinese-code-review` | 显式调用的中文 review 沟通参考 |
 | `chinese-commit-conventions` | 显式调用的中文 commit 规范参考 |
 | `chinese-documentation` | 显式调用的中文文档排版参考 |
 | `docx` | Word 文档读写、编辑、tracked changes、TOC |
 | `extract-design` | 从网站 URL 提取设计语言，生成 design tokens / Tailwind / shadcn |
-| `impeccable` | 默认前端设计入口，含 craft / shape / audit / critique / polish / adapt 等子命令 |
-| `health` | 检查 Claude Code 六层配置健康度 |
+| `impeccable` | 需要设计判断的前端专项入口，含 craft / shape / audit / critique / polish / adapt 等子命令 |
 | `html-ppt` | 浏览器 HTML 演示稿、reveal deck、小红书图文 |
-| `karpathy-guidelines` | 编码行为规范（最小改动、不过度设计） |
 | `mcp-builder` | MCP 服务器构建方法论 |
 | `officecli` | 显式 officecli、OpenXML、校验修复和跨格式 CLI |
 | `pdf` | PDF 读取、OCR、表单、合并/拆分、生成 |
@@ -93,9 +90,6 @@ Claude Code 启动时扫描 `~/.claude/skills/` 下所有子目录，把每个 `
 | `receiving-code-review` | 收到 code review 后的技术核验流程 |
 | `seo-audit` | 默认 SEO 诊断、技术 SEO / 页面 SEO 审计 |
 | `systematic-debugging` | 调试流程入口（先找根因再修） |
-| `test-driven-development` | TDD 流程入口（先写失败测试再实现） |
-| `using-git-worktrees` | 需要隔离工作区时使用 Git worktree |
-| `verification-before-completion` | 完成前验证流程入口（凭证据宣布完成） |
 | `web-access` | 联网 / 网页抓取 / 真实浏览器交互 |
 | `webapp-testing` | Playwright 本地 Web app 验证（给 Claude 一双眼睛） |
 | `writing-plans` | 明确多步骤需求的实施计划 |
@@ -249,15 +243,6 @@ git -C "C:\Users\Computer\.agents\skills\web-access" pull --ff-only origin main
 
 下面这些命令只会更新指定 skill，不会把同仓库的其他 skill 一起装到你的本地目录里。
 
-### Vercel 系
-
-```powershell
-npx -y skills add vercel-labs/agent-skills@deploy-to-vercel -g -y
-npx -y skills add vercel-labs/agent-skills@vercel-cli-with-tokens -g -y
-npx -y skills add vercel-labs/agent-skills@vercel-composition-patterns -g -y
-npx -y skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
-```
-
 ### 其他已确认来源的 Skill
 
 这些 skill 的来源已经确认，而且状态也已经核对过。
@@ -267,10 +252,7 @@ npx -y skills add xiaoheizi8/crush-skills@create-crush -g -y
 npx -y skills add YixiaJack/luo-xiang-skill@luo-xiang-perspective -g -y
 npx -y skills add KKKKhazix/khazix-skills@hv-analysis -g -y
 npx -y skills add KKKKhazix/khazix-skills@khazix-writer -g -y
-npx -y skills add multica-ai/andrej-karpathy-skills@karpathy-guidelines -g -y
 ```
-
-注意：`health` 已转为手动管理，当前不要再用 `npx -y skills add tw93/Waza@health -g -y` 直接覆盖，见后面的单独说明。
 
 ### Superpowers-ZH 精选 Skill
 
@@ -278,74 +260,34 @@ npx -y skills add multica-ai/andrej-karpathy-skills@karpathy-guidelines -g -y
 
 ```powershell
 npx -y skills add jnMetaCode/superpowers-zh@systematic-debugging -g -y
-npx -y skills add jnMetaCode/superpowers-zh@test-driven-development -g -y
-npx -y skills add jnMetaCode/superpowers-zh@verification-before-completion -g -y
 npx -y skills add jnMetaCode/superpowers-zh@chinese-documentation -g -y
 npx -y skills add jnMetaCode/superpowers-zh@chinese-commit-conventions -g -y
 npx -y skills add jnMetaCode/superpowers-zh@mcp-builder -g -y
 npx -y skills add jnMetaCode/superpowers-zh@receiving-code-review -g -y
 npx -y skills add jnMetaCode/superpowers-zh@chinese-code-review -g -y
-npx -y skills add jnMetaCode/superpowers-zh@brainstorming -g -y
 npx -y skills add jnMetaCode/superpowers-zh@writing-plans -g -y
-npx -y skills add jnMetaCode/superpowers-zh@using-git-worktrees -g -y
 ```
 
 当前状态：
 
 - `systematic-debugging`：来源已确认，已纳入管理系统，自动更新
-- `test-driven-development`：来源已确认，已纳入管理系统，自动更新
-- `verification-before-completion`：来源已确认，已纳入管理系统，自动更新
 - `chinese-documentation`：来源已确认，已纳入管理系统，自动更新
 - `chinese-commit-conventions`：来源已确认，已纳入管理系统，自动更新
 - `mcp-builder`：来源已确认，已纳入管理系统，自动更新
 - `receiving-code-review`：来源已确认，已纳入管理系统，自动更新
 - `chinese-code-review`：来源已确认，已纳入管理系统，自动更新
-- `brainstorming`：来源已确认，已纳入管理系统，自动更新；本地 override 会保留“不要抢 bug 修复 / 恢复已有行为”的触发边界
 - `writing-plans`：来源已确认，已纳入管理系统，自动更新；本地 override 会保留 OpenCode 交接方式，避免依赖未安装的 superpowers execution skills
-- `using-git-worktrees`：来源已确认，已纳入管理系统，自动更新；本地 override 会保留“隔离有价值才触发”的边界，不作为日常小修默认流程
 
 定位说明：
 
 - `writing-plans` 只作为实施计划补充。已有明确规格或多步骤需求时可以用它拆步骤；小修直接用 todo / 直接执行 / 验证命令，不默认写计划文档。
-- `using-git-worktrees` 只在需要隔离工作区时使用，例如并行任务、临时 hotfix、PR 检查、多方案实验或大型计划执行；日常单任务开发不默认启用。
-- `brainstorming` 只用于创造性产品 / 设计工作；bug、回归、测试失败、构建失败、恢复已有行为优先走 `systematic-debugging` → `test-driven-development` → `verification-before-completion`。
 
 当前状态：
 
 - `create-crush`：来源已确认，当前已是最新
 - `luo-xiang-perspective`：来源已确认，当前已是最新
-- `health`：来源已确认，但当前已改为手动管理，不参加统一自动更新
 - `hv-analysis`：来源已确认，已纳入管理系统；本地 override 会保留“研究内容生成和研究报告产出才触发；已有 PDF / 文档处理走格式 skill”的边界
 - `khazix-writer`：来源已确认，已纳入管理系统；本地 override 会保留“最终产物是公众号文章 / 长文 / 稿子才触发”的边界
-- `karpathy-guidelines`：来源已确认，已纳入管理系统
-
-#### `karpathy-guidelines`
-
-用途：约束编码行为，减少乱猜需求、过度设计、顺手大改、缺少验收标准这类常见问题。
-
-更适合在 `OpenCode` 里这样触发：
-
-```text
-这次任务请遵循 karpathy-guidelines：
-1. 不要擅自假设，不清楚先问
-2. 先用最小正确改动解决问题
-3. 只改和需求直接相关的代码
-4. 给出可验证的完成标准，必要时先写复现或验证步骤
-```
-
-适合的场景：
-
-- `修 bug，但不要顺手重构一大片`
-- `做一个小功能，但别过度设计`
-- `帮我 review 这个改动，先说风险和问题`
-- `先确认需求歧义，再开始改代码`
-
-如果你想在 `OpenCode` 里更明确地触发，也可以直接这样说：
-
-- `这次按 karpathy-guidelines 的方式处理`
-- `先按 karpathy-guidelines 澄清假设，再动手`
-- `用 karpathy-guidelines 约束这次改动，保持最小 diff`
-
 ### 适合公众号写作的 Khazix Skills
 
 这两个 skill 很适合你现在的使用场景。
@@ -435,7 +377,6 @@ npx -y skills add coreyhaines31/marketingskills@ai-seo -g -y
 npx -y skills add anthropics/skills@webapp-testing -g -y
 npx -y skills add anthropics/skills@pdf -g -y
 npx -y skills add anthropics/skills@xlsx -g -y
-npx -y skills add anthropics/skills@skill-creator -g -y
 npx -y skills add anthropics/skills@docx -g -y
 npx -y skills add anthropics/skills@pptx -g -y
 npx -y skills add anthropics/skills@canvas-design -g -y
@@ -446,7 +387,6 @@ npx -y skills add anthropics/skills@canvas-design -g -y
 - `webapp-testing`：来源已确认，已纳入管理系统，自动更新
 - `pdf`：来源已确认，已纳入管理系统，自动更新
 - `xlsx`：来源已确认，已纳入管理系统，自动更新
-- `skill-creator`：来源已确认，已纳入管理系统，自动更新
 - `docx`：来源已确认，已纳入管理系统，自动更新
 - `pptx`：来源已确认，已纳入管理系统，自动更新
 - `canvas-design`：来源已确认，已纳入管理系统，自动更新
@@ -456,7 +396,6 @@ npx -y skills add anthropics/skills@canvas-design -g -y
 - `webapp-testing`：本地 Web 应用验证和 Playwright 流程检查
 - `pdf`：PDF 读取、提取、拆分、合并、表单与 OCR
 - `xlsx`：表格清洗、编辑、公式、图表和格式修复
-- `skill-creator`：创建、优化、评估和 benchmark 现有 skill
 - `docx`：Word 文档创建和编辑
 - `pptx`：演示文稿创建和编辑
 - `canvas-design`：静态视觉稿、海报、PNG/PDF 设计产物
@@ -491,7 +430,7 @@ npx -y skills add lewislulu/html-ppt-skill@html-ppt -g -y
 - 适合浏览器直接打开的网页演示稿
 - 适合分享稿、技术演讲 slides、静态 HTML deck
 - 也适合演示型、PPT 风格、editorial 风格的静态单页页面
-- 不适合作为普通产品官网或常规应用页面的默认 skill；那类优先仍看 `impeccable`
+- 不适合作为需要设计判断的产品官网或应用页面 skill；这类任务再考虑 `impeccable`，目标明确的局部维护直接处理
 
 更新命令：
 
@@ -557,26 +496,17 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 ### 可以安全单独更新
 
 - `web-access`
-- `deploy-to-vercel`
-- `vercel-cli-with-tokens`
-- `vercel-composition-patterns`
-- `vercel-react-best-practices`
 - `create-crush`
 - `luo-xiang-perspective`
 - `hv-analysis`
 - `khazix-writer`
-- `karpathy-guidelines`
 - `systematic-debugging`
-- `test-driven-development`
-- `verification-before-completion`
 - `chinese-documentation`
 - `chinese-commit-conventions`
 - `mcp-builder`
 - `receiving-code-review`
 - `chinese-code-review`
-- `brainstorming`
 - `writing-plans`
-- `using-git-worktrees`
 - `seo-audit`
 - `schema`
 - `ai-seo`
@@ -584,7 +514,6 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 - `webapp-testing`
 - `pdf`
 - `xlsx`
-- `skill-creator`
 - `docx`
 - `pptx`
 - `canvas-design`
@@ -600,15 +529,7 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 ### 手动管理，不参加统一自动更新
 
-- `health`
 - `officecli`
-
-### 单独说明：`health`
-
-- 本地目录：`C:\Users\Computer\.agents\skills\health`
-- 当前状态：已改为手动管理，不参加统一 `skills-cli` 自动更新
-- 原因：当前 `tw93/Waza` 的 `skills` CLI 识别结果与本地 `health` 条目不一致，继续走统一自动更新会报错
-- 当前策略：保留本地已安装版本，先停止自动更新，等确认安全更新路径后再恢复自动化
 
 ### 单独说明：`officecli`
 
@@ -638,6 +559,11 @@ git -C "C:\Users\Computer\.agents\external\ppt-master" pull --ff-only origin mai
 
 ### 已移除且不再纳管
 
+- `verification-before-completion`、`brainstorming`、`test-driven-development`、`using-git-worktrees`：用户选择移除强制流程链，日常任务按风险和范围直接处理。
+- `karpathy-guidelines`：与 Agent 基础工程规则重复，已移除。
+- `skill-creator`：本地重复副本已移除；Codex 系统内置版本不受影响。
+- `health`：用户不再保留 Claude 配置审计 skill。
+- `deploy-to-vercel`、`vercel-cli-with-tokens`、`vercel-composition-patterns`、`vercel-react-best-practices`：Vercel 技能组已整体移除。
 - `workctl`、`workctl-operator`：用户确认不使用 Work Agent 平台，两个入口均已退出活动 skills。
 - `overdrive`：低频炫技视觉 skill，已删除本地目录并从 `skills-sources.json` 移除。
 - `quieter`：低频视觉降噪 skill，已删除本地目录并从 `skills-sources.json` 移除。
@@ -674,7 +600,6 @@ npx -y skills add owner/repo@skill-name -g -y
 ## 示例
 
 ```powershell
-npx -y skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
 git -C "C:\Users\Computer\.agents\skills\web-access" pull --ff-only origin main
 ```
 

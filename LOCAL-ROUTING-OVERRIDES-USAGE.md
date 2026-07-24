@@ -230,12 +230,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - `seo-audit`
 - `schema`
 - `ai-seo`
-- `deploy-to-vercel`
-- `vercel-cli-with-tokens`
-- `brainstorming`
 - `writing-plans`
-- `using-git-worktrees`
-- `vercel-react-best-practices`
 - `hv-analysis`
 - `khazix-writer`
 

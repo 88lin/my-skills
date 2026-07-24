@@ -7,11 +7,28 @@
 3. 哪些 skill 明确保持默认，不额外加规则
 4. 哪些判断已经经过人工确认
 
-更新时间：2026-07-25（本轮追加：用户确认不使用 Work Agent，删除 workctl-operator 及其活动登记）
+更新时间：2026-07-25（本轮追加：删除重流程 skill，并为 impeccable 增加小改动快速路径）
 
 ---
 
 ## 本轮治理目标
+
+2026-07-25 用户确认删除：
+
+- 强制流程：`verification-before-completion`、`brainstorming`、`test-driven-development`、`using-git-worktrees`
+- 通用重复：`karpathy-guidelines`、本地 `skill-creator`
+- 低频平台：`health`
+- Vercel 技能组：`deploy-to-vercel`、`vercel-cli-with-tokens`、`vercel-composition-patterns`、`vercel-react-best-practices`
+
+删除范围包括活动目录、Claude 入口、`skills-sources.json` 登记和 `local-routing-overrides.json` 规则；旧段落保留为历史记录，不代表当前仍安装。
+
+同日确认收窄 `impeccable`：
+
+- 只在新页面、显著重构、新设计方向、设计审查或明确 Impeccable 命令时触发
+- 文案、单点样式、直接 CSS、现有组件小改和恢复既有行为走普通直接修改
+- 小改不默认启动开发服务器、浏览器、Playwright、截图循环或部署
+- 浏览器与截图只用于无法从代码判断的布局、响应式、动效或交互验证，或用户明确要求时
+- 触发与快速路径写入 `local-routing-overrides.json`；正文截图规则和上游版本字段转换写入 `impeccable-local-patches.json`，由专用更新器持久化
 
 这轮治理不是为了“让所有 skill 都变得更严”，而是为了避免两种问题：
 
@@ -463,25 +480,14 @@
     - `seo-audit`
     - `schema`
     - `ai-seo`
-5. Vercel 簇
-    - `deploy-to-vercel`
-    - `vercel-cli-with-tokens`
-6. 流程入口簇
-   - `brainstorming`
+5. 流程入口簇
    - `systematic-debugging`
-   - `test-driven-development`
-   - `verification-before-completion`
    - `writing-plans`
-   - `using-git-worktrees`
-7. React 工程簇
-   - `impeccable`
-   - `vercel-react-best-practices`
-   - `vercel-composition-patterns`
-8. 内容研究 / 写作簇
+6. 内容研究 / 写作簇
    - `hv-analysis`
    - `khazix-writer`
    - 文档格式相关 skill
-9. Office 格式 / 工具簇
+7. Office 格式 / 工具簇
    - `docx`
    - `xlsx`
    - `pptx`
@@ -493,8 +499,8 @@
 
 以下这几类当前明确保持默认，不再继续硬加路由规则：
 
-- 工程 / 流程型：`systematic-debugging`、`test-driven-development`、`verification-before-completion`、`karpathy-guidelines`、`receiving-code-review`
-- 平台 / 工具型：`web-access`、`health`、`mcp-builder`、`skill-creator`
+- 工程 / 流程型：`systematic-debugging`、`receiving-code-review`
+- 平台 / 工具型：`web-access`、`mcp-builder`
 - 研究 / 内容型：`luo-xiang-perspective`、`create-crush`
 - 设计辅助链：已归并到 `impeccable`，不再作为独立 skill 组维护
 

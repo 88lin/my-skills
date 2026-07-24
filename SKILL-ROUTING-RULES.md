@@ -43,7 +43,7 @@
 - 它更像正常产品网页/UI
 - 还是更像演示稿式的展示页面
 
-如果最终交付物是一个**正常网站 / 产品页面 / 应用界面**，优先归 `impeccable`。
+如果最终交付物是一个需要新设计方向、显著重构或 UX 判断的**正常网站 / 产品页面 / 应用界面**，归 `impeccable`。目标明确的局部维护直接处理，不触发设计 skill。
 如果最终交付物是一个**展示型、演示型、PPT 风格的静态 HTML 页面或 deck**，`html-ppt` 可以是合理选择。
 
 ### 3. 关键词命中不等于应该触发
@@ -96,11 +96,7 @@
 - `canvas-design`
 - `schema`
 - `ai-seo`
-- `vercel-cli-with-tokens`
-- `brainstorming`
 - `writing-plans`
-- `using-git-worktrees`
-- `vercel-react-best-practices`
 - `hv-analysis`
 - `khazix-writer`
 - `officecli`
@@ -136,7 +132,7 @@
 
 这些 skill 可以作为各自领域的默认入口。
 
-### 设计与前端默认入口
+### 设计与前端专项入口
 
 - `impeccable`
 
@@ -148,7 +144,16 @@
 - dashboard
 - landing page
 - 复杂交互 Web app / React demo / mini-app
-- 正常的 UI 创建和迭代
+- 新设计方向、显著重构、设计审查或明确的 Impeccable 命令
+
+不要用于目标明确的局部维护：
+
+- 文案、标签、图标或内容替换
+- 单点间距、颜色、字体、token 或直接 CSS 修改
+- 不引入新视觉方向或交互模型的现有组件小改
+- Bug、回归或恢复既有行为
+
+这类小改直接检查相关代码并修改，不默认启动开发服务器、浏览器、Playwright、截图循环或部署。
 
 不要默认切到这些：
 
@@ -158,7 +163,8 @@
 
 判断口诀：
 
-- 正常产品网页 / landing page / 应用界面 / 复杂交互 Web app → `impeccable`
+- 需要设计判断的新页面、显著重构、landing page 或复杂交互 Web app → `impeccable`
+- 目标明确的局部 UI 维护 → 直接处理，不触发设计 skill
 - 演示型、PPT 风格、editorial 风格静态 HTML 页面 → `html-ppt`
 - 静态视觉物料 → `canvas-design`
 - 提取现有网站设计语言 → `extract-design`
@@ -182,55 +188,9 @@
 - 结构化数据：`schema`
 - AI 搜索优化：`ai-seo`
 
-### Vercel 默认入口
-
-- `deploy-to-vercel`
-
-适用：
-
-- 普通部署
-- preview deployment
-- 链接项目
-- 给我一个线上地址
-
-不要默认切到：
-
-- token 登录/CI/token automation：`vercel-cli-with-tokens`
-
----
-
 ## 按需触发 Skill
 
 这些 skill 只有在目标很明确时才应该触发。
-
-### `brainstorming`
-
-只在这些情况触发：
-
-- 创造性产品或设计工作
-- 创建新功能、新组件、新工作流或新产品界面
-- 添加新能力，且用户意图、约束或成功标准还需要探索
-- 有意改变既定产品行为或 UX
-- 实现前需要比较多个设计方案
-
-不要用于：
-
-- Bug 修复
-- 测试失败或构建失败
-- 回归修复
-- 恢复已有行为
-- 预期行为已经明确的直接实现任务
-
-这些情况优先走工程修复流程：
-
-- `systematic-debugging`：先定位根因
-- `test-driven-development`：先建立失败的回归测试或可复现检查
-- `verification-before-completion`：完成前用新鲜验证证据支撑结论
-
-关键区分：
-
-- 恢复既有预期行为 → 调试流程
-- 设计新的预期行为 → 头脑风暴流程
 
 ### `writing-plans`
 
@@ -253,47 +213,6 @@ OpenCode 中的本地边界：
 - 不要假设必须存在 `superpowers:subagent-driven-development` 或 `superpowers:executing-plans`
 - 如果上游正文提到未安装的执行 skill，改用 OpenCode 可用的 `todowrite`、`task`、直接编辑和验证命令
 - 不要默认写计划文档或 commit，除非用户明确要保存计划或任务规模确实需要持久交接
-
-### `using-git-worktrees`
-
-只在这些情况触发：
-
-- 并行开发需要隔离当前工作区
-- 临时 hotfix、PR 检查或多方案实验
-- 多 agent 并行或大型实施计划需要隔离基线
-- 用户明确要求开独立 worktree
-
-不要默认用于：
-
-- 只读调查
-- 小 bug 修复
-- 单文件改动
-- 简单配置或文档更新
-- 当前工作区就是预期编辑位置的任务
-
-关键判断：隔离有价值才开 worktree；普通小修直接在当前工作区做，同时尊重已有未提交改动。
-
-### `vercel-react-best-practices`
-
-只在这些情况触发：
-
-- React / Next.js 性能问题
-- data fetching、server/client rendering、hydration、bundle size
-- React 过度渲染、waterfall、jank、加载慢
-- 性能导向的 React / Next.js code review 或 refactor
-
-不要默认用于：
-
-- 纯视觉 UI 创建
-- landing page 或产品界面的美术方向
-- 普通 impeccable 任务
-- 没有性能证据支撑的大范围重构
-
-相邻 skill 边界：
-
-- 视觉和产品界面质量 → `impeccable`
-- 组件 API、boolean props、compound components → `vercel-composition-patterns`
-- 最小改动和避免过度设计 → `karpathy-guidelines`
 
 ### `hv-analysis`
 
@@ -431,19 +350,6 @@ OpenCode 中的本地边界：
 
 - 泛 SEO 审计
 - schema 实现
-
-### `vercel-cli-with-tokens`
-
-只在这些情况触发：
-
-- `VERCEL_TOKEN`
-- token auth
-- CI / non-interactive deploy
-- token automation
-
-不要默认用于：
-
-- 普通 Vercel 部署
 
 ### `officecli`
 
@@ -587,74 +493,23 @@ OpenCode 中的本地边界：
 - schema 落地：`schema`
 - AI 可见性：`ai-seo`
 
-### 4. `deploy-to-vercel` vs `vercel-cli-with-tokens`
-
-默认顺序：
-
-1. 普通部署：`deploy-to-vercel`
-2. token / CI / 非交互：`vercel-cli-with-tokens`
-
-一句话判断：
-
-- 正常发版：`deploy-to-vercel`
-- token 特殊场景：`vercel-cli-with-tokens`
-
-### 5. `brainstorming` vs 工程修复流程
-
-默认顺序：
-
-1. Bug、回归、测试失败、构建失败、恢复已有行为：`systematic-debugging` → `test-driven-development` → `verification-before-completion`
-2. 新功能、新组件、新能力、有意改变产品行为：`brainstorming`
-
-一句话判断：
-
-- 恢复本来就该有的行为：不要走 `brainstorming`
-- 需要决定未来应该是什么行为：走 `brainstorming`
-
-补充：
-
-- `修改行为` 不是充分触发条件；要先判断是“修复偏离预期”还是“重新定义预期”
-- 如果调试过程中发现预期行为本身不明确，再暂停并转入 `brainstorming`
-
-### 6. `writing-plans` / `using-git-worktrees` vs 直接执行
+### 4. `writing-plans` vs 直接执行
 
 默认顺序：
 
 1. 小型直接任务：当前工作区 + todo list + 验证命令
 2. 多步骤但不需要隔离：`writing-plans` 或直接 todo list，按任务规模判断
-3. 需要隔离、并行、hotfix、实验：`using-git-worktrees`
 
 一句话判断：
 
 - 需要想清楚怎么做：考虑 `writing-plans`
-- 需要隔离在哪里做：考虑 `using-git-worktrees`
-- 只是小修小改：不要默认触发这两个
+- 只是小修小改：不要默认触发它
 
 补充：
 
-- OpenCode 中不要因为上游正文提到未安装的 execution skill 就阻塞
 - 可以把计划交接翻译成 `todowrite`、`task`、直接编辑和验证命令
 
-### 7. `impeccable` vs `vercel-react-best-practices` vs `vercel-composition-patterns`
-
-默认顺序：
-
-1. 视觉 / 页面 / 产品界面 / 交互功能实现：`impeccable`
-2. React / Next 性能、渲染、数据获取、bundle：`vercel-react-best-practices`
-3. 组件 API、组合模式、boolean props：`vercel-composition-patterns`
-
-一句话判断：
-
-- 看起来如何、页面如何设计、交互功能如何实现：`impeccable`
-- 跑得快不快、渲染/加载是否健康：`vercel-react-best-practices`
-- 组件 API 是否可扩展：`vercel-composition-patterns`
-
-补充：
-
-- 复杂交互 React demo、mini-app、多组件 Web app，如果目标是 UI / 功能实现，归 `impeccable`
-- 如果目标是 React / Next 性能、渲染、bundle、hydration 或 data fetching，才归 `vercel-react-best-practices`
-
-### 8. `hv-analysis` vs `khazix-writer` vs 文档格式 skill
+### 5. `hv-analysis` vs `khazix-writer` vs 文档格式 skill
 
 默认顺序：
 
@@ -675,7 +530,7 @@ OpenCode 中的本地边界：
 - `hv-analysis` 的 PDF 研究报告指“先做研究内容，再生成报告”
 - `pdf` 指“已有 PDF 的读取、OCR、拆分、合并、表单、转换、编辑或最终 PDF 文件处理”
 
-### 9. `officecli` vs `docx` vs `xlsx` vs `pptx`
+### 6. `officecli` vs `docx` vs `xlsx` vs `pptx`
 
 默认顺序：
 
@@ -724,8 +579,6 @@ OpenCode 中的本地边界：
 - 设计语言提取 / tokens / CSS variables / Tailwind config → `extract-design`
 - 静态海报、封面、PNG/PDF 视觉物料 → `canvas-design`
 - HTML/browser slide deck → `html-ppt`
-- React / Next 性能、渲染、bundle、hydration、data fetching → `vercel-react-best-practices`
-- 组件 API、compound components、boolean props → `vercel-composition-patterns`
 
 原因：
 
@@ -742,8 +595,8 @@ OpenCode 中的本地边界：
 - 默认入口已经明确
 - 高冲突专项 skill 已经改成按需触发
 - 格式型 skill 已经改成格式明确再触发
-- 已按真实误触发风险补上 `brainstorming` 与工程修复流程的边界
-- 已收窄 `writing-plans`、`using-git-worktrees`、`vercel-react-best-practices`、`hv-analysis`、`khazix-writer` 的触发边界
+- 已移除会让普通任务变重的强制流程 skill 和整组 Vercel skill
+- `writing-plans`、`hv-analysis`、`khazix-writer` 仍保持按需触发
 - 已把 `officecli` 收窄为按需工具层，普通 Office 文件继续按最终格式路由
 - `workctl` 与 `workctl-operator` 均已停用，不再提供 Work Agent 平台入口
 - 剩下主要是设计链内部的柔性交集，不属于必须马上修的错误
