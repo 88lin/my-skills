@@ -5,10 +5,11 @@
 ## 关键路径
 
 - 活动目录：`C:\Users\Computer\.agents\skills`
+- 备份仓库：`C:\Users\Computer\Documents\GitHub\my-skills`（GitHub `88lin/my-skills`）
 - 来源登记：`skills-sources.json`
 - 本地持久规则：`local-routing-overrides.json`
 - Claude Code 白名单：`C:\Users\Computer\.claude\skills`
-- QoderWork skill 入口：`C:\Users\Computer\.qoderworkcn\skills`
+- QoderWork skill 入口：当前不存在（`C:\Users\Computer\.qoderwork` 下无 `skills` 目录）
 - WorkBuddy skill 入口：`C:\Users\Computer\.workbuddy\skills`
 - 备份、缓存和外部仓库：`C:\Users\Computer\.agents\external`
 
@@ -56,7 +57,11 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 4. 检查 `C:\Users\Computer\.claude\skills` 是否出现意外入口。
 5. 遇到 `patch-stale` 时先审查上游变化，不要直接删除补丁或覆盖本地文件。
 
-通过 junction 映射到 QoderWork 或 WorkBuddy 的 skill 不需要单独复制或更新；更新 `C:\Users\Computer\.agents\skills` 后，两个客户端会读取同一份内容。客户端入口只需检查链接是否仍指向活动目录。
+通过 symlink 映射到 WorkBuddy 的 skill 不需要单独复制或更新；更新 `C:\Users\Computer\.agents\skills` 后，客户端会读取同一份内容。客户端入口只需检查链接是否仍指向活动目录。
+
+QoderWork 当前没有 skill 入口目录（`C:\Users\Computer\.qoderwork` 下不存在 `skills`），所以不需要为它做任何同步。如果以后重建了入口，按 WorkBuddy 的方式建 symlink 指向活动目录，不要复制实体目录。
+
+`C:\Users\Computer\.workbuddy\skills` 下除 symlink 外还有几个实体目录（`checklist-design`、`frontend-dev`、`knowledge-base`、`wechat-cover`），它们不在本仓库纳管范围内。其中 `knowledge-base` 与活动目录里的同名 skill 是两份独立内容，改动其中一份不会同步到另一份。
 
 不要使用宽泛的 `npx skills update`，也不要把整个多 skill 仓库一次性安装进全局目录。
 
@@ -109,6 +114,16 @@ npx -y skills add owner/repo@skill-name -g -y
 | `patch-stale` | `bodyPatches.find` 已无法匹配当前上游 | 对照上游修改补丁，再单项更新 |
 | `error` | 来源不可达、目录缺失或命令失败 | 先处理具体错误，不要批量覆盖 |
 | `skipped` | 人工管理或明确跳过 | 按对应专用流程处理 |
+
+`manual` 型的 `up-to-date` **不代表上游已经检查过**，它只表示"本地 override 与本地 `SKILL.md` 一致"（有 override 的 manual 项走这条判定，没有 override 的显示 `skipped`）。`impeccable` 的真实上游状态只能用 `update-impeccable.ps1 -Mode preview` 得到，`check` 表格看不出它有没有待应用的上游更新。
+
+`git` 型出现 `outdated` 且 detail 提到 `local skill directory out of sync` 时，说明源仓库已经拉到最新、但 `syncSkillDirectory` 还没同步进活动目录，跑一次 `update -Only <skill>` 即可。这个同步是**只覆盖不删除**的，活动目录里多出来的文件不会被清掉。
+
+`git` 型报 `缺少 Git 源仓库目录` 时，是 `.agents\external\<name>-source` 丢了而不是 skill 坏了。按 `skills-sources.json` 里登记的 remote 重新 clone 回去即可，活动目录内容不用动：
+
+```powershell
+git clone <remote> "C:\Users\Computer\.agents\external\<name>-source"
+```
 
 管理器检查通过只能证明配置和生成结果一致，不能替代对触发优先级是否符合使用习惯的人工判断。
 
@@ -205,6 +220,32 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 ```
 
 不要把这些仓库改成只含 `SKILL.md` 的单文件安装；它们的 `references/`、`templates/`、`assets/`、脚本或数据目录都是运行和参考流程的一部分。
+
+## 备份仓库
+
+`C:\Users\Computer\Documents\GitHub\my-skills` 是活动目录的备份镜像，不是第二份活动 skill。唯一的权威内容在 `C:\Users\Computer\.agents\skills`。
+
+同步方向固定为**活动目录 → 备份仓库**。反向复制会把旧内容盖回在用的 skill，`web-access` 曾因此在备份里停留在 v2.5.3、而活动目录已经是 v2.5.4。
+
+需要修改配置、脚本或本地 override 时，先在备份仓库里改并验证，再同步到活动目录。管理脚本以自身所在目录为根（`$ScriptRoot`），所以直接跑备份仓库里的 `manage-skills.ps1` 只会作用于备份自己，可以安全试：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\Documents\GitHub\my-skills\manage-skills.ps1" -Mode check -Only <skill>
+```
+
+注意备份仓库里跑 `git` 型 skill 会失败，因为 `repositoryFolder` 相对备份根解析不到 `.agents\external`。`git` 型只能在活动目录侧更新。
+
+每次 update/apply-overrides 之后都要把结果同步回备份并提交，否则备份会静默落后。用下面这条**只列差异、不改文件**的命令核对（无输出即完全一致）：
+
+```powershell
+robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\my-skills" /MIR /XD .git /XF .gitattributes /L /NDL /NJH /NJS /NP
+```
+
+去掉 `/L` 才会真正复制。此时务必先确认备份里没有尚未同步到活动目录的改动：`/MIR` 是单向镜像，会把备份独有的文件删掉、把备份里更新的内容盖回旧版。所以顺序永远是"先把备份里的修改同步进活动目录并验证，再用 `/MIR` 反向刷回备份"。`/XF .gitattributes` 是必需的，否则 `/MIR` 会因为活动目录没有这个文件而把它删掉。
+
+`.agents\external` 下的源仓库和备份**不在**这个仓库里，丢了要按 `skills-sources.json` 的 remote 重新 clone。
+
+仓库里的 `.gitattributes` 用 `* -text` 关掉了 Git 的行尾转换，这样任何机器克隆都能逐字节还原活动目录。不要删掉它，否则 `core.autocrlf` 会重新在还原时改写行尾。
 
 ## 删除和恢复
 

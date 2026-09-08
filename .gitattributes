@@ -1,0 +1,9 @@
+# 本仓库是 C:\Users\Computer\.agents\skills 的逐字节备份镜像。
+#
+# 此前 core.autocrlf=true 且没有 .gitattributes，导致 index 存 LF、工作区是 CRLF
+# （全仓 635 个文件处于这种不一致状态）。后果是备份不再忠实：在 autocrlf 设置
+# 不同的机器上克隆，还原出来的文件行尾就和活动目录不一样。
+#
+# 关掉行尾转换后，仓库按磁盘原样存取，任何机器克隆都能逐字节还原活动目录，
+# 也不会再由 Git 单方面把上游的 LF 改成 CRLF。
+* -text

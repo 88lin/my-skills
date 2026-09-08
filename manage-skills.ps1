@@ -281,7 +281,24 @@ function Get-FileHashValue {
     if (-not (Test-Path -LiteralPath $Path)) {
         return $null
     }
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
+
+    # Hash via .NET instead of Get-FileHash. When PSModulePath is inherited from
+    # PowerShell 7, Windows PowerShell 5.1 can fail to resolve the Get-FileHash
+    # cmdlet, which turned real 'outdated' sync drift into a bogus 'error' row.
+    $Sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $Stream = [System.IO.File]::OpenRead($Path)
+        try {
+            $HashBytes = $Sha.ComputeHash($Stream)
+        }
+        finally {
+            $Stream.Dispose()
+        }
+        return ([System.BitConverter]::ToString($HashBytes) -replace '-', '').ToLowerInvariant()
+    }
+    finally {
+        $Sha.Dispose()
+    }
 }
 
 function Get-WebText {
@@ -590,9 +607,24 @@ function Invoke-Git {
         [string[]]$Arguments
     )
 
-    $Output = & git -C $Path @Arguments 2>&1
+    # git reports progress and summaries ("From https://...", "Switched to
+    # branch ...") on stderr even when it succeeds. Under the script-wide
+    # $ErrorActionPreference = 'Stop', the `2>&1` redirect turns those lines into
+    # a terminating RemoteException, so `-Mode update` used to fail for every git
+    # skill that actually had new commits to fetch — silently leaving the active
+    # skill directory out of sync. Judge success by exit code instead.
+    $PreviousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $Output = & git -C $Path @Arguments 2>&1
+        $ExitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $PreviousPreference
+    }
+
     return [pscustomobject]@{
-        ExitCode = $LASTEXITCODE
+        ExitCode = $ExitCode
         Output   = (($Output | ForEach-Object { $_.ToString() }) -join "`n").Trim()
     }
 }
@@ -603,17 +635,28 @@ function Get-GitRemoteHead {
         [string]$Branch
     )
 
-    $Output = & git ls-remote $Remote "refs/heads/$Branch" 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    # Same stderr-under-Stop hazard as Invoke-Git: ls-remote can emit warnings
+    # (redirect notices, credential helper chatter) while still succeeding.
+    $PreviousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $Output = & git ls-remote $Remote "refs/heads/$Branch" 2>&1
+        $ExitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $PreviousPreference
+    }
+
+    if ($ExitCode -ne 0) {
         throw (($Output | ForEach-Object { $_.ToString() }) -join "`n").Trim()
     }
 
-    $Line = ($Output | Select-Object -First 1).ToString().Trim()
-    if ([string]::IsNullOrWhiteSpace($Line)) {
+    $Line = @($Output | Where-Object { $_ -match '^[0-9a-f]{40}\s' } | Select-Object -First 1)
+    if ($Line.Count -eq 0) {
         throw "No remote ref found for $Branch"
     }
 
-    return ($Line -split "\s+")[0]
+    return (($Line[0].ToString().Trim()) -split "\s+")[0]
 }
 
 function Get-SkillStatus {
