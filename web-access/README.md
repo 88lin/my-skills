@@ -31,7 +31,7 @@ AI Agent 原本的联网能力（WebSearch、WebFetch）缺少调度策略和浏
 
 ---
 
-## v2.5.2 能力
+## v2.5.4 能力
 
 | 能力 | 说明 |
 |------|------|
@@ -43,11 +43,18 @@ AI Agent 原本的联网能力（WebSearch、WebFetch）缺少调度策略和浏
 | 站点经验积累 | 按域名存储操作经验（URL 模式、平台特征、已知陷阱），跨 session 复用 |
 | 媒体提取 | 从 DOM 直取图片/视频 URL，或对视频任意时间点截帧分析 |
 
-**v2.5.2 更新：**
+**v2.5.4 更新：**
+- **修复新标签页空白竞态** — `/new` 先创建 `about:blank` 并完成 CDP attach，再显式导航；不再把浏览器初始空白文档误判为目标页面
+- **目标内容就绪契约** — 导航成功或 `readyState` 完成不等于任务完成；遇到验证页、登录跳转和异步渲染时继续观察，直到目标内容出现或确认受阻
+- **完整 URL 安全传输** — `/new` 和 `/navigate` 从 v2.5.3 起使用 POST body 传 URL，查询参数中的 `&` 不再被错误切分
+
+<details><summary>v2.5.2 更新</summary>
+
 - **Microsoft Edge 支持** — CDP Proxy 不再绑定 Chrome，新增 Edge 适配（及 Chromium、Chrome Canary 等 Chromium 系，通过同一套自动发现机制接入）。在 `edge://inspect/#remote-debugging` 勾选 "Allow remote debugging for this browser instance" 即可
 - **浏览器偏好持久化** — 新增 `config.env`（gitignored，首次运行从模板创建），通过 `WEB_ACCESS_BROWSER` 固定默认浏览器；多浏览器同时开启 toggle 时 Agent 会询问偏好。也支持单次覆盖 `--browser <chrome|edge>`
 - **不擅自降级** — 偏好/指定的浏览器没启动或没开 toggle 时硬错并给出明确处理步骤，不会悄悄连到别的浏览器；proxy 首次成功连接后 pin 住浏览器 id，避免运行中漂移
 - **find-url 也支持 Edge** — 本地书签/历史检索默认遍历 Chrome 与 Edge，可用 `--browser <chrome|edge>` 限定单一浏览器
+</details>
 
 <details><summary>v2.5.0 更新</summary>
 

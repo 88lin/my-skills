@@ -276,7 +276,11 @@ async function closeAllManagedTabs() {
 }
 
 // --- 等待页面加载 ---
-async function waitForLoad(sessionId, timeoutMs = 15000) {
+async function waitForLoad(
+  sessionId,
+  timeoutMs = 15000,
+  { requireNonBlank = false, acceptInteractive = false } = {},
+) {
   // 启用 Page 域
   await sendCDP('Page.enable', {}, sessionId);
 
@@ -294,10 +298,13 @@ async function waitForLoad(sessionId, timeoutMs = 15000) {
     const checkInterval = setInterval(async () => {
       try {
         const resp = await sendCDP('Runtime.evaluate', {
-          expression: 'document.readyState',
+          expression: 'JSON.stringify({ ready: document.readyState, url: location.href })',
           returnByValue: true,
         }, sessionId);
-        if (resp.result?.result?.value === 'complete') {
+        const value = resp.result?.result?.value;
+        const state = typeof value === 'string' ? JSON.parse(value) : null;
+        const ready = state?.ready === 'complete' || (acceptInteractive && state?.ready === 'interactive');
+        if (ready && (!requireNonBlank || state.url !== 'about:blank')) {
           done('complete');
         }
       } catch { /* 忽略 */ }
@@ -358,7 +365,9 @@ const server = http.createServer(async (req, res) => {
       }
       const body = (await readBody(req)).trim();
       const targetUrl = body || 'about:blank';
-      const resp = await sendCDP('Target.createTarget', { url: targetUrl, background: true });
+      // 先创建空白页并完成 attach，再显式导航。Target.createTarget({ url }) 会先暴露
+      // readyState=complete 的 about:blank，导致慢页面在真正开始加载前被误判为完成。
+      const resp = await sendCDP('Target.createTarget', { url: 'about:blank', background: true });
       const targetId = resp.result.targetId;
       managedTabs.set(targetId, { lastAccessed: Date.now() });
 
@@ -366,7 +375,8 @@ const server = http.createServer(async (req, res) => {
       if (targetUrl !== 'about:blank') {
         try {
           const sid = await ensureSession(targetId);
-          await waitForLoad(sid);
+          await sendCDP('Page.navigate', { url: targetUrl }, sid);
+          await waitForLoad(sid, 15000, { requireNonBlank: true, acceptInteractive: true });
         } catch { /* 非致命，继续 */ }
       }
 
