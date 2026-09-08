@@ -94,6 +94,172 @@ function Get-LocalSkillFile {
     return (Join-Path (Get-LocalSkillPath -Entry $Entry) 'SKILL.md')
 }
 
+function Get-GitRepositoryPath {
+    param([object]$Entry)
+
+    if ($Entry.PSObject.Properties.Name -contains 'repositoryFolder' -and -not [string]::IsNullOrWhiteSpace($Entry.repositoryFolder)) {
+        $Candidate = Join-Path $SkillsRoot $Entry.repositoryFolder
+        return [System.IO.Path]::GetFullPath($Candidate)
+    }
+
+    return (Get-LocalSkillPath -Entry $Entry)
+}
+
+function Get-SyncSkillSourcePath {
+    param([object]$Entry)
+
+    if (-not ($Entry.PSObject.Properties.Name -contains 'syncSkillFile') -or [string]::IsNullOrWhiteSpace($Entry.syncSkillFile)) {
+        return $null
+    }
+
+    return (Join-Path (Get-GitRepositoryPath -Entry $Entry) $Entry.syncSkillFile)
+}
+
+function Get-CanonicalSkillFilePath {
+    param([object]$Entry)
+
+    if (-not ($Entry.PSObject.Properties.Name -contains 'skillFile') -or [string]::IsNullOrWhiteSpace($Entry.skillFile)) {
+        return $null
+    }
+
+    return (Join-Path (Get-LocalSkillPath -Entry $Entry) $Entry.skillFile)
+}
+
+function Sync-LocalSkillEntryPoint {
+    param([object]$Entry)
+
+    $SourcePath = Get-SyncSkillSourcePath -Entry $Entry
+    if ($null -eq $SourcePath) {
+        return $false
+    }
+
+    $DestinationPath = Get-LocalSkillFile -Entry $Entry
+    if (-not (Test-Path -LiteralPath $SourcePath)) {
+        throw "缺少同步源文件: $SourcePath"
+    }
+
+    Copy-Item -LiteralPath $SourcePath -Destination $DestinationPath -Force
+    return $true
+}
+
+function Get-SyncSkillDirectoryMappings {
+    param([object]$Entry)
+
+    $Mappings = New-Object System.Collections.Generic.List[object]
+
+    # syncSkillDirectory keeps the historical behavior: flatten the configured
+    # source directory into the active skill root (used for nested skill dirs).
+    if ($Entry.PSObject.Properties.Name -contains 'syncSkillDirectory' -and -not [string]::IsNullOrWhiteSpace($Entry.syncSkillDirectory)) {
+        $null = $Mappings.Add([pscustomobject]@{
+            Source      = $Entry.syncSkillDirectory
+            Destination = '.'
+        })
+    }
+
+    # syncSkillDirectories copies additional repository directories while
+    # preserving their configured destination under the active skill root.
+    if ($Entry.PSObject.Properties.Name -contains 'syncSkillDirectories' -and $null -ne $Entry.syncSkillDirectories) {
+        foreach ($Configured in @($Entry.syncSkillDirectories)) {
+            if ($null -eq $Configured) {
+                continue
+            }
+
+            if ($Configured -is [string]) {
+                $Source = $Configured
+                $Destination = Split-Path -Leaf ($Configured.TrimEnd('\', '/'))
+            }
+            else {
+                $Source = if ($Configured.PSObject.Properties.Name -contains 'source') { [string]$Configured.source } else { '' }
+                $Destination = if ($Configured.PSObject.Properties.Name -contains 'destination') { [string]$Configured.destination } else { Split-Path -Leaf ($Source.TrimEnd('\', '/')) }
+            }
+
+            if ([string]::IsNullOrWhiteSpace($Source) -or [string]::IsNullOrWhiteSpace($Destination)) {
+                continue
+            }
+
+            $null = $Mappings.Add([pscustomobject]@{
+                Source      = $Source
+                Destination = $Destination
+            })
+        }
+    }
+
+    return $Mappings.ToArray()
+}
+
+function Get-SyncSkillDirectoryStatus {
+    param([object]$Entry)
+
+    $Mappings = @(Get-SyncSkillDirectoryMappings -Entry $Entry)
+    if ($Mappings.Count -eq 0) {
+        return 'not-configured'
+    }
+
+    $RepositoryRoot = Get-GitRepositoryPath -Entry $Entry
+    $LocalRoot = Get-LocalSkillPath -Entry $Entry
+    foreach ($Mapping in $Mappings) {
+        $SourceRoot = Join-Path $RepositoryRoot $Mapping.Source
+        $DestinationRoot = Join-Path $LocalRoot $Mapping.Destination
+        if (-not (Test-Path -LiteralPath $SourceRoot -PathType Container)) {
+            throw "缺少同步源目录: $SourceRoot"
+        }
+
+        foreach ($SourceFile in @(Get-ChildItem -LiteralPath $SourceRoot -Recurse -Force -File)) {
+            $Relative = $SourceFile.FullName.Substring($SourceRoot.Length).TrimStart('\')
+            $Destination = Join-Path $DestinationRoot $Relative
+            if (-not (Test-Path -LiteralPath $Destination)) {
+                return 'outdated'
+            }
+
+            $SourceHash = Get-FileHashValue -Path $SourceFile.FullName
+            $DestinationHash = Get-FileHashValue -Path $Destination
+            if ($SourceHash -ne $DestinationHash) {
+                return 'outdated'
+            }
+        }
+    }
+
+    return 'synced'
+}
+
+function Sync-LocalSkillDirectory {
+    param([object]$Entry)
+
+    $Mappings = @(Get-SyncSkillDirectoryMappings -Entry $Entry)
+    if ($Mappings.Count -eq 0) {
+        return $false
+    }
+
+    $RepositoryRoot = Get-GitRepositoryPath -Entry $Entry
+    $LocalRoot = Get-LocalSkillPath -Entry $Entry
+    $Changed = $false
+    foreach ($Mapping in $Mappings) {
+        $SourceRoot = Join-Path $RepositoryRoot $Mapping.Source
+        $DestinationRoot = Join-Path $LocalRoot $Mapping.Destination
+        if (-not (Test-Path -LiteralPath $SourceRoot -PathType Container)) {
+            throw "缺少同步源目录: $SourceRoot"
+        }
+
+        foreach ($SourceFile in @(Get-ChildItem -LiteralPath $SourceRoot -Recurse -Force -File)) {
+            $Relative = $SourceFile.FullName.Substring($SourceRoot.Length).TrimStart('\')
+            $Destination = Join-Path $DestinationRoot $Relative
+            $DestinationParent = Split-Path -Parent $Destination
+            if (-not (Test-Path -LiteralPath $DestinationParent)) {
+                $null = New-Item -ItemType Directory -Path $DestinationParent -Force
+            }
+
+            $SourceHash = Get-FileHashValue -Path $SourceFile.FullName
+            $DestinationHash = Get-FileHashValue -Path $Destination
+            if ($null -eq $DestinationHash -or $SourceHash -ne $DestinationHash) {
+                Copy-Item -LiteralPath $SourceFile.FullName -Destination $Destination -Force
+                $Changed = $true
+            }
+        }
+    }
+
+    return $Changed
+}
+
 function Get-NormalizedText {
     param([string]$Text)
     if ($null -eq $Text) {
@@ -108,6 +274,14 @@ function Get-FileText {
         return $null
     }
     return (Get-NormalizedText -Text ([System.IO.File]::ReadAllText($Path)))
+}
+
+function Get-FileHashValue {
+    param([string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return $null
+    }
+    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
 }
 
 function Get-WebText {
@@ -522,16 +696,48 @@ function Get-SkillStatus {
         }
         'git' {
             try {
-                $Head = Invoke-Git -Path $FolderPath -Arguments @('rev-parse', 'HEAD')
+                $RepositoryPath = Get-GitRepositoryPath -Entry $Entry
+                if (-not (Test-Path -LiteralPath $RepositoryPath -PathType Container)) {
+                    throw "缺少 Git 源仓库目录: $RepositoryPath"
+                }
+
+                $Head = Invoke-Git -Path $RepositoryPath -Arguments @('rev-parse', 'HEAD')
                 if ($Head.ExitCode -ne 0) {
                     throw $Head.Output
                 }
 
                 $Branch = if ($Entry.branch) { $Entry.branch } else { 'main' }
                 $RemoteHead = Get-GitRemoteHead -Remote $Entry.remote -Branch $Branch
-                $Dirty = Invoke-Git -Path $FolderPath -Arguments @('status', '--porcelain')
+                $Dirty = Invoke-Git -Path $RepositoryPath -Arguments @('status', '--porcelain')
                 $DirtySuffix = if (-not [string]::IsNullOrWhiteSpace($Dirty.Output)) { '; local changes present' } else { '' }
-                $Status = if ($Head.Output -eq $RemoteHead) { 'up-to-date' } else { 'outdated' }
+                $CanonicalSkillFile = Get-CanonicalSkillFilePath -Entry $Entry
+                if ($null -ne $CanonicalSkillFile -and -not (Test-Path -LiteralPath $CanonicalSkillFile)) {
+                    throw "缺少 canonical skill 入口文件: $CanonicalSkillFile"
+                }
+                $SyncSourcePath = Get-SyncSkillSourcePath -Entry $Entry
+                $SyncStatus = 'not-configured'
+                if ($null -ne $SyncSourcePath) {
+                    if (-not (Test-Path -LiteralPath $SyncSourcePath)) {
+                        throw "缺少同步源文件: $SyncSourcePath"
+                    }
+
+                    $SourceText = Get-FileText -Path $SyncSourcePath
+                    $DestinationText = Get-FileText -Path $SkillFile
+                    if ($null -eq $DestinationText) {
+                        $SyncStatus = 'missing'
+                    }
+                    elseif ((Get-TextHash -Text $SourceText) -eq (Get-TextHash -Text $DestinationText)) {
+                        $SyncStatus = 'synced'
+                    }
+                    else {
+                        $SyncStatus = 'outdated'
+                    }
+                }
+
+                $SyncDirectoryStatus = Get-SyncSkillDirectoryStatus -Entry $Entry
+
+                $Status = if ($Head.Output -eq $RemoteHead -and $SyncStatus -in @('not-configured', 'synced') -and $SyncDirectoryStatus -in @('not-configured', 'synced')) { 'up-to-date' } else { 'outdated' }
+                $SyncSuffix = if ($SyncStatus -eq 'outdated') { '; local SKILL.md entry out of sync' } elseif ($SyncStatus -eq 'missing') { '; local SKILL.md entry missing' } elseif ($SyncDirectoryStatus -eq 'outdated') { '; local skill directory out of sync' } else { '' }
 
                 return [pscustomobject]@{
                     Name      = $Entry.name
@@ -539,7 +745,7 @@ function Get-SkillStatus {
                     Type      = $Entry.type
                     Installed = $true
                     Status    = $Status
-                    Detail    = ("local {0}; remote {1}{2}" -f $Head.Output.Substring(0, 7), $RemoteHead.Substring(0, 7), $DirtySuffix)
+                    Detail    = ("local {0}; remote {1}{2}{3}" -f $Head.Output.Substring(0, 7), $RemoteHead.Substring(0, 7), $DirtySuffix, $SyncSuffix)
                 }
             }
             catch {
@@ -689,17 +895,20 @@ function Update-Skill {
     try {
         switch ($Entry.type) {
             'git' {
-                $FolderPath = Get-LocalSkillPath -Entry $Entry
-                $Dirty = Invoke-Git -Path $FolderPath -Arguments @('status', '--porcelain')
+                $RepositoryPath = Get-GitRepositoryPath -Entry $Entry
+                $Dirty = Invoke-Git -Path $RepositoryPath -Arguments @('status', '--porcelain')
                 if (-not [string]::IsNullOrWhiteSpace($Dirty.Output)) {
                     throw '检测到本地 Git 改动，已跳过更新'
                 }
 
                 $Branch = if ($Entry.branch) { $Entry.branch } else { 'main' }
-                $Pull = Invoke-Git -Path $FolderPath -Arguments @('pull', '--ff-only', 'origin', $Branch)
+                $Pull = Invoke-Git -Path $RepositoryPath -Arguments @('pull', '--ff-only', 'origin', $Branch)
                 if ($Pull.ExitCode -ne 0) {
                     throw $Pull.Output
                 }
+
+                $null = Sync-LocalSkillDirectory -Entry $Entry
+                $null = Sync-LocalSkillEntryPoint -Entry $Entry
             }
             'skills-cli' {
                 & npx -y skills add "$($Entry.repo)@$($Entry.skill)" -g -y

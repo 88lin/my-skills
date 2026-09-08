@@ -8,6 +8,8 @@
 - 来源登记：`skills-sources.json`
 - 本地持久规则：`local-routing-overrides.json`
 - Claude Code 白名单：`C:\Users\Computer\.claude\skills`
+- QoderWork skill 入口：`C:\Users\Computer\.qoderworkcn\skills`
+- WorkBuddy skill 入口：`C:\Users\Computer\.workbuddy\skills`
 - 备份、缓存和外部仓库：`C:\Users\Computer\.agents\external`
 
 ## 日常命令
@@ -54,6 +56,8 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 4. 检查 `C:\Users\Computer\.claude\skills` 是否出现意外入口。
 5. 遇到 `patch-stale` 时先审查上游变化，不要直接删除补丁或覆盖本地文件。
 
+通过 junction 映射到 QoderWork 或 WorkBuddy 的 skill 不需要单独复制或更新；更新 `C:\Users\Computer\.agents\skills` 后，两个客户端会读取同一份内容。客户端入口只需检查链接是否仍指向活动目录。
+
 不要使用宽泛的 `npx skills update`，也不要把整个多 skill 仓库一次性安装进全局目录。
 
 ## 来源类型
@@ -63,6 +67,13 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 - 用于本身就是独立 Git 仓库的 skill。
 - 管理器按 `skills-sources.json` 登记的 remote 和 branch 检查、更新。
 - 当前 `web-access` 恢复为 `git`、`autoUpdate: true`，不再维护本地路由 override。
+- 如果 `SKILL.md` 依赖仓库内的脚本、参考资料或数据目录，必须保留完整工作树，不能只下载根目录的 `SKILL.md`。
+- `img2threejs` 属于完整仓库型 skill，更新后必须确认 `forge/`、`grimoire/`、`scripts/` 和 `docs/` 仍存在。
+- `xhs-visual-director` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\xhs-visual-director-source`；登记的 `syncSkillDirectory: skill` 会在 Git 更新后把上游 `skill` 子目录同步到活动 skill 根目录。
+- `ian-xiaohei-illustrations` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\ian-xiaohei-illustrations-source`；活动目录只保留同步后的 skill 内容，避免 Codex 递归扫描出重复 skill。
+- `modlens` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\modlens-source`；登记的 `syncSkillDirectory: skills\\modlens` 会同步入口、Windows/Unix 启动脚本和 references 到活动 skill 根目录。
+- `archify` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\archify-source`；登记的 `syncSkillDirectory: archify` 会同步独立 HTML 技术图所需的 CLI、schemas、renderers、references 和资源，不把外层网站、研究文档、测试项目暴露为活动 skill。
+- Git 源仓库需要与活动目录分离时，使用 `repositoryFolder` 指向外部仓库，再用 `syncSkillDirectory` 把仓库内的 skill 子目录同步到活动目录；如果入口依赖仓库根部资料，再用 `syncSkillDirectories` 按目录名同步这些资源。不要手工把完整仓库复制回活动 skill 根目录。
 
 ### `skills-cli`
 
@@ -174,6 +185,26 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 ```
 
 只有来源明确、单 skill 路径稳定且能验证本地内容的项目才适合 `skills-cli` 自动更新。
+
+### 完整 Git 仓库型 Skill
+
+以下 Git 仓库型 skill 使用 Git 纳管，来源均为各自 GitHub 仓库的 `main` 分支：
+
+- `xhs-visual-director`：源仓库为 `C:\Users\Computer\.agents\external\xhs-visual-director-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\xhs-visual-director`；活动目录保留入口、`agents` 以及运行所需的 `assets`、`docs`、`examples`、`templates`，不包含完整 Git 仓库。
+- `oil-cover`：`C:\Users\Computer\.agents\skills\oil-cover`；上游入口为根目录 `SKILL.md`。
+- `ian-xiaohei-illustrations`：源仓库为 `C:\Users\Computer\.agents\external\ian-xiaohei-illustrations-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\ian-xiaohei-illustrations`；活动目录只保留内层 skill 内容。
+- `modlens`：源仓库为 `C:\Users\Computer\.agents\external\modlens-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\modlens`；活动目录同步 `skills\\modlens`，保留 `SKILL.md`、`scripts` 和 `references`，不包含完整项目源码。
+- `archify`：源仓库为 `C:\Users\Computer\.agents\external\archify-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\archify`；活动目录同步仓库内的 `archify` 子目录，保留渲染、校验、导出和视觉检查所需的完整运行包。
+- `img2threejs`：`C:\Users\Computer\.agents\skills\img2threejs`；需要完整保留 `forge/`、`grimoire/`、`scripts/` 和 `docs/`。
+
+日常检查和更新：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode check -Only img2threejs
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode update -Only img2threejs
+```
+
+不要把这些仓库改成只含 `SKILL.md` 的单文件安装；它们的 `references/`、`templates/`、`assets/`、脚本或数据目录都是运行和参考流程的一部分。
 
 ## 删除和恢复
 

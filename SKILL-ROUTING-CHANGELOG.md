@@ -1,5 +1,60 @@
 # Skill Routing Changelog
 
+## 2026-08-31：纳管 archify
+
+- 安装 `tt-a1i/archify`，完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\archify-source`，活动入口同步到 `C:\Users\Computer\.agents\skills\archify`。
+- 使用 `repositoryFolder` + `syncSkillDirectory: archify`，活动目录只保留官方 skill 运行包，不暴露外层网站、研究文档、benchmark 和集成项目。
+- 触发边界：用于可交互、可校验的独立 HTML 架构图、工作流、时序图、数据流和状态图；不接管普通网页 UI、Figma 内部图、HTML deck 或轻量文字示意图。
+- 登记 `main` 分支自动更新，不修改上游 `SKILL.md` 正文，也不添加本地 routing override。
+
+## 2026-08-28：纳管 modlens
+
+- 安装 `liustack/modlens`，完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\modlens-source`，活动入口同步到 `C:\Users\Computer\.agents\skills\modlens`。
+- 使用 `repositoryFolder` + `syncSkillDirectory: skills\\modlens`，保留上游 `SKILL.md`、`scripts` 和 `references`，不把项目源码、测试和根目录文档暴露为活动 skill。
+- 触发边界：仅在当前模型无法直接查看图片、且需要 OCR/布局/语义读取时使用；原生可视模型、图片生成、网页抓取、XHS 视觉设计和参考图到 3D 重建不由它接管。
+- 已登记 `main` 分支自动更新，并创建 WorkBuddy junction；没有修改上游 skill 正文或添加本地 override。
+
+## 2026-08-16：收敛 xhs-visual-director 的重复入口
+
+- 完整 Git 源仓库移到 `C:\Users\Computer\.agents\external\xhs-visual-director-source`，活动目录保留上游 `skill` 入口以及它依赖的 `assets`、`docs`、`examples`、`templates`。
+- 登记改用 `repositoryFolder`、`syncSkillDirectory` 和 `syncSkillDirectories`，不再在活动目录中保留完整仓库和重复根入口。
+- QoderWork 和 WorkBuddy 的 junction 继续指向活动 skill 目录；递归扫描现在只发现一个 `SKILL.md`。
+
+## 2026-08-16：收敛 ian-xiaohei-illustrations 的重复入口
+
+- 完整 Git 源仓库移到 `C:\Users\Computer\.agents\external\ian-xiaohei-illustrations-source`，活动目录只保留上游内层 skill 的内容。
+- 登记使用 `repositoryFolder` 和 `syncSkillDirectory`，更新时从外部源仓库拉取，再同步到活动目录。
+- QoderWork 和 WorkBuddy 的 junction 指向活动 skill 目录，避免同一 skill 被递归扫描两次。
+
+## 2026-08-14：优化 impeccable 触发优先级
+
+- 保留上游 `impeccable` 正文和参考文档不变，仅调整本地 routing override。
+- 将触发判断明确为：显式 Impeccable 命令优先，其次看最终交付格式，再判断是否真的需要前端设计判断；普通工程、小前端维护和单独运行时验证不触发。
+- 补齐 `doctor`、`hooks`、`pin/unpin` 等显式管理命令的触发覆盖，避免命令请求被普通前端边界漏掉。
+- 保留 `html-ppt`、`canvas-design`、格式 skills 和 `webapp-testing` 的职责边界，避免因“页面/设计/审计”等词语抢触发。
+
+## 2026-08-05：卸载 beautify-github-readme
+
+- 已移除本体、来源登记，以及 Claude Code、QoderWork 和 WorkBuddy 的 junction 映射。
+- 当前路由与更新文档不再把它作为活动 skill；本条仅保留卸载审计记录。
+
+## 2026-08-05：纳管三组内容视觉 Skill
+
+- 初始安装 `ziguishian/xhs-visual-director-skill` 时，纳管名为 `xhs-visual-director`，曾把 `skill/SKILL.md` 同步为活动目录根入口；该临时结构已在 2026-08-16 收敛为外部源仓库 + 资源目录同步。
+- 安装 `oil-oil/oil-cover`，只在用户明确指定时触发，使用完整仓库的脚本、参考规则和素材目录。
+- 安装 `helloianneo/ian-xiaohei-illustrations`，纳管名为 `ian-xiaohei-illustrations`；实际入口为仓库子目录中的 `SKILL.md`。
+- 三者均登记为 `git`、`main`、`autoUpdate: true`，没有修改上游正文，也没有添加本地 routing override。
+- 已分别映射到 QoderWork 和 WorkBuddy 的 `skills` 目录；两个客户端共用 `.agents\skills` 活动目录。
+- 明确边界：XHS 视觉导演、Oil 视频封面、小黑正文配图彼此分工，不抢普通文案、普通静态封面或 PPT 信息图任务。
+
+## 2026-08-03：纳管 img2threejs
+
+- 安装 `img2threejs/img2threejs` 完整 Git 仓库到 `C:\Users\Computer\.agents\skills\img2threejs`。
+- 在 `skills-sources.json` 登记为 `git`、`main`、`autoUpdate: true`；不添加本地 body patch 或 routing override，保留上游正文。
+- 明确它只处理“参考图到程序化 Three.js 模型”的重建任务，与 `impeccable`、`canvas-design` 和普通 Three.js 编程分开路由。
+- 后续通过 `manage-skills.ps1 -Mode check/update -Only img2threejs` 管理，不得裁剪掉 `forge/`、`grimoire/`、`scripts/` 或 `docs/`。
+- 已通过 junction 映射到 `C:\Users\Computer\.qoderworkcn\skills\img2threejs` 和 `C:\Users\Computer\.workbuddy\skills\img2threejs`，两处共用活动目录。
+
 ## 2026-07-25：第二轮精简与治理修复
 
 - 删除 `writing-plans`：正文仍依赖已移除的 brainstorming/worktree/TDD/频繁 commit 流程，且与 agent 自带计划能力重复

@@ -1,40 +1,28 @@
 {
   "patches": [
     {
-      "path": "SKILL.md",
-      "reason": "Local path: installed skill lives under the user's global .agents tree.",
-      "find": "node .agents/skills/impeccable/scripts/context.mjs",
-      "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/context.mjs\""
-    },
-    {
       "path": "reference/routing.md",
       "reason": "Local path: context signals helper lives under the user's global .agents tree.",
-      "find": "node .agents/skills/impeccable/scripts/context-signals.mjs",
-      "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/context-signals.mjs\""
+      "find": ".agents/skills/impeccable/scripts/impeccable signals",
+      "replace": "\"C:/Users/Computer/.agents/skills/impeccable/scripts/impeccable\" signals"
     },
     {
       "path": "reference/routing.md",
       "reason": "Local path: bundled detector lives under the user's global .agents tree.",
-      "find": "node .agents/skills/impeccable/scripts/detect.mjs --json <scan.targets joined by spaces>",
-      "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/detect.mjs\" --json <scan.targets joined by spaces>"
+      "find": ".agents/skills/impeccable/scripts/impeccable detect --json <scan.targets joined by spaces>",
+      "replace": "\"C:/Users/Computer/.agents/skills/impeccable/scripts/impeccable\" detect --json <scan.targets joined by spaces>"
     },
     {
       "path": "SKILL.md",
       "reason": "Local path: pin helper lives under the user's global .agents tree.",
-      "find": "node .agents/skills/impeccable/scripts/pin.mjs <pin|unpin> <command>",
-      "replace": "node \"C:/Users/Computer/.agents/skills/impeccable/scripts/pin.mjs\" <pin|unpin> <command>"
+      "find": ".agents/skills/impeccable/scripts/impeccable pin <pin|unpin> <command>",
+      "replace": "\"C:/Users/Computer/.agents/skills/impeccable/scripts/impeccable\" pin <pin|unpin> <command>"
     },
     {
       "path": "SKILL.md",
-      "reason": "Keep low-risk frontend maintenance lightweight; browser and screenshot validation should be proportional to design risk.",
-      "find": "- Iterate with tools available to you (e.g. visual understanding, browser screenshots) until you think this meets the bar.",
-      "replace": "- Match validation effort to risk. Use browser screenshots or interactive checks only for new surfaces, substantial redesigns, responsive or layout behavior, motion, or interaction changes that cannot be verified from code, or when the user explicitly asks. For clear low-risk maintenance, prefer static inspection and the smallest relevant existing check; do not start a server, browser, screenshot loop, or deployment solely to prove a copy, spacing, color, typography, or straightforward CSS change."
-    },
-    {
-      "path": "SKILL.md",
-      "reason": "Keep the upstream version as allowed metadata so Codex skill validation accepts the frontmatter.",
-      "find": "version: 4.0.2",
-      "replace": "metadata:\n  upstream-version: \"4.0.2\""
+      "reason": "Keep low-risk frontend maintenance lightweight; browser and screenshot validation should be proportional to design risk. Anchor on the stable closing sentence of upstream's bounded-verification principle so platform-specific wording changes earlier in the bullet do not invalidate this patch.",
+      "find": "Open-ended self-QA burns the user's money doing worse what the finish handoffs do better.",
+      "replace": "Open-ended self-QA burns the user's money doing worse what the finish handoffs do better.\n- Match validation effort to risk. Use browser screenshots or interactive checks only for new surfaces, substantial redesigns, responsive or layout behavior, motion, or interaction changes that cannot be verified from code, or when the user explicitly asks. For clear low-risk maintenance, prefer static inspection and the smallest relevant existing check; do not start a server, browser, screenshot loop, or deployment solely to prove a copy, spacing, color, typography, or straightforward CSS change."
     }
   ]
 }

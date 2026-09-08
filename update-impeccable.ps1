@@ -341,6 +341,7 @@ function Apply-ImpeccableLocalPatches {
         else {
             ''
         }
+        $UseRegex = ($Patch.PSObject.Properties.Name -contains 'regex' -and $Patch.regex -eq $true)
         $Reason = if ($Patch.PSObject.Properties.Name -contains 'reason' -and $Patch.reason) { $Patch.reason } else { '(no reason field)' }
 
         if ([string]::IsNullOrWhiteSpace($RelativePath) -or [string]::IsNullOrWhiteSpace($FindText)) {
@@ -362,8 +363,14 @@ function Apply-ImpeccableLocalPatches {
         }
 
         $Text = Get-NormalizedText -Text (Read-TextFileUtf8 -Path $TargetPath)
-        if ($Text.Contains($FindText)) {
-            $Updated = $Text.Replace($FindText, $ReplaceText)
+        $Matched = if ($UseRegex) { [regex]::IsMatch($Text, $FindText) } else { $Text.Contains($FindText) }
+        if ($Matched) {
+            $Updated = if ($UseRegex) {
+                [regex]::Replace($Text, $FindText, $ReplaceText)
+            }
+            else {
+                $Text.Replace($FindText, $ReplaceText)
+            }
             Write-TextFileUtf8NoBom -Path $TargetPath -Text $Updated
             $AppliedCount += 1
         }

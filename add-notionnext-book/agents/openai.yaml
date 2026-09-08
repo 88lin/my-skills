@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add NotionNext Book"
+  short_description: "Sync finished-book notes into the Heo reading shelf"
+  default_prompt: "Use $add-notionnext-book to add the newest finished-book notes to the NotionNext Heo /book shelf."

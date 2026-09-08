@@ -1,207 +1,296 @@
-{
-  "skills": [
-    {
-      "name": "ai-seo",
-      "localFolder": "ai-seo",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "coreyhaines31/marketingskills",
-      "skill": "ai-seo",
-      "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/ai-seo/SKILL.md"
-    },
-    {
-      "name": "canvas-design",
-      "localFolder": "canvas-design",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "canvas-design",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/canvas-design/SKILL.md"
-    },
-    {
-      "name": "chinese-code-review",
-      "localFolder": "chinese-code-review",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "chinese-code-review",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-code-review/SKILL.md"
-    },
-    {
-      "name": "chinese-commit-conventions",
-      "localFolder": "chinese-commit-conventions",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "chinese-commit-conventions",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-commit-conventions/SKILL.md"
-    },
-    {
-      "name": "chinese-documentation",
-      "localFolder": "chinese-documentation",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "chinese-documentation",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-documentation/SKILL.md"
-    },
-    {
-      "name": "create-crush",
-      "localFolder": "crush-skills",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "xiaoheizi8/crush-skills",
-      "skill": "create-crush",
-      "rawSkillUrl": "https://raw.githubusercontent.com/xiaoheizi8/crush-skills/main/SKILL.md"
-    },
-    {
-      "name": "docx",
-      "localFolder": "docx",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "docx",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/docx/SKILL.md"
-    },
-    {
-      "name": "html-ppt",
-      "localFolder": "html-ppt",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "lewislulu/html-ppt-skill",
-      "skill": "html-ppt",
-      "rawSkillUrl": "https://raw.githubusercontent.com/lewislulu/html-ppt-skill/main/SKILL.md"
-    },
-    {
-      "name": "hv-analysis",
-      "localFolder": "hv-analysis",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "KKKKhazix/khazix-skills",
-      "skill": "hv-analysis",
-      "rawSkillUrl": "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/hv-analysis/SKILL.md"
-    },
-    {
-      "name": "impeccable",
-      "localFolder": "impeccable",
-      "type": "manual",
-      "autoUpdate": false,
-      "reason": "Local mirror of pbakaus/impeccable .agents skill; update from reviewed upstream bundle, do not overwrite blindly"
-    },
-    {
-      "name": "khazix-writer",
-      "localFolder": "khazix-writer",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "KKKKhazix/khazix-skills",
-      "skill": "khazix-writer",
-      "rawSkillUrl": "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/khazix-writer/SKILL.md"
-    },
-    {
-      "name": "luo-xiang-perspective",
-      "localFolder": "luo-xiang-perspective",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "YixiaJack/luo-xiang-skill",
-      "skill": "luo-xiang-perspective",
-      "rawSkillUrl": "https://raw.githubusercontent.com/YixiaJack/luo-xiang-skill/main/SKILL.md"
-    },
-    {
-      "name": "mcp-builder",
-      "localFolder": "mcp-builder",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "mcp-builder",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
-    },
-    {
-      "name": "officecli",
-      "localFolder": "officecli",
-      "type": "manual",
-      "autoUpdate": false,
-      "reason": "Specialized cross-format Office CLI; keep manual and route only for explicit officecli, OpenXML, validation, or cross-format CLI work"
-    },
-    {
-      "name": "pdf",
-      "localFolder": "pdf",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "pdf",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/pdf/SKILL.md"
-    },
-    {
-      "name": "pptx",
-      "localFolder": "pptx",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "pptx",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/pptx/SKILL.md"
-    },
-    {
-      "name": "receiving-code-review",
-      "localFolder": "receiving-code-review",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "receiving-code-review",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/receiving-code-review/SKILL.md"
-    },
-    {
-      "name": "schema",
-      "localFolder": "schema",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "coreyhaines31/marketingskills",
-      "skill": "schema",
-      "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/schema/SKILL.md"
-    },
-    {
-      "name": "seo-audit",
-      "localFolder": "seo-audit",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "coreyhaines31/marketingskills",
-      "skill": "seo-audit",
-      "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
-    },
-    {
-      "name": "systematic-debugging",
-      "localFolder": "systematic-debugging",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "jnMetaCode/superpowers-zh",
-      "skill": "systematic-debugging",
-      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
-    },
-    {
-      "name": "web-access",
-      "localFolder": "web-access",
-      "type": "git",
-      "autoUpdate": true,
-      "remote": "https://github.com/eze-is/web-access.git",
-      "branch": "main",
-      "notes": "Standalone Git repository"
-    },
-    {
-      "name": "webapp-testing",
-      "localFolder": "webapp-testing",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "webapp-testing",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
-    },
-    {
-      "name": "xlsx",
-      "localFolder": "xlsx",
-      "type": "skills-cli",
-      "autoUpdate": true,
-      "repo": "anthropics/skills",
-      "skill": "xlsx",
-      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/xlsx/SKILL.md"
-    }
-  ]
+﻿{
+    "skills":  [
+                   {
+                       "name":  "add-notionnext-book",
+                       "localFolder":  "add-notionnext-book",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Local workflow for syncing E:\\knowledge-base finished-book notes into the NotionNext Heo /book shelf"
+                   },
+                   {
+                       "name":  "ai-seo",
+                       "localFolder":  "ai-seo",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "coreyhaines31/marketingskills",
+                       "skill":  "ai-seo",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/ai-seo/SKILL.md"
+                   },
+                   {
+                       "name":  "archify",
+                       "localFolder":  "archify",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/tt-a1i/archify.git",
+                       "branch":  "main",
+                       "repositoryFolder":  "..\\external\\archify-source",
+                       "syncSkillDirectory":  "archify",
+                       "notes":  "Git source is kept under .agents\\external; active skill folder contains only the packaged Archify skill runtime"
+                   },
+                   {
+                       "name":  "book-dissection",
+                       "localFolder":  "book-dissection",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "QoderWork-adapted from esthersjw/book-dissection-skill; upstream checked by the skill's built-in Auto-Update section (.update-meta.json, 14-day interval), do not overwrite with raw Cola upstream"
+                   },
+                   {
+                       "name":  "canvas-design",
+                       "localFolder":  "canvas-design",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "canvas-design",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/canvas-design/SKILL.md"
+                   },
+                   {
+                       "name":  "chinese-code-review",
+                       "localFolder":  "chinese-code-review",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "chinese-code-review",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-code-review/SKILL.md"
+                   },
+                   {
+                       "name":  "chinese-commit-conventions",
+                       "localFolder":  "chinese-commit-conventions",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "chinese-commit-conventions",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-commit-conventions/SKILL.md"
+                   },
+                   {
+                       "name":  "chinese-documentation",
+                       "localFolder":  "chinese-documentation",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "chinese-documentation",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-documentation/SKILL.md"
+                   },
+                   {
+                        "name":  "create-crush",
+                        "localFolder":  "create-crush",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "xiaoheizi8/crush-skills",
+                       "skill":  "create-crush",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/xiaoheizi8/crush-skills/main/SKILL.md"
+                   },
+                   {
+                       "name":  "docx",
+                       "localFolder":  "docx",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "docx",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/docx/SKILL.md"
+                   },
+                   {
+                       "name":  "html-ppt",
+                       "localFolder":  "html-ppt",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "lewislulu/html-ppt-skill",
+                       "skill":  "html-ppt",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/lewislulu/html-ppt-skill/main/SKILL.md"
+                   },
+                   {
+                       "name":  "hv-analysis",
+                       "localFolder":  "hv-analysis",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "KKKKhazix/khazix-skills",
+                       "skill":  "hv-analysis",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/hv-analysis/SKILL.md"
+                   },
+                   {
+                       "name":  "ian-xiaohei-illustrations",
+                       "localFolder":  "ian-xiaohei-illustrations",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/helloianneo/ian-xiaohei-illustrations.git",
+                       "branch":  "main",
+                       "repositoryFolder":  "..\\external\\ian-xiaohei-illustrations-source",
+                       "syncSkillDirectory":  "ian-xiaohei-illustrations",
+                       "notes":  "Git source is kept under .agents\\external; active skill folder contains the synced nested entry and required resource directories"
+                   },
+                   {
+                       "name":  "img2threejs",
+                       "localFolder":  "img2threejs",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/img2threejs/img2threejs.git",
+                       "branch":  "main",
+                       "notes":  "Full repository required: forge/, grimoire/, scripts/, and docs/"
+                   },
+                   {
+                       "name":  "impeccable",
+                       "localFolder":  "impeccable",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Local mirror of pbakaus/impeccable .agents skill; update from reviewed upstream bundle, do not overwrite blindly"
+                   },
+                   {
+                       "name":  "khazix-writer",
+                       "localFolder":  "khazix-writer",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "KKKKhazix/khazix-skills",
+                       "skill":  "khazix-writer",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/khazix-writer/SKILL.md"
+                   },
+                   {
+                       "name":  "knowledge-base",
+                       "localFolder":  "knowledge-base",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "QoderWork-adapted from esthersjw/learn-from-books; upstream checked by the skill's built-in Auto-Update section (.update-meta.json, 14-day interval), do not overwrite with raw Cola upstream"
+                   },
+                   {
+                       "name":  "luo-xiang-perspective",
+                       "localFolder":  "luo-xiang-perspective",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "YixiaJack/luo-xiang-skill",
+                       "skill":  "luo-xiang-perspective",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/YixiaJack/luo-xiang-skill/main/SKILL.md"
+                   },
+                   {
+                       "name":  "mcp-builder",
+                       "localFolder":  "mcp-builder",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "mcp-builder",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
+                   },
+                   {
+                       "name":  "modlens",
+                       "localFolder":  "modlens",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/liustack/modlens.git",
+                       "branch":  "main",
+                       "repositoryFolder":  "..\\external\\modlens-source",
+                       "syncSkillDirectory":  "skills\\modlens",
+                       "notes":  "Git source is kept under .agents\\external; active skill folder contains only the Codex/Claude skill entry, launcher scripts, and references"
+                   },
+                   {
+                       "name":  "officecli",
+                       "localFolder":  "officecli",
+                       "type":  "manual",
+                       "autoUpdate":  false,
+                       "reason":  "Specialized cross-format Office CLI; keep manual and route only for explicit officecli, OpenXML, validation, or cross-format CLI work"
+                   },
+                   {
+                       "name":  "oil-cover",
+                       "localFolder":  "oil-cover",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/oil-oil/oil-cover.git",
+                       "branch":  "main",
+                       "notes":  "Full repository required: scripts/, references/, and assets/"
+                   },
+                   {
+                       "name":  "pdf",
+                       "localFolder":  "pdf",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "pdf",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/pdf/SKILL.md"
+                   },
+                   {
+                       "name":  "pptx",
+                       "localFolder":  "pptx",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "pptx",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/pptx/SKILL.md"
+                   },
+                   {
+                       "name":  "receiving-code-review",
+                       "localFolder":  "receiving-code-review",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "receiving-code-review",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/receiving-code-review/SKILL.md"
+                   },
+                   {
+                       "name":  "schema",
+                       "localFolder":  "schema",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "coreyhaines31/marketingskills",
+                       "skill":  "schema",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/schema/SKILL.md"
+                   },
+                   {
+                       "name":  "seo-audit",
+                       "localFolder":  "seo-audit",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "coreyhaines31/marketingskills",
+                       "skill":  "seo-audit",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
+                   },
+                   {
+                       "name":  "systematic-debugging",
+                       "localFolder":  "systematic-debugging",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "jnMetaCode/superpowers-zh",
+                       "skill":  "systematic-debugging",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
+                   },
+                   {
+                       "name":  "web-access",
+                       "localFolder":  "web-access",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/eze-is/web-access.git",
+                       "branch":  "main",
+                       "notes":  "Standalone Git repository"
+                   },
+                   {
+                       "name":  "webapp-testing",
+                       "localFolder":  "webapp-testing",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "webapp-testing",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
+                   },
+                   {
+                       "name":  "xhs-visual-director",
+                       "localFolder":  "xhs-visual-director",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/ziguishian/xhs-visual-director-skill.git",
+                       "branch":  "main",
+                       "repositoryFolder":  "..\\external\\xhs-visual-director-source",
+                       "syncSkillDirectory":  "skill",
+                       "syncSkillDirectories":  [
+                           "assets",
+                           "docs",
+                           "examples",
+                           "templates"
+                       ],
+                       "notes":  "Git source is kept under .agents\\external; active skill folder contains only the synced nested skill directory"
+                   },
+                   {
+                       "name":  "xlsx",
+                       "localFolder":  "xlsx",
+                       "type":  "skills-cli",
+                       "autoUpdate":  true,
+                       "repo":  "anthropics/skills",
+                       "skill":  "xlsx",
+                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/xlsx/SKILL.md"
+                   }
+               ]
 }

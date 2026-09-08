@@ -1,9 +1,9 @@
 ---
 name: impeccable
 description: >-
-  Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, redesign an existing page or component, establish a visual/UX direction or design system, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly run an Impeccable command such as `craft`, `shape`, `audit`, or `polish`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, external-site design inspection without an implementation deliverable, static artwork, or HTML slide decks.
+  Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, establish or replace visual/UX direction, redesign an existing interface, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly invoke an Impeccable command such as `$impeccable shape`, `$impeccable audit`, `$impeccable doctor`, or `$impeccable hooks`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, external-site design inspection without an implementation deliverable, static artwork, or HTML slide decks.
 metadata:
-  upstream-version: "4.0.2"
+  version: 4.2.2
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -11,12 +11,20 @@ metadata:
 
 Use this skill as the frontend design entry point only when design judgment materially affects the outcome.
 
+### Trigger priority
+
+Apply these checks in order:
+
+1. An explicit `$impeccable <command>` request or a direct request to use Impeccable takes priority and should follow the named command's reference. This includes `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, `live`, `doctor`, `hooks`, and `pin`/`unpin`.
+2. If no command is explicit, route by the final deliverable: a new or substantially redesigned frontend interface belongs here; HTML/browser slide decks belong to `html-ppt`; static poster, cover, PNG, or PDF artwork belongs to `canvas-design`; Office and PDF file work belongs to the corresponding format skill.
+3. If the deliverable is a frontend interface, trigger this skill only when visual or UX direction, a new interaction model, or design judgment materially affects the result.
+4. If the task is ordinary engineering, a clear small maintenance edit, or runtime verification only, do not trigger this skill.
+
 Trigger it for:
 
-- Designing or building a new page, product surface, component, dashboard, landing page, or app screen where visual or UX direction must be established
+- Designing or building a new frontend page, product surface, visual component, dashboard, landing page, or app screen where visual or UX direction must be established
 - Substantially redesigning an existing interface, interaction model, responsive system, onboarding flow, or design system
 - Performing a design-focused critique, audit, polish, accessibility pass, or visual quality review
-- Explicit Impeccable command requests such as `craft`, `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, or `live`
 
 Do not auto-trigger it for routine frontend maintenance when the requested outcome is already clear, including:
 
@@ -25,6 +33,7 @@ Do not auto-trigger it for routine frontend maintenance when the requested outco
 - Small edits to an existing component that do not introduce a new visual direction or interaction model
 - Bug fixes, regression fixes, or restoring established behavior
 - Generic website or React code work whose primary goal is not interface design
+- Browser, Playwright, screenshot, or server verification by itself; use `webapp-testing` only when runtime evidence is required
 
 ### Small-change fast path
 
@@ -51,18 +60,21 @@ Boundary rules:
 - React performance or component architecture without a design deliverable is ordinary engineering work, not an Impeccable trigger
 <!-- LOCAL ROUTING OVERRIDE END -->
 
-This skill gives you the tools and permission to create design that earns to be called out-of-distribution craft: Whereas before, your design work would have been safe, timid and measured, you now approach every design task as a award-winning design director with impeccable understanding for what makes exceptional design work: production-grade code, peak creativity, a clear POV, deep understanding of the needs of the client and users, and exceptional craft.
+This skill gives you the tools and permission to create design that earns to be called out-of-distribution craft: Whereas before, your design work would have been safe, timid and measured, you now approach every design task as an award-winning design director with impeccable understanding for what makes exceptional design work: production-grade code, peak creativity, a clear POV, deep understanding of the needs of the client and users, and exceptional craft.
 
 Core principles:
 - Go all out. No hedging, no shortcuts. The deliverable must be complete (except assets the user must provide).
 - Dream big and bold. Distinct, beautiful, outstanding and highly inspiring work.
+- Verify in bounded passes, not a loop, and the ceiling covers the whole cycle: screenshots, defect scans, micro-edits, and rebuilds alike. Build fully, inspect once with a batched round (desktop and mobile together on the web; the shipped device classes on a native platform), fix everything it shows in one batch, confirm with at most one more round, and stop polishing. Open-ended self-QA burns the user's money doing worse what the finish handoffs do better.
 - Match validation effort to risk. Use browser screenshots or interactive checks only for new surfaces, substantial redesigns, responsive or layout behavior, motion, or interaction changes that cannot be verified from code, or when the user explicitly asks. For clear low-risk maintenance, prefer static inspection and the smallest relevant existing check; do not start a server, browser, screenshot loop, or deployment solely to prove a copy, spacing, color, typography, or straightforward CSS change.
 
 ## Setup
 
-1. Run `node "C:/Users/Computer/.agents/skills/impeccable/scripts/context.mjs"` once per session (if the runtime shows this skill's loaded base directory, run `node <skill-base-dir>/scripts/context.mjs`; keep cwd at the user's project). Pass a named source file or route as `--target <path>`. It loads PRODUCT.md, DESIGN.md, the matching surface brief, and native-platform guidance when applicable; follow its directives and do not rerun it.
-2. Before acting, load the one playbook that owns the request: the Commands table's reference for an explicit or clearly implied sub-command, or [reference/new-work.md](reference/new-work.md) for a new surface or replacement visual world. Then inspect the target and at least one representative source of incumbent visual truth (tokens, theme, CSS, component, or asset) before editing.
-3. After analysis and direction are resolved, load [reference/craft-floor.md](reference/craft-floor.md) immediately before editing UI. It carries the quality floor, the absolute bans, and the reflexes no detector catches. Do not load it for planning-only work.
+1. Run `<skill-base-dir>/scripts/impeccable context` once per session, where `<skill-base-dir>` is the directory that contains this SKILL.md (the skill folder, not a plugin root two levels above it); keep cwd at the user's project. That base directory resolves every `.agents/skills/impeccable/scripts/impeccable <verb>` command in this skill and its references, and `.agents/skills/impeccable/scripts` is the fallback only when the runtime reports no base directory. On a Windows shell without `sh`, call `.agents/skills/impeccable/scripts/impeccable.cmd` instead. The launcher runs a self-contained binary that ships next to it or is downloaded once on first run; no Node or other runtime is required. Pass a named source file or route as `--target <path>`. It loads PRODUCT.md, DESIGN.md, the matching surface brief, and native-platform guidance when applicable; follow its directives and do not rerun it.
+2. Load the request's playbook: its Commands-table reference for an explicit/implied sub-command, or [reference/new-work.md](reference/new-work.md) for a new surface or replacement visual world. Inspect target and incumbent visual truth before editing. When the app cannot run, start with committed visual-regression goldens or screenshot fixtures; verify target and freshness against current tokens, CSS, components, or assets, resolve conflicts, and compare theme/variant captures.
+3. After resolving analysis and direction, read [reference/craft-floor.md](reference/craft-floor.md) immediately before any UI edit, including small refinements. It carries the quality floor, the absolute bans, and the reflexes no detector catches. Do not load it for planning-only work.
+
+**Launcher unavailable:** If refused, missing, or failed, **first send the user a message** that context loading did not run. Then read existing PRODUCT.md and DESIGN.md without inventing missing context, follow the applicable steps 2–3, and perform the requested work through permitted tools. Launcher failure alone does not block otherwise-permitted edits.
 
 ## How to design
 
@@ -112,13 +124,14 @@ Choose the mode from the requested surface, not the product, and persist it only
 Routing:
 
 - **No argument:** read [routing.md](reference/routing.md) and present its context-aware menu; never auto-run a command.
-- **Explicit or clearly implied command:** load its reference (native variant on native platforms) and follow it. Ask once if two commands fit.
-- **Otherwise:** treat the request as general design work. Missing PRODUCT.md routes a new surface or replacement world through init, then new-work; a narrow refinement of existing code proceeds on the incumbent implementation as context.mjs directs, offering init afterward rather than blocking on it.
+- **Explicit or clearly implied request to run a command:** load its reference (native variant on native platforms) and follow it. Ask once if two commands fit.
+- **Workflow or command-selection question:** read [Workflow questions](reference/routing.md#workflow-questions).
+- **Otherwise:** treat the request as general design work. Missing PRODUCT.md routes a new surface or replacement world through init, then new-work; a narrow refinement of existing code proceeds on the incumbent implementation as `impeccable context` directs, offering init afterward rather than blocking on it.
 - `teach` aliases `init`. `craft` is a deprecated alias for ordinary new-work and adds nothing. `shape` owns task discovery, then enters new-work only for visual-world and surface-concept decisions.
 
-After init writes PRODUCT.md, resume without rerunning `context.mjs`; init loads the native platform reference itself when the platform it recorded is `ios`, `android`, or `adaptive`.
+After init writes PRODUCT.md, resume without rerunning `impeccable context`; init loads the native platform reference itself when the platform it recorded is `ios`, `android`, or `adaptive`.
 
-**Pin / Unpin:** `node "C:/Users/Computer/.agents/skills/impeccable/scripts/pin.mjs" <pin|unpin> <command>` creates or removes a standalone `$<command>` shortcut. Report the script's result concisely; relay stderr verbatim on error.
+**Pin / Unpin:** `"C:/Users/Computer/.agents/skills/impeccable/scripts/impeccable" pin <pin|unpin> <command>` creates or removes a standalone `$<command>` shortcut. Report the script's result concisely; relay stderr verbatim on error.
 
 **Hooks:** `$impeccable hooks <on|off|status|ignore-rule|ignore-file|ignore-value|reset>` manages the design detector hook for this project (auto-runs the detector after UI file edits and surfaces findings). Load [reference/hooks.md](reference/hooks.md) when the user invokes it with any argument.
 
