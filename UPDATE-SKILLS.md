@@ -127,6 +127,20 @@ git clone <remote> "C:\Users\Computer\.agents\external\<name>-source"
 
 管理器检查通过只能证明配置和生成结果一致，不能替代对触发优先级是否符合使用习惯的人工判断。
 
+## 外部命令超时
+
+`manage-skills.ps1` 调用的 `git` 和 `npx` 都有墙钟超时，默认 git 180 秒、npx 600 秒，可按需覆盖：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manage-skills.ps1" -Mode update -GitTimeoutSec 300 -NpxTimeoutSec 900
+```
+
+超时判定分两层。首选让 git 自己中止：调用时带上 `http.lowSpeedLimit` / `http.lowSpeedTime`，传输停滞即失败并返回 git 的真实错误信息；同时设 `GIT_TERMINAL_PROMPT=0` 并清空 askpass，避免凭据缺失时卡在无人应答的输入提示或弹窗上。墙钟超时是兜底，用于这些设置看不见的卡死（例如 DNS 或 TCP 连接阶段），触发时终止**整个进程树** —— git 与 npx 都会派生子进程，只杀父进程会留下仍占着网络句柄的孤儿。
+
+超时表现为该 skill 一行 `error`，detail 写明"超过 N 秒未返回，已终止进程树"，不会中断其他 skill 的检查。
+
+`update-impeccable.ps1` 和 `install-and-register-skill.ps1` 目前还没有这层保护，它们都是人工触发、卡住可见，暂按现状保留。
+
 ## 本地 Override
 
 `local-routing-overrides.json` 是本地触发规则的权威来源。不要只编辑生成后的 `SKILL.md`，否则下一次更新会覆盖。

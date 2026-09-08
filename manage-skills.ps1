@@ -4,7 +4,15 @@
 
     [string[]]$Only = @(),
 
-    [switch]$IncludeManual
+    [switch]$IncludeManual,
+
+    # Wall-clock ceiling for a single git invocation. Large repositories such as
+    # img2threejs and archify need real headroom, so this is deliberately not a
+    # tight bound; it exists to break indefinite hangs, not to police slowness.
+    [int]$GitTimeoutSec = 180,
+
+    # npm cold installs are far slower than git transfers, hence the wider bound.
+    [int]$NpxTimeoutSec = 600
 )
 
 Set-StrictMode -Version Latest
@@ -601,6 +609,135 @@ function Get-FrontMatterVersion {
     return $null
 }
 
+function Stop-ProcessTree {
+    param([int]$ProcessId)
+
+    # git and npx both spawn helpers (git-remote-https, node, npm). Process.Kill()
+    # on .NET Framework only kills the parent, which would leave the very hung
+    # child that caused the stall still holding the network handle. taskkill /T
+    # walks the tree; fall back to the direct kill if it is unavailable.
+    try {
+        $null = & taskkill /T /F /PID $ProcessId 2>&1
+    }
+    catch {
+        try { (Get-Process -Id $ProcessId -ErrorAction Stop).Kill() } catch {}
+    }
+}
+
+function Invoke-ExternalCommand {
+    param(
+        [string]$FilePath,
+        [string[]]$Arguments,
+        [int]$TimeoutSec,
+
+        # When set, the child inherits this console so long-running output (npx
+        # install progress) stays visible instead of disappearing into a file.
+        [switch]$StreamOutput,
+
+        [hashtable]$Environment = @{}
+    )
+
+    # Start-Process is used rather than [Diagnostics.ProcessStartInfo] because
+    # Windows PowerShell 5.1 runs on .NET Framework, where ProcessStartInfo has
+    # no ArgumentList property — building the command line by hand would mean
+    # re-implementing Windows argument quoting. Captured output goes through
+    # uniquely named temp files rather than pipes, which sidesteps the classic
+    # deadlock where a full stdout buffer blocks the child while the parent is
+    # still waiting on stderr.
+    $Token = [System.Guid]::NewGuid().ToString('N')
+    $StdOutPath = Join-Path $env:TEMP "manage-skills-$Token.out"
+    $StdErrPath = Join-Path $env:TEMP "manage-skills-$Token.err"
+
+    $RestoreEnvironment = @{}
+    foreach ($Key in $Environment.Keys) {
+        $RestoreEnvironment[$Key] = [Environment]::GetEnvironmentVariable($Key, 'Process')
+        [Environment]::SetEnvironmentVariable($Key, $Environment[$Key], 'Process')
+    }
+
+    try {
+        $StartArguments = @{
+            FilePath     = $FilePath
+            ArgumentList = $Arguments
+            NoNewWindow  = $true
+            PassThru     = $true
+        }
+        if (-not $StreamOutput) {
+            $StartArguments['RedirectStandardOutput'] = $StdOutPath
+            $StartArguments['RedirectStandardError'] = $StdErrPath
+        }
+
+        $Process = Start-Process @StartArguments
+
+        # Reading .Handle forces .NET to cache the process handle. Without this,
+        # Start-Process -PassThru hands back an object whose ExitCode is empty
+        # after the process ends, so every call would look like a failure.
+        # Verified: without the touch ExitCode is ''; with it, 0 and 128 both
+        # come through correctly.
+        $null = $Process.Handle
+
+        $TimedOut = -not $Process.WaitForExit($TimeoutSec * 1000)
+        if ($TimedOut) {
+            Stop-ProcessTree -ProcessId $Process.Id
+            $null = $Process.WaitForExit(5000)
+        }
+
+        $ExitCode = if ($TimedOut) { $null } else { $Process.ExitCode }
+
+        $Segments = @()
+        if (-not $StreamOutput) {
+            foreach ($Path in @($StdOutPath, $StdErrPath)) {
+                if (Test-Path -LiteralPath $Path) {
+                    $Text = [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
+                    if (-not [string]::IsNullOrWhiteSpace($Text)) {
+                        $Segments += (Get-NormalizedText -Text $Text).Trim()
+                    }
+                }
+            }
+        }
+
+        $Output = ($Segments -join "`n").Trim()
+        if ($TimedOut) {
+            $TimeoutNote = "$FilePath 超过 $TimeoutSec 秒未返回，已终止进程树"
+            $Output = if ([string]::IsNullOrWhiteSpace($Output)) { $TimeoutNote } else { "$TimeoutNote`n$Output" }
+        }
+
+        return [pscustomobject]@{
+            ExitCode = $ExitCode
+            Output   = $Output
+            TimedOut = $TimedOut
+        }
+    }
+    finally {
+        foreach ($Key in $RestoreEnvironment.Keys) {
+            [Environment]::SetEnvironmentVariable($Key, $RestoreEnvironment[$Key], 'Process')
+        }
+        foreach ($Path in @($StdOutPath, $StdErrPath)) {
+            Remove-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
+function Get-GitGuardArguments {
+    # Prefer letting git abort itself: a stalled transfer then fails with git's
+    # own message and a real exit code, which is far more diagnosable than the
+    # wall-clock kill in Invoke-ExternalCommand. That kill stays as the backstop
+    # for hangs these settings cannot see, such as a wedged DNS or TCP connect.
+    return @(
+        '-c', 'http.lowSpeedLimit=1000',
+        '-c', "http.lowSpeedTime=$GitTimeoutSec"
+    )
+}
+
+function Get-GitGuardEnvironment {
+    # Without these, a missing or expired credential makes git wait forever on a
+    # terminal prompt or a GUI askpass dialog that nobody is watching.
+    return @{
+        GIT_TERMINAL_PROMPT = '0'
+        GIT_ASKPASS         = ''
+        SSH_ASKPASS         = ''
+    }
+}
+
 function Invoke-Git {
     param(
         [string]$Path,
@@ -608,24 +745,21 @@ function Invoke-Git {
     )
 
     # git reports progress and summaries ("From https://...", "Switched to
-    # branch ...") on stderr even when it succeeds. Under the script-wide
-    # $ErrorActionPreference = 'Stop', the `2>&1` redirect turns those lines into
-    # a terminating RemoteException, so `-Mode update` used to fail for every git
-    # skill that actually had new commits to fetch — silently leaving the active
-    # skill directory out of sync. Judge success by exit code instead.
-    $PreviousPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'Continue'
-    try {
-        $Output = & git -C $Path @Arguments 2>&1
-        $ExitCode = $LASTEXITCODE
-    }
-    finally {
-        $ErrorActionPreference = $PreviousPreference
-    }
+    # branch ...") on stderr even when it succeeds, so success is judged by exit
+    # code only. Under the script-wide $ErrorActionPreference = 'Stop', the older
+    # `& git ... 2>&1` form turned those lines into a terminating RemoteException,
+    # which made -Mode update fail for every git skill that actually had new
+    # commits to fetch — silently leaving the active skill directory out of sync.
+    $Result = Invoke-ExternalCommand `
+        -FilePath 'git' `
+        -Arguments (@(Get-GitGuardArguments) + @('-C', $Path) + $Arguments) `
+        -TimeoutSec $GitTimeoutSec `
+        -Environment (Get-GitGuardEnvironment)
 
     return [pscustomobject]@{
-        ExitCode = $ExitCode
-        Output   = (($Output | ForEach-Object { $_.ToString() }) -join "`n").Trim()
+        ExitCode = $Result.ExitCode
+        Output   = $Result.Output
+        TimedOut = $Result.TimedOut
     }
 }
 
@@ -635,23 +769,20 @@ function Get-GitRemoteHead {
         [string]$Branch
     )
 
-    # Same stderr-under-Stop hazard as Invoke-Git: ls-remote can emit warnings
-    # (redirect notices, credential helper chatter) while still succeeding.
-    $PreviousPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'Continue'
-    try {
-        $Output = & git ls-remote $Remote "refs/heads/$Branch" 2>&1
-        $ExitCode = $LASTEXITCODE
-    }
-    finally {
-        $ErrorActionPreference = $PreviousPreference
+    $Result = Invoke-ExternalCommand `
+        -FilePath 'git' `
+        -Arguments (@(Get-GitGuardArguments) + @('ls-remote', $Remote, "refs/heads/$Branch")) `
+        -TimeoutSec $GitTimeoutSec `
+        -Environment (Get-GitGuardEnvironment)
+
+    if ($Result.TimedOut -or $Result.ExitCode -ne 0) {
+        throw $Result.Output
     }
 
-    if ($ExitCode -ne 0) {
-        throw (($Output | ForEach-Object { $_.ToString() }) -join "`n").Trim()
-    }
-
-    $Line = @($Output | Where-Object { $_ -match '^[0-9a-f]{40}\s' } | Select-Object -First 1)
+    # Match the SHA line explicitly. The previous implementation took the first
+    # output line verbatim, so any leading warning (redirect notice, credential
+    # helper chatter) would be parsed as a commit id.
+    $Line = @($Result.Output -split "`n" | Where-Object { $_ -match '^[0-9a-f]{40}\s' } | Select-Object -First 1)
     if ($Line.Count -eq 0) {
         throw "No remote ref found for $Branch"
     }
@@ -954,8 +1085,22 @@ function Update-Skill {
                 $null = Sync-LocalSkillEntryPoint -Entry $Entry
             }
             'skills-cli' {
-                & npx -y skills add "$($Entry.repo)@$($Entry.skill)" -g -y
-                if ($LASTEXITCODE -ne 0) {
+                # Routed through cmd.exe because npx is a .cmd/.ps1 shim on
+                # Windows: Start-Process -NoNewWindow implies UseShellExecute
+                # false, and CreateProcess cannot launch a bare `npx`
+                # (verified: "%1 is not a valid Win32 application"). Output is
+                # streamed rather than captured so a slow npm install still
+                # shows progress.
+                $Install = Invoke-ExternalCommand `
+                    -FilePath 'cmd.exe' `
+                    -Arguments @('/c', 'npx', '-y', 'skills', 'add', "$($Entry.repo)@$($Entry.skill)", '-g', '-y') `
+                    -TimeoutSec $NpxTimeoutSec `
+                    -StreamOutput
+
+                if ($Install.TimedOut) {
+                    throw "skills add 超过 $NpxTimeoutSec 秒未返回，已终止进程树"
+                }
+                if ($Install.ExitCode -ne 0) {
                     throw 'skills add 命令执行失败'
                 }
 
