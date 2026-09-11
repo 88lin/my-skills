@@ -58,7 +58,11 @@ param(
     [int]$GitTimeoutSec = 180,
     [int]$ImpeccableTimeoutSec = 900,
     [int]$SkillsTimeoutSec = 2400,
-    [int]$LogRetention = 40
+    [int]$LogRetention = 40,
+
+    # Seconds to keep the tray icon alive so the balloon stays on screen.
+    # Only applies to interactive runs; disposing sooner would hide the balloon.
+    [int]$NotifyDwellSec = 3
 )
 
 Set-StrictMode -Version Latest
@@ -111,7 +115,14 @@ function Write-LogBlock {
     # away the evidence — the 32-row manage-skills table is exactly what
     # someone needs when diagnosing a failed unattended run — while writing the
     # whole thing to the console would bury the step markers.
-    if ([string]::IsNullOrWhiteSpace($Text)) { return }
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        # Record the silence explicitly. An empty gap in the log is ambiguous:
+        # it could mean the child printed nothing, or that the logging itself
+        # was skipped.
+        Add-Content -LiteralPath $LogPath -Value '(无输出)' -Encoding UTF8
+        Write-Host '(无输出)'
+        return
+    }
     Add-Content -LiteralPath $LogPath -Value $Text -Encoding UTF8
     Write-Host (Get-Excerpt -Text $Text)
 }
@@ -456,6 +467,15 @@ function Show-BalloonTip {
 
     # Best effort only. A scheduled task that runs with no interactive session
     # simply gets no toast; the status files are the durable record.
+    #
+    # Bail out before doing anything when there is no interactive session: the
+    # balloon cannot appear there, so loading WinForms and then sleeping just to
+    # keep an invisible tray icon alive is pure dead time on every run.
+    if (-not [Environment]::UserInteractive) {
+        Write-Log '无交互会话，跳过气泡通知（状态文件仍已写入）。' 'WARN'
+        return
+    }
+
     try {
         Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
         Add-Type -AssemblyName System.Drawing -ErrorAction Stop
@@ -467,7 +487,9 @@ function Show-BalloonTip {
         $Notify.BalloonTipIcon = $Level
         $Notify.Visible = $true
         $Notify.ShowBalloonTip(20000)
-        Start-Sleep -Seconds 10
+        # Disposing removes the balloon, so the icon has to outlive the call
+        # briefly. Kept short: this blocks an otherwise finished manual run.
+        Start-Sleep -Seconds $NotifyDwellSec
         $Notify.Dispose()
     }
     catch {
@@ -487,12 +509,27 @@ function Show-BalloonTip {
 # when a previous run is force-killed the mutex is abandoned, and the next
 # WaitOne throws instead of returning. Catching it means we inherit the lock,
 # which is the correct outcome — the previous owner is gone.
-$UpdateMutex = New-Object System.Threading.Mutex($false, 'Global\AgentsSkillsAutoUpdate')
+#
+# The constructor is inside the try as well: under "run whether or not the user
+# is logged on" the task lands in Session 0, where creating a Global\ object can
+# be denied. An exception there would escape before any status file is written,
+# turning a permission problem into a silent no-op. Losing the lock is far less
+# bad than losing the run, so that case degrades to running unlocked.
+$UpdateMutex = $null
 $HasMutex = $false
 try {
+    $UpdateMutex = New-Object System.Threading.Mutex($false, 'Global\AgentsSkillsAutoUpdate')
     $HasMutex = $UpdateMutex.WaitOne(0)
 }
 catch [System.Threading.AbandonedMutexException] {
+    $HasMutex = $true
+}
+catch {
+    Write-Log ('无法建立单实例互斥锁，降级为不加锁运行: ' + $_.Exception.Message) 'WARN'
+    if ($null -ne $UpdateMutex) {
+        try { $UpdateMutex.Dispose() } catch {}
+        $UpdateMutex = $null
+    }
     $HasMutex = $true
 }
 
@@ -697,23 +734,45 @@ if (-not $ImpeccableOnly) {
                 $ExitCode = 1
             }
             else {
+                # `outdated` means opposite things per mode. In `check` it is
+                # simply "upstream has new commits" — the normal resting state
+                # between runs, and reporting it as unhealthy trains the reader
+                # to ignore this step. After an `update` run it means the update
+                # did not converge, which is a real failure.
+                $PendingStatuses = if ($Mode -eq 'update') { @() } else { @('outdated') }
+
                 $Problems = @{}
+                $Pending = @{}
                 foreach ($Key in $Counts.Keys) {
-                    if ($HealthyStatuses -notcontains $Key -and $Counts[$Key] -gt 0) {
+                    if ($HealthyStatuses -contains $Key -or $Counts[$Key] -le 0) { continue }
+                    if ($PendingStatuses -contains $Key) {
+                        $Pending[$Key] = $Counts[$Key]
+                    }
+                    else {
                         $Problems[$Key] = $Counts[$Key]
                     }
                 }
 
+                $PendingSummary = (($Pending.Keys | Sort-Object | ForEach-Object { "$_=$($Pending[$_])" }) -join ', ')
+
                 if ($Problems.Count -eq 0) {
-                    Write-Log ('manage-skills 完成，全部为健康状态：' + (($Counts.Keys | Sort-Object | ForEach-Object { "$_=$($Counts[$_])" }) -join ', ')) 'OK'
-                    Add-Step -Name 'skills' -Status 'updated' -Detail "mode=$Mode，全部健康"
+                    if ($Pending.Count -gt 0) {
+                        Write-Log "manage-skills 完成，无异常；有待更新项：$PendingSummary" 'OK'
+                        Add-Step -Name 'skills' -Status 'update-available' -Detail "mode=$Mode，待更新：$PendingSummary"
+                    }
+                    else {
+                        Write-Log ('manage-skills 完成，全部为健康状态：' + (($Counts.Keys | Sort-Object | ForEach-Object { "$_=$($Counts[$_])" }) -join ', ')) 'OK'
+                        Add-Step -Name 'skills' -Status 'updated' -Detail "mode=$Mode，全部健康"
+                    }
                 }
                 else {
                     $Summary = (($Problems.Keys | Sort-Object | ForEach-Object { "$_=$($Problems[$_])" }) -join ', ')
                     $HumanNeeded = @($Problems.Keys | Where-Object { $NeedsHumanStatuses -contains $_ })
+                    $Detail = "mode=$Mode，非健康状态：$Summary"
+                    if ($Pending.Count -gt 0) { $Detail += "；另有待更新：$PendingSummary" }
 
                     Write-Log "manage-skills 存在非健康状态：$Summary" 'WARN'
-                    Add-Step -Name 'skills' -Status 'partial' -Detail "mode=$Mode，非健康状态：$Summary"
+                    Add-Step -Name 'skills' -Status 'partial' -Detail $Detail
 
                     if ($HumanNeeded.Count -gt 0) {
                         $NotifyMessages.Add("skills 需要人工处理：$Summary（详见状态文件）。")
@@ -802,7 +861,10 @@ exit $ExitCode
 finally {
     # Released even on an unhandled failure, otherwise the lock would only be
     # cleared when the process dies and the next run would have to recover from
-    # an abandoned mutex.
-    try { $UpdateMutex.ReleaseMutex() } catch {}
-    $UpdateMutex.Dispose()
+    # an abandoned mutex. Null when the lock could not be created at all and the
+    # run continued unlocked.
+    if ($null -ne $UpdateMutex) {
+        try { $UpdateMutex.ReleaseMutex() } catch {}
+        try { $UpdateMutex.Dispose() } catch {}
+    }
 }
