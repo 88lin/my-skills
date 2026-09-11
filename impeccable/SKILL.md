@@ -3,7 +3,7 @@ name: impeccable
 description: >-
   Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, establish or replace visual/UX direction, redesign an existing interface, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly invoke an Impeccable command such as `$impeccable shape`, `$impeccable audit`, `$impeccable doctor`, or `$impeccable hooks`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, external-site design inspection without an implementation deliverable, static artwork, or HTML slide decks.
 metadata:
-  version: 4.2.2
+  version: 4.3.1
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
