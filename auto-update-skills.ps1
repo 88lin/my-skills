@@ -62,7 +62,11 @@ param(
 
     # Seconds to keep the tray icon alive so the balloon stays on screen.
     # Only applies to interactive runs; disposing sooner would hide the balloon.
-    [int]$NotifyDwellSec = 3
+    [int]$NotifyDwellSec = 3,
+
+    # Session-independent attention signal. Appears only when a run needs a
+    # human and is cleared automatically once a run comes back clean.
+    [string]$AttentionFlagPath = (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Skills 需要处理.txt')
 )
 
 Set-StrictMode -Version Latest
@@ -454,6 +458,53 @@ function Restore-LatestBackup {
     }
 
     return [pscustomobject]@{ Ok = $true; Detail = "已从备份恢复: $($Latest[0].FullName)" }
+}
+
+function Set-AttentionFlag {
+    param(
+        [string]$Path,
+        [string[]]$Messages,
+        [string]$StatusMarkdown,
+        [string]$LogPath
+    )
+
+    # Session-independent fallback for "a human needs to look at this".
+    #
+    # Balloons and toasts both require an interactive session, so a task running
+    # under "whether or not the user is logged on" (Session 0) can never reach
+    # the desktop — the run would fail silently no matter which notification
+    # library is used. A file, on the other hand, always lands. It sits on the
+    # Desktop where it cannot be missed, and is removed again automatically on
+    # the next healthy run, so its mere presence is the signal.
+    try {
+        if ($Messages.Count -eq 0) {
+            if (Test-Path -LiteralPath $Path) {
+                Remove-Item -LiteralPath $Path -Force -ErrorAction Stop
+                Write-Log '本次无需人工处理，已移除桌面提示文件。'
+            }
+            return
+        }
+
+        $Body = New-Object System.Collections.Generic.List[string]
+        $Body.Add('Skills 自动更新需要你处理')
+        $Body.Add('')
+        $Body.Add(('发现时间: {0}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')))
+        $Body.Add('')
+        $Body.Add('原因:')
+        foreach ($Message in $Messages) { $Body.Add("  - $Message") }
+        $Body.Add('')
+        $Body.Add('怎么看:')
+        $Body.Add("  状态摘要  $StatusMarkdown")
+        $Body.Add("  完整日志  $LogPath")
+        $Body.Add('')
+        $Body.Add('处理完成后本文件会在下一次正常运行时自动消失，不用手动删。')
+
+        [System.IO.File]::WriteAllText($Path, ($Body -join "`r`n"), (New-Object System.Text.UTF8Encoding $true))
+        Write-Log "已写出桌面提示文件: $Path" 'WARN'
+    }
+    catch {
+        Write-Log ('桌面提示文件处理失败: ' + $_.Exception.Message) 'WARN'
+    }
 }
 
 # --------------------------------------------------------- notification --
@@ -851,8 +902,15 @@ foreach ($Old in $OldLogs) {
     Remove-Item -LiteralPath $Old.FullName -Force -ErrorAction SilentlyContinue
 }
 
-if (-not $NoNotify -and $NotifyMessages.Count -gt 0) {
-    Show-BalloonTip -Title $NotifyTitle -Message (($NotifyMessages -join ' ') + " 详见 $StatusMarkdown") -Level 'Warning'
+if (-not $NoNotify) {
+    # The flag file runs unconditionally: it is the only channel that survives a
+    # non-interactive session, and it clears itself when the run comes back
+    # clean.
+    Set-AttentionFlag -Path $AttentionFlagPath -Messages @($NotifyMessages.ToArray()) -StatusMarkdown $StatusMarkdown -LogPath $LogPath
+
+    if ($NotifyMessages.Count -gt 0) {
+        Show-BalloonTip -Title $NotifyTitle -Message (($NotifyMessages -join ' ') + " 详见 $StatusMarkdown") -Level 'Warning'
+    }
 }
 
 exit $ExitCode

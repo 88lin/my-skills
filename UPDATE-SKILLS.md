@@ -157,9 +157,28 @@ powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\User
 
 判定结果时它解析 `manage-skills.ps1` 的汇总块，把除 `up-to-date`/`skipped`/`unchanged`/`updated`/`applied` 之外的任何状态都视为未通过。其中 `patch-stale`、`error`、`missing` 以及"更新后仍 `outdated`"会置退出码 1 并触发通知；汇总块解析不出来时同样报错，不会默认当作健康。
 
-运行记录写在 `logs\`（完整输出、`LATEST-STATUS.md`、`last-status.json`），默认保留最近 40 份日志。该目录属运行期产物，已在备份仓库中被 `.gitignore` 排除。
+### 出问题时怎么通知你
 
-通知走 NotifyIcon 气泡，只是尽力而为：计划任务若以无交互会话运行，气泡不会出现，此时 `logs\LATEST-STATUS.md` 是唯一可靠记录。
+需要人工处理时，桌面会出现一个文件：
+
+```
+C:\Users\Computer\Desktop\Skills 需要处理.txt
+```
+
+里面写明原因、状态摘要路径和完整日志路径。**下一次运行恢复正常时它会自动消失**，所以"桌面上有没有这个文件"本身就是信号，不用手动删，也不用记得去哪里查。路径可用 `-AttentionFlagPath` 改。
+
+这个兜底信号走文件系统，不需要任何账号或密钥，也不受会话限制。之所以需要它，是因为气泡和 Toast 都**必须有交互会话**才能显示：计划任务如果配置成"不管用户是否登录都运行"，它会跑在 Session 0，Windows 不允许其向桌面弹任何东西 —— 这跟用哪个通知库无关，换成 BurntToast 之类同样弹不出来。此时脚本会在日志里记一行"无交互会话，跳过气泡通知"。
+
+所以建任务时请选 **"只在用户登录时运行"**，气泡才会真正弹出来。两条通道的关系是：
+
+| 通道 | 生效条件 | 作用 |
+|---|---|---|
+| 桌面提示文件 | 始终生效 | 兜底，不会漏 |
+| 气泡通知 | 仅用户已登录会话 | 即时提醒 |
+
+`-NoNotify` 会同时关掉这两者（状态文件仍然写）。`-NotifyDwellSec` 控制气泡驻留秒数，默认 3 秒；手动运行时这段时间是阻塞的，所以没有设得更长。
+
+运行记录写在 `logs\`（完整输出、`LATEST-STATUS.md`、`last-status.json`），默认保留最近 40 份日志。该目录属运行期产物，已在备份仓库中被 `.gitignore` 排除。
 
 ## 本地 Override
 
