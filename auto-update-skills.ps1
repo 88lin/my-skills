@@ -34,11 +34,21 @@
     run against current upstream to mean anything. Pass -NoCacheRepair as well
     if the cache must not be touched at all.
 
-.PARAMETER ImpeccableOnly / SkillsOnly
-    Restrict the run to one of the two flows.
+.PARAMETER ImpeccableOnly
+    Run only the impeccable flow and skip the rest of the skill tree.
+
+.PARAMETER SkillsOnly
+    Run only the manage-skills flow and skip impeccable.
 
 .PARAMETER NoNotify
-    Suppress the Windows balloon tip (the status files are still written).
+    Suppress the Windows balloon tip only. The status files and the desktop
+    attention flag are still written — the flag is the sole channel that works
+    without an interactive session, so it is not tied to this switch. Use
+    -NoAttentionFlag to turn that one off.
+
+.PARAMETER NoAttentionFlag
+    Do not create or remove the desktop attention flag. Note this also disables
+    its self-clearing behaviour, so an existing flag file will be left in place.
 
 .PARAMETER NoCacheRepair
     Skip the upstream Git cache self-heal pass.
@@ -54,6 +64,7 @@ param(
     [switch]$ImpeccableOnly,
     [switch]$SkillsOnly,
     [switch]$NoNotify,
+    [switch]$NoAttentionFlag,
     [switch]$NoCacheRepair,
     [int]$GitTimeoutSec = 180,
     [int]$ImpeccableTimeoutSec = 900,
@@ -537,7 +548,11 @@ function Show-BalloonTip {
         $Notify.BalloonTipText = $Message
         $Notify.BalloonTipIcon = $Level
         $Notify.Visible = $true
-        $Notify.ShowBalloonTip(20000)
+        # Windows treats this as a requested duration and may clamp it, but it
+        # is derived from the same knob as the sleep below so the two cannot
+        # drift apart: a hard-coded 20000 next to a 3 second dwell reads as if
+        # the balloon lingered for 20 seconds, which it never did.
+        $Notify.ShowBalloonTip($NotifyDwellSec * 1000)
         # Disposing removes the balloon, so the icon has to outlive the call
         # briefly. Kept short: this blocks an otherwise finished manual run.
         Start-Sleep -Seconds $NotifyDwellSec
@@ -902,15 +917,17 @@ foreach ($Old in $OldLogs) {
     Remove-Item -LiteralPath $Old.FullName -Force -ErrorAction SilentlyContinue
 }
 
-if (-not $NoNotify) {
-    # The flag file runs unconditionally: it is the only channel that survives a
-    # non-interactive session, and it clears itself when the run comes back
-    # clean.
+# The attention flag is deliberately NOT gated on -NoNotify. That switch means
+# "do not interrupt me with popups", and the flag is not an interruption — it is
+# the only channel that survives a non-interactive session. Tying the two
+# together would let -NoNotify silently remove the safety net, which is exactly
+# the channel that must not be lost. Use -NoAttentionFlag to opt out explicitly.
+if (-not $NoAttentionFlag) {
     Set-AttentionFlag -Path $AttentionFlagPath -Messages @($NotifyMessages.ToArray()) -StatusMarkdown $StatusMarkdown -LogPath $LogPath
+}
 
-    if ($NotifyMessages.Count -gt 0) {
-        Show-BalloonTip -Title $NotifyTitle -Message (($NotifyMessages -join ' ') + " 详见 $StatusMarkdown") -Level 'Warning'
-    }
+if (-not $NoNotify -and $NotifyMessages.Count -gt 0) {
+    Show-BalloonTip -Title $NotifyTitle -Message (($NotifyMessages -join ' ') + " 详见 $StatusMarkdown") -Level 'Warning'
 }
 
 exit $ExitCode
