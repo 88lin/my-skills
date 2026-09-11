@@ -1,0 +1,16 @@
+# Secrets — never commit
+.zenmux_api_key
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Cover-gen intermediate artifacts (if produced inside the repo)
+*.oil-cover/
+
+# OS
+.DS_Store
+node_modules/

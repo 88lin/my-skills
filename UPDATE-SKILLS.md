@@ -281,6 +281,12 @@ robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\
 
 `.agents\external` 下的源仓库和备份**不在**这个仓库里，丢了要按 `skills-sources.json` 的 remote 重新 clone。
 
+备份仓库里不保留任何嵌套的 `.git`。`img2threejs` 和 `oil-cover` 曾因为带着自己的 `.git` 被 Git 记成 gitlink（模式 160000），仓库里只存了一个 commit 指针、实际内容一个文件都没备份，合计 432 个文件；又因为没有 `.gitmodules`，`git submodule update --init` 也救不回来，克隆出来只会是两个空目录。现在这三个曾含嵌套仓库的 skill（连同 `web-access`）都按普通文件追踪。
+
+因此往这个目录里放新 skill 时，如果它本身是 Git 仓库，必须先删掉它的 `.git` 再提交，否则会重新退化成 gitlink。对应地，从备份还原 `git` 型 skill 时活动目录不会带 `.git`，需要按登记的 remote 重新 clone 或 init。
+
+各 skill 自带的 `.gitignore` 依然生效，所以 `web-access\config.env`（本地浏览器偏好）和 `img2threejs\.cache\` 不进备份，这是预期行为。
+
 仓库里的 `.gitattributes` 用 `* -text` 关掉了 Git 的行尾转换，这样任何机器克隆都能逐字节还原活动目录。不要删掉它，否则 `core.autocrlf` 会重新在还原时改写行尾。
 
 ## 删除和恢复
