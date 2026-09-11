@@ -141,6 +141,26 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\manag
 
 `update-impeccable.ps1` 和 `install-and-register-skill.ps1` 目前还没有这层保护，它们都是人工触发、卡住可见，暂按现状保留。
 
+## 无人值守自动更新
+
+`auto-update-skills.ps1` 把 impeccable 与其余 skill 两条更新流串成一次无人值守运行，供计划任务调用：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\Users\Computer\.agents\skills\auto-update-skills.ps1"
+```
+
+先用 `-DryRun` 验证接线（impeccable 走 `preview`、其余走 `check`，不写入任何活动 skill 目录）。注意 `-DryRun` 仍会刷新 `.agents\external` 下的上游 Git 缓存（含 `reset --hard`、`clean -fdx`），因为 preview 必须对着当前上游才有意义；完全不想碰缓存就同时加 `-NoCacheRepair`。
+
+安全模型是 impeccable 必须先 `preview` 通过才允许 `apply`，任何校验失败都放弃更新并保留现有版本；apply 后若入口文件缺失会自动回滚到最近备份。
+
+它带全局互斥锁，计划任务在上一次尚未跑完时再次触发会直接退出而不排队 —— 否则两个并发的 `npx skills add -g` 会同时写同一个全局 skill 目录。
+
+判定结果时它解析 `manage-skills.ps1` 的汇总块，把除 `up-to-date`/`skipped`/`unchanged`/`updated`/`applied` 之外的任何状态都视为未通过。其中 `patch-stale`、`error`、`missing` 以及"更新后仍 `outdated`"会置退出码 1 并触发通知；汇总块解析不出来时同样报错，不会默认当作健康。
+
+运行记录写在 `logs\`（完整输出、`LATEST-STATUS.md`、`last-status.json`），默认保留最近 40 份日志。该目录属运行期产物，已在备份仓库中被 `.gitignore` 排除。
+
+通知走 NotifyIcon 气泡，只是尽力而为：计划任务若以无交互会话运行，气泡不会出现，此时 `logs\LATEST-STATUS.md` 是唯一可靠记录。
+
 ## 本地 Override
 
 `local-routing-overrides.json` 是本地触发规则的权威来源。不要只编辑生成后的 `SKILL.md`，否则下一次更新会覆盖。
@@ -252,10 +272,12 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\Documents\GitHub\my-
 每次 update/apply-overrides 之后都要把结果同步回备份并提交，否则备份会静默落后。用下面这条**只列差异、不改文件**的命令核对（无输出即完全一致）：
 
 ```powershell
-robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\my-skills" /MIR /XD .git /XF .gitattributes /L /NDL /NJH /NJS /NP
+robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\my-skills" /MIR /XD .git logs /XF "C:\Users\Computer\Documents\GitHub\my-skills\.gitattributes" "C:\Users\Computer\Documents\GitHub\my-skills\.gitignore" /L /NDL /NJH /NJS /NP
 ```
 
-去掉 `/L` 才会真正复制。此时务必先确认备份里没有尚未同步到活动目录的改动：`/MIR` 是单向镜像，会把备份独有的文件删掉、把备份里更新的内容盖回旧版。所以顺序永远是"先把备份里的修改同步进活动目录并验证，再用 `/MIR` 反向刷回备份"。`/XF .gitattributes` 是必需的，否则 `/MIR` 会因为活动目录没有这个文件而把它删掉。
+去掉 `/L` 才会真正复制。此时务必先确认备份里没有尚未同步到活动目录的改动：`/MIR` 是单向镜像，会把备份独有的文件删掉、把备份里更新的内容盖回旧版。所以顺序永远是"先把备份里的修改同步进活动目录并验证，再用 `/MIR` 反向刷回备份"。
+
+`/XF` 必须写**绝对路径**：它按文件名匹配，只写 `.gitignore` 会把 `oil-cover\.gitignore`、`web-access\.gitignore` 这些上游自带的同名文件一并排除，导致它们永远同步不过来。`/XD logs` 排除运行期日志，`.gitattributes` 与 `.gitignore` 只存在于备份侧，不排除就会被 `/MIR` 删掉。
 
 `.agents\external` 下的源仓库和备份**不在**这个仓库里，丢了要按 `skills-sources.json` 的 remote 重新 clone。
 
