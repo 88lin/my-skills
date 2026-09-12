@@ -212,7 +212,16 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\updat
 powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\update-impeccable.ps1" -Mode apply
 ```
 
-专用更新器会检查上游 bundle、重放 `impeccable-local-patches.json` 和路由规则，再替换活动目录。不要直接覆盖 `impeccable/SKILL.md`。
+专用更新器会检查上游 bundle、重放 `impeccable-local-patches.json` 和路由规则，再替换活动目录。不要直接覆盖 `impeccable/SKILL.md`——本地改动应写进 `impeccable-local-patches.json`，否则下次更新会被冲掉。
+
+### 上游改结构或改文字时
+
+这两种情况都会让 preview 失败，而失败是**安全的**：apply 根本不会执行，活动目录一字不动。
+
+- **上游挪动了 skill 目录**：更新器会在来源里递归探测结构完整的 `impeccable` 目录（优先最短路径，跳过 `.git`），找到就打印 `Upstream layout changed; using detected skill directory: ...` 并继续。这个探测在 `update-impeccable.ps1` 内部，所以桌面 .bat 和无人值守任务两条入口都享受得到。真找不到才失败。
+- **上游改写了补丁锚定的正文**：报 `local patch anchors missing: <文件>: <该 patch 的 reason>`，需要人工按上游最新内容重写 `impeccable-local-patches.json` 里的 `find`。写 `find` 时尽量锚定不易变动的句子。
+
+失败时更新器会打印一个包含「原因」和「怎么处理」的块，不再抛出 PowerShell 原始堆栈。需要堆栈时设环境变量 `IMPECCABLE_UPDATER_DEBUG=1` 再运行。退出码为 1，桌面 .bat 据此拦住 apply。
 
 ## Claude Code 白名单
 
@@ -297,12 +306,12 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\Documents\GitHub\my-
 每次 update/apply-overrides 之后都要把结果同步回备份并提交，否则备份会静默落后。用下面这条**只列差异、不改文件**的命令核对（无输出即完全一致）：
 
 ```powershell
-robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\my-skills" /MIR /XD .git logs /XF "C:\Users\Computer\Documents\GitHub\my-skills\.gitattributes" "C:\Users\Computer\Documents\GitHub\my-skills\.gitignore" /L /NDL /NJH /NJS /NP
+robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\my-skills" /MIR /XD .git logs "C:\Users\Computer\Documents\GitHub\my-skills\desktop-launchers" /XF "C:\Users\Computer\Documents\GitHub\my-skills\.gitattributes" "C:\Users\Computer\Documents\GitHub\my-skills\.gitignore" /L /NDL /NJH /NJS /NP
 ```
 
 去掉 `/L` 才会真正复制。此时务必先确认备份里没有尚未同步到活动目录的改动：`/MIR` 是单向镜像，会把备份独有的文件删掉、把备份里更新的内容盖回旧版。所以顺序永远是"先把备份里的修改同步进活动目录并验证，再用 `/MIR` 反向刷回备份"。
 
-`/XF` 必须写**绝对路径**：它按文件名匹配，只写 `.gitignore` 会把 `oil-cover\.gitignore`、`web-access\.gitignore` 这些上游自带的同名文件一并排除，导致它们永远同步不过来。`/XD logs` 排除运行期日志，`.gitattributes` 与 `.gitignore` 只存在于备份侧，不排除就会被 `/MIR` 删掉。
+`/XF` 必须写**绝对路径**：它按文件名匹配，只写 `.gitignore` 会把 `oil-cover\.gitignore`、`web-access\.gitignore` 这些上游自带的同名文件一并排除，导致它们永远同步不过来。`/XD logs` 排除运行期日志；`.gitattributes`、`.gitignore` 和 `desktop-launchers` 只存在于备份侧，不排除就会被 `/MIR` 删掉。
 
 `.agents\external` 下的源仓库和备份**不在**这个仓库里，丢了要按 `skills-sources.json` 的 remote 重新 clone。
 
@@ -311,6 +320,10 @@ robocopy "C:\Users\Computer\.agents\skills" "C:\Users\Computer\Documents\GitHub\
 因此往这个目录里放新 skill 时，如果它本身是 Git 仓库，必须先删掉它的 `.git` 再提交，否则会重新退化成 gitlink。对应地，从备份还原 `git` 型 skill 时活动目录不会带 `.git`，需要按登记的 remote 重新 clone 或 init。
 
 各 skill 自带的 `.gitignore` 依然生效，所以 `web-access\config.env`（本地浏览器偏好）和 `img2threejs\.cache\` 不进备份，这是预期行为。
+
+桌面入口不在活动目录里，因此单独备份在 `desktop-launchers\`：`update-impeccable.bat`、`更新 Skills.bat`、`纳管新 Skill.bat`。改动这些入口时同样先改备份再复制回桌面。桌面上其他与 skills 无关的 .bat 不纳入。
+
+所有 `.ps1` 必须存为 **UTF-8 带 BOM**。Windows PowerShell 5.1 会把无 BOM 的文件按 ANSI 读取，中文字符串会碎成乱码并导致解析失败——`update-impeccable.ps1` 曾因全文件仅含 ASCII 而长期掩盖了这个问题，直到往里加中文才暴露。
 
 仓库里的 `.gitattributes` 用 `* -text` 关掉了 Git 的行尾转换，这样任何机器克隆都能逐字节还原活动目录。不要删掉它，否则 `core.autocrlf` 会重新在还原时改写行尾。
 

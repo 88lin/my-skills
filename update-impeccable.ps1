@@ -1,4 +1,4 @@
-param(
+﻿param(
     [ValidateSet('preview', 'apply')]
     [string]$Mode = 'preview',
 
@@ -154,6 +154,45 @@ function Test-ImpeccableSourceDir {
     )
 }
 
+function Find-ImpeccableSkillDir {
+    param(
+        [string]$Root,
+        [string]$PreferredSubdir = ''
+    )
+
+    # Upstream occasionally moves the skill inside its repository. Probing for a
+    # relocated copy lives here rather than in a caller so that every entry
+    # point benefits: previously only auto-update-skills.ps1 carried this logic,
+    # which left the desktop .bat — the manual path — failing outright on a
+    # layout change that the unattended path handled fine.
+    if (-not [string]::IsNullOrWhiteSpace($PreferredSubdir)) {
+        $Primary = Join-Path $Root ($PreferredSubdir -replace '/', '\')
+        if (Test-ImpeccableSourceDir -Path $Primary) {
+            return [pscustomobject]@{ Path = (Get-FullPath -Path $Primary); Relocated = $false }
+        }
+    }
+
+    if (Test-ImpeccableSourceDir -Path $Root) {
+        return [pscustomobject]@{ Path = (Get-FullPath -Path $Root); Relocated = $false }
+    }
+
+    # Shortest path first, so a top-level relocation wins over a nested copy
+    # such as a vendored example or test fixture.
+    $Candidates = @(
+        Get-ChildItem -LiteralPath $Root -Recurse -Directory -Force -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -eq 'impeccable' -and $_.FullName -notmatch '\\\.git\\' } |
+            Sort-Object { $_.FullName.Length }
+    )
+
+    foreach ($Candidate in $Candidates) {
+        if (Test-ImpeccableSourceDir -Path $Candidate.FullName) {
+            return [pscustomobject]@{ Path = (Get-FullPath -Path $Candidate.FullName); Relocated = $true }
+        }
+    }
+
+    return $null
+}
+
 function Resolve-ImpeccableSource {
     param(
         [string]$SourcePath = '',
@@ -168,30 +207,23 @@ function Resolve-ImpeccableSource {
         }
 
         $Resolved = Get-FullPath -Path (Resolve-Path -LiteralPath $SourcePath).Path
-        $DirectSkillDir = $Resolved
-        $RepoSkillDir = Join-Path $Resolved '.agents\skills\impeccable'
-
-        if (Test-ImpeccableSourceDir -Path $DirectSkillDir) {
-            return [pscustomobject]@{
-                Root       = $DirectSkillDir
-                SkillDir   = $DirectSkillDir
-                Commit     = Get-GitCommit -Path $DirectSkillDir
-                SourceKind = 'source-path'
-                SourcePath = $Resolved
-            }
+        $Found = Find-ImpeccableSkillDir -Root $Resolved -PreferredSubdir $SourceSubdir
+        if ($null -eq $Found) {
+            throw "SourcePath must be either the impeccable skill directory or a repo root containing $SourceSubdir"
         }
 
-        if (Test-ImpeccableSourceDir -Path $RepoSkillDir) {
-            return [pscustomobject]@{
-                Root       = $Resolved
-                SkillDir   = Get-FullPath -Path $RepoSkillDir
-                Commit     = Get-GitCommit -Path $Resolved
-                SourceKind = 'source-path'
-                SourcePath = $Resolved
-            }
+        if ($Found.Relocated) {
+            Write-Host "Upstream layout changed; using detected skill directory: $($Found.Path)"
         }
 
-        throw "SourcePath must be either the impeccable skill directory or a repo root containing $SourceSubdir"
+        return [pscustomobject]@{
+            Root       = $Resolved
+            SkillDir   = $Found.Path
+            Commit     = Get-GitCommit -Path $Resolved
+            SourceKind = 'source-path'
+            SourcePath = $Resolved
+            Relocated  = $Found.Relocated
+        }
     }
 
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -225,17 +257,22 @@ function Resolve-ImpeccableSource {
         Invoke-GitChecked -Arguments @('-C', $CacheFull, 'pull', '--ff-only', 'origin', $Branch) | Out-Null
     }
 
-    $SkillDir = Join-Path $CacheFull '.agents\skills\impeccable'
-    if (-not (Test-ImpeccableSourceDir -Path $SkillDir)) {
+    $Found = Find-ImpeccableSkillDir -Root $CacheFull -PreferredSubdir $SourceSubdir
+    if ($null -eq $Found) {
         throw "Git source does not contain expected skill directory: $SourceSubdir"
+    }
+
+    if ($Found.Relocated) {
+        Write-Host "Upstream layout changed; using detected skill directory: $($Found.Path)"
     }
 
     return [pscustomobject]@{
         Root       = $CacheFull
-        SkillDir   = Get-FullPath -Path $SkillDir
+        SkillDir   = $Found.Path
         Commit     = Get-GitCommit -Path $CacheFull
         SourceKind = 'git-cache'
         SourcePath = $CacheFull
+        Relocated  = $Found.Relocated
     }
 }
 
@@ -900,4 +937,108 @@ if ($LoadOnly) {
     return
 }
 
-Invoke-ImpeccableUpdate -Mode $Mode -SourcePath $SourcePath -RepoUrl $RepoUrl -Branch $Branch -CacheDir $CacheDir
+# Failure guidance lives with the script that produces the failures. Without
+# this, the desktop .bat could only surface a raw PowerShell exception dump —
+# the one actionable line buried between "所在位置", CategoryInfo and
+# FullyQualifiedErrorId — leaving the reader to fish the cause out of a stack.
+$FailureGuidance = @(
+    [pscustomobject]@{
+        Match = 'local patch anchors missing'
+        Hint  = @(
+            '上游改写了本地补丁所锚定的正文，find 已匹配不到。'
+            '处理：对照上游最新内容重写 impeccable-local-patches.json 里对应的 find；'
+            '优先锚定不易变动的句子，避免锚在会随版本调整的措辞上。'
+        )
+    }
+    [pscustomobject]@{
+        Match = 'routing bodyPatch anchors missing'
+        Hint  = @(
+            'local-routing-overrides.json 中 impeccable 的 bodyPatch 锚点已失效。'
+            '处理：按上游现网正文重写该 find，再运行 manage-skills.ps1 -Mode apply-overrides -Only impeccable。'
+        )
+    }
+    [pscustomobject]@{
+        Match = 'missing command references|missing required paths|bundle structure is invalid'
+        Hint  = @(
+            '上游 skill 包结构不完整，缺少必需目录或命令参考文件，已拒绝覆盖本地版本。'
+            '处理：先到上游仓库确认这是有意重构还是上游自身出错，确认后再调整本脚本的结构校验预期。'
+        )
+    }
+    [pscustomobject]@{
+        Match = 'script syntax failures'
+        Hint  = @(
+            '上游 scripts 下的脚本未通过 node --check，已拒绝覆盖本地版本。'
+            '处理：这通常是上游提交了坏代码，等上游修复后重试即可，不要绕过校验。'
+        )
+    }
+    [pscustomobject]@{
+        Match = 'does not contain expected skill directory|SourcePath must be either'
+        Hint  = @(
+            '在来源中找不到结构完整的 impeccable 目录（已自动递归探测过重定位的副本）。'
+            '处理：确认上游是否整体重构，必要时用 -SourcePath 显式指定新的 skill 目录。'
+        )
+    }
+    [pscustomobject]@{
+        Match = 'Git cache has local changes'
+        Hint  = @(
+            '上游 Git 缓存有本地改动，为避免混入未知内容已停止。'
+            "处理：该缓存是纯镜像，可直接重置：git -C `"$CacheDir`" reset --hard && git -C `"$CacheDir`" clean -fdx"
+        )
+    }
+    [pscustomobject]@{
+        Match = 'git is required'
+        Hint  = @('找不到 git，无法拉取上游。处理：安装 git 或用 -SourcePath 指向已就绪的本地目录。')
+    }
+)
+
+function Get-FailureHint {
+    param([string]$Message)
+
+    foreach ($Entry in $FailureGuidance) {
+        if ($Message -match $Entry.Match) {
+            return @($Entry.Hint)
+        }
+    }
+    return @()
+}
+
+try {
+    Invoke-ImpeccableUpdate -Mode $Mode -SourcePath $SourcePath -RepoUrl $RepoUrl -Branch $Branch -CacheDir $CacheDir
+}
+catch {
+    $Message = [string]$_.Exception.Message
+
+    Write-Host ''
+    Write-Host '================================================================'
+    Write-Host ("{0} 未完成，本地 impeccable 未被改动。" -f $Mode)
+    Write-Host '================================================================'
+    Write-Host ''
+    Write-Host '原因:'
+    foreach ($Line in ($Message -split "`r?`n")) {
+        if (-not [string]::IsNullOrWhiteSpace($Line)) { Write-Host ("  " + $Line.TrimEnd()) }
+    }
+
+    # Wrapped in @() because returning an empty array from a function unrolls to
+    # $null on the way out, and $null.Count throws under Set-StrictMode.
+    $Hint = @(Get-FailureHint -Message $Message)
+    if ($Hint.Count -gt 0) {
+        Write-Host ''
+        Write-Host '怎么处理:'
+        foreach ($Line in $Hint) { Write-Host ("  " + $Line) }
+    }
+
+    Write-Host ''
+    # Stack traces are diagnostics for whoever edits this script, not for the
+    # person who double-clicked a shortcut, so they stay out of the default view.
+    if ($env:IMPECCABLE_UPDATER_DEBUG -eq '1') {
+        Write-Host '--- 调试信息 ---'
+        Write-Host $_.ScriptStackTrace
+        Write-Host ''
+    }
+    else {
+        Write-Host '（需要堆栈时设 IMPECCABLE_UPDATER_DEBUG=1 再运行）'
+        Write-Host ''
+    }
+
+    exit 1
+}
