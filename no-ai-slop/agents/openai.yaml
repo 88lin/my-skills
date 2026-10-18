@@ -1,0 +1,4 @@
+interface:
+  display_name: "/no-ai-slop · 中文去 AI 腔"
+  short_description: "清理中文与公众号草稿中的 AI 腔和模板套话，保留作者语气"
+  default_prompt: "用 $no-ai-slop 润色这篇中文草稿，去掉 AI 味，保留我的事实、观点和语气，并简述修改。"

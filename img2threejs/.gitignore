@@ -18,6 +18,12 @@ docs/PLAN_*.md
 # OMC planning/team state — local orchestration artifacts, never part of a release
 .omc/
 .omo/
+
+# npm / Node — kept out of the repo. The tarball ships only bin/img2threejs.mjs.
+node_modules/
+package-lock.json
+npm-debug.log*
+.npmrc
 .opencode/
 .img2threejs/
 

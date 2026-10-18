@@ -57,7 +57,7 @@ In Claude Code, type:
 
 1. **Basic Info**: Alias + Basic Info + Personality Profile (3 questions)
 2. **Source Import**: Chat logs, photos, social media (optional)
-3. **Analysis & Generation**: Relationship Memory + Persona
+3. **Analysis & Generation**: Relationship Memory + Persona + Conversation Engine (with fidelity rating)
 4. **Chat Test**: Talk like them
 
 ### Management Commands
@@ -96,6 +96,40 @@ Bridges the gap between virtual simulation and real-life action. Sarcastic but r
 | `/advisor analyze` | Review past conversations, decode their signals |
 | `/advisor confession` | Confession plan — timing, method, scripts, fallbacks |
 | `/advisor reality` | Reality check — assess crush health, prevent over-indulgence |
+
+### Mirror Mode
+
+> Simulator mode = *you talk to them*. Advisor mode = *how to talk to them*. Mirror mode = *who you are in their eyes*.
+
+It doesn't change them — it changes how you see yourself. The person in the mirror is the one they see every day.
+
+| Command | Description |
+|---------|-------------|
+| `/mirror` | Enter mirror mode (free consultation) |
+| `/mirror selfie` | Analysis — rebuild "you in their eyes", including how they'd describe you to friends |
+| `/mirror talk` | Mirror conversation — how your messages land in their eyes, with "re-shoot" rewrites |
+| `/mirror gap` | Filter check — two-way mirror: "them in your eyes" vs "you in their eyes", expose idealization |
+| `/mirror draft` | Pre-send rehearsal — mirror-check an unsent draft: send / tweak / don't |
+| `/mirror growth` | Growth line — read archived mirror reports, track how your reflection changes |
+
+### Anti-Monotony Conversation Engine
+
+> Being "like them" ≠ repeating the same line every turn. Since v1.2, every generated Skill ships with a conversation engine that kills the classic degeneration: revolving around one topic and ending every reply with the same catch-all line (e.g. "never mind, gonna go listen to music").
+
+| Mechanism | What it does |
+|-----------|--------------|
+| State card | Internally tracks current topic, topics used in last 5 turns, catchphrases used, **unanswered hooks** |
+| Topic quotas | Details appearing <3 times in source material can't be reply anchors; catchphrases ≤1 per 8 turns; anchors from the last 3 turns are off-limits |
+| Three-candidate sampling | Generates 3 internal candidates with different anchors, picks by consistency + progression + novelty − repetition |
+| Degeneration check | Repeated sentence pattern / ending / core noun → rewrite; cop-out phrases banned after 2 uses in 5 turns |
+| Progression rules | At least one proactive topic per 3 turns; your hooks must be picked up within 2 turns |
+| Fidelity tiers | `high/medium/low` — with thin material it switches to **listener mode** instead of faking a personality |
+
+The more material you provide, the higher the fidelity. With only one line of input, the Skill admits its own fidelity instead of looping on the single detail it knows.
+
+**Local referee scripts** (zero dependencies, stdlib only): prompt rules tend to be violated silently, so two executable referees back them up — `tools/speech_guard.py` measures repetition with character 2-gram Jaccard and detects ending styles and cop-out phrases, while `tools/topic_ledger.py` keeps the topic ledger, checks quotas and scores each candidate. Every turn, all 3 candidates are checked; `veto` ones are dropped and the rest are ranked by the script's score. Self-test: `python3 tools/speech_guard.py --selftest`.
+
+**Thresholds learn from you**: say "she wouldn't keep saying that" and the repetition check tightens automatically; say "she really does say that" and the feature is whitelisted permanently. A single correction only nudges the thresholds, so one complaint never flips the system. Settings live in `crushes/{slug}/adaptive.json`; say "reset to defaults" to clear them.
 
 ---
 
@@ -160,6 +194,7 @@ crush/
 │   ├── memory_analyzer.md      # Relationship memory analyzer
 │   ├── persona_builder.md      # Persona template
 │   ├── persona_analyzer.md     # Personality behavior analyzer
+│   ├── conversation_engine.md  # Anti-monotony conversation engine (state card / quotas / sampling)
 │   ├── merger.md               # Incremental merge logic
 │   ├── correction_handler.md  # Conversation correction handler
 │   ├── confession_simulator.md # Confession simulator
@@ -172,14 +207,19 @@ crush/
 │   ├── advisor_prep.md         # Pre-action prep
 │   ├── advisor_analyze.md      # Conversation review
 │   ├── advisor_confession.md   # Confession planning
-│   └── advisor_reality.md      # Reality check
+│   ├── advisor_reality.md      # Reality check
+│   ├── mirror.md               # Mirror mode (you in their eyes + mirror conversation)
 └── tools/
     ├── wechat_parser.py        # WeChat chat log parser
     ├── qq_parser.py            # QQ chat log parser
     ├── social_parser.py        # Social media parser
     ├── photo_analyzer.py       # Photo EXIF analyzer
     ├── version_manager.py      # Version management/rollback
-    └── skill_writer.py         # Skill file manager
+    ├── skill_writer.py         # Skill file manager
+    ├── session_state.py        # Session state I/O (shared by referee scripts)
+    ├── speech_guard.py         # Text referee: repetition / ending style / cop-out phrases
+    ├── topic_ledger.py         # Ledger referee: topic quotas / candidate scoring / report
+    └── feedback_tuner.py       # Adaptive thresholds calibrated from user corrections
 ```
 
 ---

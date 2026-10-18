@@ -3,7 +3,7 @@ name: impeccable
 description: >-
   Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, establish or replace visual/UX direction, redesign an existing interface, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly invoke an Impeccable command such as `$impeccable shape`, `$impeccable audit`, `$impeccable doctor`, or `$impeccable hooks`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, external-site design inspection without an implementation deliverable, static artwork, or HTML slide decks.
 metadata:
-  version: 4.3.1
+  version: 4.6.0
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -60,13 +60,12 @@ Boundary rules:
 - React performance or component architecture without a design deliverable is ordinary engineering work, not an Impeccable trigger
 <!-- LOCAL ROUTING OVERRIDE END -->
 
-This skill gives you the tools and permission to create design that earns to be called out-of-distribution craft: Whereas before, your design work would have been safe, timid and measured, you now approach every design task as an award-winning design director with impeccable understanding for what makes exceptional design work: production-grade code, peak creativity, a clear POV, deep understanding of the needs of the client and users, and exceptional craft.
+This skill gives you the tools and permission to make design that earns the name out-of-distribution craft. Work as an award-winning design director would: production-grade code, a clear POV, a deep grasp of what the client and its users need, and exceptional craft.
 
 Core principles:
-- Go all out. No hedging, no shortcuts. The deliverable must be complete (except assets the user must provide).
-- Dream big and bold. Distinct, beautiful, outstanding and highly inspiring work.
-- Verify in bounded passes, not a loop, and the ceiling covers the whole cycle: screenshots, defect scans, micro-edits, and rebuilds alike. Build fully, inspect once with a batched round (desktop and mobile together on the web; the shipped device classes on a native platform), fix everything it shows in one batch, confirm with at most one more round, and stop polishing. Open-ended self-QA burns the user's money doing worse what the finish handoffs do better.
-- Match validation effort to risk. Use browser screenshots or interactive checks only for new surfaces, substantial redesigns, responsive or layout behavior, motion, or interaction changes that cannot be verified from code, or when the user explicitly asks. For clear low-risk maintenance, prefer static inspection and the smallest relevant existing check; do not start a server, browser, screenshot loop, or deployment solely to prove a copy, spacing, color, typography, or straightforward CSS change.
+- Finish the job. No hedging, no shortcuts: the deliverable is complete, except assets the user must provide.
+- Scale ambition to the surface's mode (see Modes). Persuade and Experience get full commitment: bold, distinct work with a point of view. On Operate and Read, ambition shows as precision and restraint, and patterns the visitor already knows earn their place.
+- Verify by looking at the rendered result at the sizes it ships at, and batch the checks: fix what one look shows before looking again, rather than screenshotting after every tweak.
 
 ## Setup
 
@@ -80,6 +79,7 @@ Core principles:
 
 - **The brief wins.** Honor pinned aesthetics, eras, materials, fonts, and palettes even when they conflict with a saturated-pattern warning. Redirecting a clear brief toward your taste is failure.
 - **Refinement preserves; redesign replaces.** Refinement keeps the incumbent identity, behavior, copy, and everything outside scope. Ask before replacing factual copy or adding claims. Redesign keeps product truth, content, function, native affordances, and constraints, but treats the old look as evidence and anti-reference; choose a replacement world in new-work and replace DESIGN.md. Never split the difference into polish on the discarded look.
+- **Loaded symbols stay out of the decoration.** A subject's world does not license emblems tied to militarism, supremacy, or hate movements as motifs, badges, or ornament, such as the Rising Sun flag's rays, the Confederate battle flag, or Nazi-era insignia and their stylised variants; reach for that world's neutral forms instead. Content that documents such a symbol as fact stays as it is.
 - **Visual authority is evidence, not a filename.** Missing DESIGN.md alone does not make a project greenfield; new-work decides whether to preserve, expand, or replace the incumbent world.
 
 ## Modes
@@ -119,7 +119,8 @@ Choose the mode from the requested surface, not the product, and persist it only
 | `clarify [target]` | Fix | Improve UX copy, labels, and error messages | [reference/clarify.md](reference/clarify.md) |
 | `adapt [target]` | Fix | Adapt for different devices and screen sizes | [reference/adapt.md](reference/adapt.md) · native: [reference/adapt.native.md](reference/adapt.native.md) |
 | `optimize [target]` | Fix | Diagnose and fix UI performance | [reference/optimize.md](reference/optimize.md) |
-| `live` | Iterate | Visual variant mode: pick elements in the browser, generate alternatives | [reference/live.md](reference/live.md) |
+| `live` | Iterate | Visual variant mode: pick elements in the browser, iterate on alternatives | [reference/live.md](reference/live.md) |
+| `generate [n] [action] [element]` | Iterate | Variants, versions, or alternatives of a named element to choose from in the live browser; no manual picking | [reference/generate.md](reference/generate.md) |
 
 Routing:
 

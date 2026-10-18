@@ -1,4 +1,4 @@
-﻿{
+{
     "skills":  [
                    {
                        "name":  "add-notionnext-book",
@@ -26,6 +26,24 @@
                        "repositoryFolder":  "..\\external\\archify-source",
                        "syncSkillDirectory":  "archify",
                        "notes":  "Git source is kept under .agents\\external; active skill folder contains only the packaged Archify skill runtime"
+                   },
+                   {
+                       "name":  "guizang-product-video-skill",
+                       "localFolder":  "guizang-product-video-skill",
+                       "type":  "git",
+                       "autoUpdate":  true,
+                       "remote":  "https://github.com/op7418/guizang-product-video-skill.git",
+                       "branch":  "main",
+                       "repositoryFolder":  "..\\external\\guizang-product-video-skill-source",
+                       "syncSkillFile":  "SKILL.md",
+                       "syncSkillDirectories":  [
+                           "agents",
+                           "assets",
+                           "references",
+                           "scripts",
+                           "tests"
+                       ],
+                       "notes":  "Git source is kept under .agents\\external; active skill contains the entry, runtime resources, and README/LICENSE needed for usage and license references"
                    },
                    {
                        "name":  "book-dissection",
@@ -291,6 +309,109 @@
                        "repo":  "anthropics/skills",
                        "skill":  "xlsx",
                        "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/xlsx/SKILL.md"
-                   }
+                   },
+                   {
+                       "name": "gsap-core",
+                       "localFolder": "gsap-core",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-core",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-core/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-timeline",
+                       "localFolder": "gsap-timeline",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-timeline",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-timeline/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-scrolltrigger",
+                       "localFolder": "gsap-scrolltrigger",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-scrolltrigger",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-scrolltrigger/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-plugins",
+                       "localFolder": "gsap-plugins",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-plugins",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-plugins/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-utils",
+                       "localFolder": "gsap-utils",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-utils",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-utils/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-react",
+                       "localFolder": "gsap-react",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-react",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-react/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-performance",
+                       "localFolder": "gsap-performance",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-performance",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-performance/SKILL.md"
+                   },
+                   {
+                       "name": "gsap-frameworks",
+                       "localFolder": "gsap-frameworks",
+                       "type": "skills-cli",
+                       "autoUpdate": true,
+                       "repo": "greensock/gsap-skills",
+                       "skill": "gsap-frameworks",
+                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-frameworks/SKILL.md"
+                   },
+                   {
+                       "name": "oil-motion",
+                       "localFolder": "oil-motion",
+                       "type": "git",
+                       "autoUpdate": true,
+                       "remote": "https://github.com/oil-oil/oil-motion.git",
+                       "branch": "main",
+                       "repositoryFolder": "..\\external\\oil-motion-source",
+                       "syncSkillFile": "SKILL.md",
+                       "syncSkillDirectories": [
+                           "agents",
+                           "assets",
+                           "references",
+                           "scripts",
+                           "tests"
+                       ],
+                       "notes": "Source checkout stays under .agents/external; runtime resources are synced separately. Python environment is at .agents/external/oil-motion-runtime/.venv. README and LICENSE are retained locally."
+                   },
+    {
+      "name": "no-ai-slop",
+      "localFolder": "no-ai-slop",
+      "type": "manual",
+      "autoUpdate": false,
+      "remote": "https://github.com/petergyang/no-ai-slop.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\no-ai-slop-source",
+      "upstreamSkillPath": "skills/no-ai-slop",
+      "upstreamCommit": "000650b156983f5159695b441477f4e63b25dc85",
+      "reason": "用户授权的中文定制版：原版 18 组模式中文化，补充 32 组中文模式、公众号流程、编辑强度、误判边界与三类样稿自检。人工审阅合并上游，避免通用自动更新覆盖中文正文和参考库。",
+      "notes": "Source checkout is preserved clean under .agents\\external; active runtime and backup retain the localized skill and MIT license. Description is replayed from local-routing-overrides.json. WorkBuddy uses a junction to the active runtime."
+    }
                ]
 }

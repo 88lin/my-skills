@@ -1,5 +1,38 @@
 # Skill Routing Changelog
 
+## 2026-10-18：补强 no-ai-slop 的中文识别依据、改写规格与误判边界
+
+- 18 组原版模式逐条补齐识别依据、常见变体、过度改写提示和保留边界；U04、U18 原先缺失的保留边界已补上。改写示范不再只有一条改法，同时说明“过度改写长什么样”。
+- 中文专项由 24 组扩到 32 组，新增 C25 伪结论与正确废话、C26 编造场景化案例、C27 中英混搭与术语炫技、C28 比喻密度过高、C29 抽象主体施动、C30 密度失常、C31 引用与转述失层、C32 反转金句。原文照搬的句子不属此类。
+- 模式库增加来源说明、组合诊断（四种常见搭配及优先级）和误判总则：单次出现不是模式；口语、术语、口癖、整齐清单、真实犹豫默认保留。
+- `SKILL.md` 增加三问判断、默认不算 AI 味清单、编辑强度（轻度／标准／深度）和“修改说明只写保留／改动／故意未动／待核实”。description 同步到 `local-routing-overrides.json`，写明不误伤口语术语、不因从零起草触发。
+- 公众号流程补“过度改写长什么样”和“作者说改得不像我了怎么办”；`eval.md` 增加误判、反模板、组合诊断检查，以及改写／只检测／正常表达三类样稿回归。第三类被改动即视为失败。
+- 与 `khazix-writer` 的关系写进正文：卡兹克稿件的标点禁令和口语习惯属于作者风格，编辑时保留，也不把其推荐表达当成通用去 AI 味手段。
+- 三类样稿验证：改写样稿按标准强度收回标题、删除套话与升华、保留全部作者事实与语气；只检测样稿输出 5 处标注、未改写未补来源未打分；正常表达样稿判定无需改动并逐处说明理由。
+
+## 2026-10-18：安装并中文化 no-ai-slop
+
+- 从 `petergyang/no-ai-slop` 的 `skills/no-ai-slop` 安装，基线 `000650b156983f5159695b441477f4e63b25dc85`；干净源码保存在 `.agents\external\no-ai-slop-source`。
+- 活动入口保留原版两种任务和编辑框架；18 组原版模式逐项中文化，另增 24 组中文专项模式及公众号整篇流程。每组包含场景、问题示例、改写方向和保留边界。
+- 同步中文 `eval.md` 和 Codex UI 文案，保留 MIT 许可证；活动目录只有一个 `SKILL.md`。
+- 登记为 `manual`、`autoUpdate: false`，中文触发描述纳入持久 override。通用更新不覆盖中文版本，未来审阅上游后再合并。
+- WorkBuddy 入口以 junction 指向活动目录；备份仓库保留同一份中文内容。未扩展其他客户端白名单。
+
+## 2026-10-05：安装 GSAP、Oil Motion 并接入 Rare UI
+
+- 逐项安装并登记 GSAP 八个技能和 Oil Motion；源码与活动入口分离，保留运行资源、参考示例和许可证。
+- 为 GSAP core/react/frameworks 添加持久触发边界，解决泛化动画推荐与现有 Impeccable、CSS、Motion 分工的冲突；上游正文不改写。
+- 同日复核后补齐 performance、scrolltrigger、timeline、plugins、utils 五项的上下文限制，避免通用关键词接管普通工具函数、性能排查、视频时间线或其他动画引擎。
+- 为九个新增技能建立 WorkBuddy junction；保留客户端已有实体内容和 Claude Code 白名单。
+- Rare UI 保留为外部组件源码与项目注册表，不增加假 skill；组件按需使用，记录署名要求。
+
+## 2026-09-20：纳管 guizang-product-video-skill
+
+- 安装 `op7418/guizang-product-video-skill`，完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\guizang-product-video-skill-source`，活动入口同步到 `C:\Users\Computer\.agents\skills\guizang-product-video-skill`。
+- 使用 `repositoryFolder`、`syncSkillFile` 和 `syncSkillDirectories`，活动目录保留入口、素材、参考文档、脚本、回归测试以及 `README.md`、`LICENSE`；不暴露 Git 元数据和重复嵌套入口。
+- 触发边界：仅用于软件版本更新宣传片、changelog promo 和代码驱动的产品视频工程；普通封面、HTML deck、网页 UI、小范围文案改动不自动触发。
+- 登记 `main` 分支自动更新，不修改上游 `SKILL.md` 正文，也不添加本地 routing override；记录主许可证 AGPL-3.0 与默认 CodePilot 资产的 BUSL-1.1 例外。
+
 ## 2026-08-31：纳管 archify
 
 - 安装 `tt-a1i/archify`，完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\archify-source`，活动入口同步到 `C:\Users\Computer\.agents\skills\archify`。

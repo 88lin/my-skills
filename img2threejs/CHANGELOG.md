@@ -20,6 +20,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   input across the move. The partition of every character/rig-named line as base mechanism or
   domain content is written down *before* any file moves.
 
+## npm CLI 0.1.1 — 2026-10-07
+
+- Add tag-driven trusted publishing for independent `cli-vX.Y.Z` CLI releases.
+- Publish the tested installer tarball from GitHub Actions without a stored npm write
+  token; keep skill `vX.Y.Z` releases and the default skill `v2.0.0` independent.
+- Document npx/global npm installation and the npm trusted publisher configuration.
+
+## npm CLI 0.1.0 — 2026-10-07
+
+Published [`img2threejs@0.1.0`](https://www.npmjs.com/package/img2threejs) to the public
+npm registry with the `latest` tag. CLI versions are independent of skill releases;
+the default installed skill remains `v2.0.0`.
+
+- Install the base skill directly from a pinned GitHub tag or commit instead of invoking
+  the unpublished `img2` npm package and its plugin-only `add` command.
+- Honor `--host` for Hermes, Claude Code, Codex, and OpenCode; share one managed checkout
+  per commit and preserve manual installs, unrelated symlinks, and locally edited releases.
+- Make `--dry-run` offline and side-effect-free, and enforce skill-version downgrade
+  rejection in `update`, including SHA refs and prerelease precedence.
+- Replace source-text self-tests with isolated real-Git installation/update regressions;
+  exclude the test runner from the published tarball and validate the CLI in CI.
+
 ## [2.0.0] — 2026-09-05
 
 **The Plugin Update.** The plugin ecosystem — domain registry, img2 harness, plugin-served

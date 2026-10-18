@@ -1,5 +1,13 @@
 # Skill Routing Rules
 
+## no-ai-slop 中文编辑（2026-10-18）
+
+- 用户要求给中文草稿去 AI 味、去 AI 腔、去机器味、去翻译腔、润色得自然，或只检测标注模板套话时使用 `no-ai-slop`。
+- 改写与只检测遵从用户选择；保留作者的事实、语气和观点，不打 AI 作者概率分，不保证通过检测器。
+- 触发信号是“已有草稿需要按中文表达问题审校”，不是关键词命中。单看“润色”“自然”且对象是英文或代码时不触发；内容本身就是正常口语、术语和作者口癖时不改动。
+- 公众号起草、扩写和明确的卡兹克风格继续按 `khazix-writer` 的任务边界处理；`no-ai-slop` 可作为已有草稿的编辑检查，不擅自切换作者风格，也不因“公众号”一词接管配图或发布。卡兹克稿件自身的标点禁令与口语习惯属于作者风格，编辑时保留，不反向注入。
+- 中文 description 由 `local-routing-overrides.json` 持久保存；中文主体与模式库属于用户明确授权的本地定制，按人工审阅合并上游维护。
+
 这份文档用于解决多个 skill 都能处理同一请求时的默认路由问题。它是维护参考，不直接参与运行时触发。
 
 真正参与触发的是各 skill `SKILL.md` frontmatter 中的 `description`。需要长期保留本地边界时，修改 `local-routing-overrides.json`，再运行 `manage-skills.ps1 -Mode apply-overrides`。
@@ -49,6 +57,13 @@
 ## 路由边界
 
 ### 前端与设计
+
+#### GSAP 动画技能、Oil Motion 与 Rare UI
+
+- GSAP 是动画实现专项。`gsap-core` 处理基础动画；时间线、ScrollTrigger、插件、utils、React、其他框架和性能按实际需要加载，不同时加载整套技能。八项入口均要求明确的 GSAP 上下文，不能只凭滚动、拖拽、时间线、FPS、clamp 等通用词触发。
+- 普通 UI 美化仍按 `impeccable` 的设计判断边界执行；简单 CSS 过渡直接实现。已经采用 Motion 的 Rare UI 组件保持其原有引擎，不为技能偏好迁移。
+- `oil-motion` 用于 AI 生成或已有视频、序列帧到交互网页资源的处理；普通界面过渡和微交互、独立成片、单张配图不由它接管。保留上游明确边界，不增加冗余 override。
+- Rare UI 为按需复制代码的 shadcn 组件注册表，不是 skill。使用 `@rare-ui` 名称或完整注册表 URL；交付组件时遵守署名与 Commons Clause，不能按无附加条件 MIT 处理。
 
 #### `impeccable`
 
@@ -110,6 +125,15 @@
 #### `oil-cover`
 
 只在用户明确指定 `oil-cover`、`$oil-cover` 或要求使用它时触发。它专门生成小红书 / B 站 AI 工具实操视频封面，默认处理真实视频证据、3:4/4:3/16:9 三种画幅和可选创作者头像；普通封面、首图或视频封面请求不自动抢占。
+
+#### `guizang-product-video-skill`
+
+只在用户要制作软件版本更新宣传片、changelog promo、产品功能演示片或明确点名该 skill 时触发。它从真实更新和产品组件出发，制作可继续修改的视频工程、关键静帧、配乐、动作音效和最终 MP4。
+
+- 普通网页 UI、产品宣传页或 HTML deck 归 `impeccable` / `html-ppt`；普通视频剪辑、单张封面或静态视觉稿不自动加载它。
+- 这是重量级视频制作流程。小范围改文案、做一张封面或只要分镜建议时，不自动启动环境检查、浏览器渲染、FFmpeg 或完整交付链。
+- 默认优先使用真实产品组件和仓库证据；需要 Node、Python、FFmpeg、Playwright 等环境时，只检查当前项目实际缺项，不把安装依赖当作 skill 安装的一部分。
+- 注意上游许可证：主流程为 AGPL-3.0，`assets/fallback` 中的 CodePilot 默认样式另受 BUSL-1.1 约束；使用默认样式或分发产物时按上游说明核对授权。
 
 #### `ian-xiaohei-illustrations`
 

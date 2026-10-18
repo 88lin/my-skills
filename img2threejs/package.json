@@ -1,0 +1,39 @@
+{
+  "name": "img2threejs",
+  "version": "0.1.1",
+  "description": "Install and update the img2threejs skill into agent hosts (Hermes, Claude Code, Codex, OpenCode).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "img2threejs": "bin/img2threejs.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test bin/img2threejs.mjs-test.mjs",
+    "package:check": "npm pack --dry-run"
+  },
+  "files": [
+    "bin/img2threejs.mjs"
+  ],
+  "keywords": [
+    "img2threejs",
+    "threejs",
+    "image-to-3d",
+    "skill",
+    "ai-agent"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/img2threejs/img2threejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/img2threejs/img2threejs/issues"
+  },
+  "homepage": "https://github.com/img2threejs/img2threejs#readme"
+}

@@ -1,5 +1,16 @@
 # Skills 更新说明
 
+## no-ai-slop 中文定制版（2026-10-18）
+
+- 活动入口：`C:\Users\Computer\.agents\skills\no-ai-slop`。
+- 源码：`C:\Users\Computer\.agents\external\no-ai-slop-source`，上游子目录 `skills/no-ai-slop`；登记的 `upstreamCommit` 是已合并基线。
+- 原版 18 组模式的中文对应关系在 `references/original-patterns-zh.md`，每组含识别依据、常见变体、过度改写提示和保留边界；新增 32 组在 `references/chinese-patterns.md`，另有模式来源、组合诊断、误判总则、公众号流程（含编辑强度与过度改写对照）和中文 `eval.md`。
+- `eval.md` 要求用三类样稿回归：改写、只检测、正常表达不误伤。第三类与第一类同等重要，正常样稿被改动即视为失败；修改模式库后应重跑三类，防止技能朝“改得多”漂移。
+- `manual` / `autoUpdate: false` 用于保护用户授权的中文定制；通用 `update` 会跳过。`check` 的 `up-to-date` 只证明本地入口和 description override 同步，不代表已检查远端新提交。
+- 中文触发 description 先改 `local-routing-overrides.json`，再执行 `apply-overrides -Only no-ai-slop`；正文、模式参考和 UI 文案同步维护。
+- 合并上游时：先在外部源码仓库确认无本地修改，再获取上游，在登记基线与待合并提交之间检查 skill 差异；逐项保留或补充中文对应模式和自检，不以重新安装覆盖活动目录。完成技能校验、事实保真和只检测行为复核后，更新登记基线并同步活动目录与备份。
+- WorkBuddy 使用 `C:\Users\Computer\.workbuddy\skills\no-ai-slop` junction；活动内容更新后无需第二份复制。
+
 这份文档说明全局 skill 的检查、更新、纳管和恢复方式。活动状态以磁盘和配置文件为准，不维护容易过期的静态数量清单。
 
 ## 关键路径
@@ -12,6 +23,15 @@
 - QoderWork skill 入口：当前不存在（`C:\Users\Computer\.qoderwork` 下无 `skills` 目录）
 - WorkBuddy skill 入口：`C:\Users\Computer\.workbuddy\skills`
 - 备份、缓存和外部仓库：`C:\Users\Computer\.agents\external`
+
+## GSAP、Oil Motion 与 Rare UI（2026-10-05）
+
+- GSAP 的八个独立入口（core、timeline、scrolltrigger、plugins、utils、react、performance、frameworks）逐项登记为 `skills-cli`，更新始终指定单个 skill。上游参考仓库保存在 `.agents\external\gsap-skills-source`，不放进活动扫描目录。
+- GSAP 八项技能的持久路由位于 `local-routing-overrides.json`：不因普通 UI 美化或框架名称强制引入 GSAP，不替换已有 Motion 动画。
+- `oil-motion` 的 Git 源保存在 `.agents\external\oil-motion-source`；活动入口同步 `SKILL.md`、`agents`、`assets`、`references`、`scripts`、`tests`，另保留 README 和许可证。Python 依赖使用 `.agents\external\oil-motion-runtime\.venv`，不污染项目或全局 Python。
+- WorkBuddy 的九个新增入口均以 junction 指向 `.agents\skills`。保留客户端实体目录与迁移文件；不扩展 Claude Code 白名单。
+- Rare UI 不是 Agent Skill，不登记到 `skills-sources.json`，也不伪装成 WorkBuddy skill。源码、组件 JSON 和许可证位于 `.agents\external\rare-ui-source`（稀疏检出组件与注册表，未安装其 Next.js 演示站）；Facetmark 的 `frontend/components.json` 提供 `@rare-ui` 入口，具体组件按需添加。
+- 外部资源与使用入口见 `.agents\external\UI-MOTION-TOOLS.md`。GSAP 技能文件与项目的 `gsap` npm 依赖是两个不同层次；安装技能不会自动重写项目动画。
 
 ## 日常命令
 
@@ -78,6 +98,7 @@ QoderWork 当前没有 skill 入口目录（`C:\Users\Computer\.qoderwork` 下�
 - `ian-xiaohei-illustrations` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\ian-xiaohei-illustrations-source`；活动目录只保留同步后的 skill 内容，避免 Codex 递归扫描出重复 skill。
 - `modlens` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\modlens-source`；登记的 `syncSkillDirectory: skills\\modlens` 会同步入口、Windows/Unix 启动脚本和 references 到活动 skill 根目录。
 - `archify` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\archify-source`；登记的 `syncSkillDirectory: archify` 会同步独立 HTML 技术图所需的 CLI、schemas、renderers、references 和资源，不把外层网站、研究文档、测试项目暴露为活动 skill。
+- `guizang-product-video-skill` 的完整 Git 源仓库保存在 `C:\Users\Computer\.agents\external\guizang-product-video-skill-source`；登记的 `syncSkillFile: SKILL.md` 和 `syncSkillDirectories` 会同步 `agents`、`assets`、`references`、`scripts`、`tests`，活动目录另外保留 `README.md` 与 `LICENSE` 以满足上游用法和许可证链接；不把 Git 元数据当作运行入口。
 - Git 源仓库需要与活动目录分离时，使用 `repositoryFolder` 指向外部仓库，再用 `syncSkillDirectory` 把仓库内的 skill 子目录同步到活动目录；如果入口依赖仓库根部资料，再用 `syncSkillDirectories` 按目录名同步这些资源。不要手工把完整仓库复制回活动 skill 根目录。
 
 ### `skills-cli`
@@ -278,6 +299,7 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\Computer\.agents\skills\insta
 - `ian-xiaohei-illustrations`：源仓库为 `C:\Users\Computer\.agents\external\ian-xiaohei-illustrations-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\ian-xiaohei-illustrations`；活动目录只保留内层 skill 内容。
 - `modlens`：源仓库为 `C:\Users\Computer\.agents\external\modlens-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\modlens`；活动目录同步 `skills\\modlens`，保留 `SKILL.md`、`scripts` 和 `references`，不包含完整项目源码。
 - `archify`：源仓库为 `C:\Users\Computer\.agents\external\archify-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\archify`；活动目录同步仓库内的 `archify` 子目录，保留渲染、校验、导出和视觉检查所需的完整运行包。
+- `guizang-product-video-skill`：源仓库为 `C:\Users\Computer\.agents\external\guizang-product-video-skill-source`，活动 skill 为 `C:\Users\Computer\.agents\skills\guizang-product-video-skill`；活动目录同步 `SKILL.md`、`agents`、`assets`、`references`、`scripts`、`tests`，并保留 `README.md`、`LICENSE`，用于代码驱动的软件版本更新宣传片制作。
 - `img2threejs`：`C:\Users\Computer\.agents\skills\img2threejs`；需要完整保留 `forge/`、`grimoire/`、`scripts/` 和 `docs/`。
 
 日常检查和更新：

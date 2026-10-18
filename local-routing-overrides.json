@@ -81,11 +81,6 @@
       "usageRule": "## Usage Rule\n\nUse this skill **on demand** for AI-search optimization.\n\nTrigger it when the task clearly involves one of these goals:\n\n- Improving visibility in AI-generated answers\n- Getting cited by LLMs or answer engines\n- Optimizing for AI Overviews, ChatGPT, Perplexity, Claude, or Gemini\n- Working on AEO, GEO, LLMO, AI citations, or zero-click AI search presence\n\nDo **not** use this as the default SEO skill.\n\n- For broad SEO diagnosis, prefer `seo-audit`\n- For structured data implementation, prefer `schema`",
       "bodyPatches": [
         {
-          "reason": "上游工具注册表链接在当前独立 skill 安装中不存在",
-          "find": "For implementation, see the [tools registry](../../tools/REGISTRY.md).",
-          "replace": "For implementation, use the relevant SEO and analytics tools available in the current environment."
-        },
-        {
           "reason": "Related Skills 只保留当前已安装的 skill，避免路由到不存在的能力",
           "find": "## Related Skills\n\n- **seo-audit**: For traditional technical and on-page SEO audits\n- **schema**: For implementing structured data that helps AI understand your content\n- **content-strategy**: For planning what content to create\n- **competitors**: For building comparison pages that get cited\n- **programmatic-seo**: For building SEO pages at scale\n- **copywriting**: For writing content that's both human-readable and AI-extractable",
           "replace": "## Related Skills\n\n- **seo-audit**: For traditional technical and on-page SEO audits\n- **schema**: For implementing structured data that helps AI understand your content"
@@ -127,6 +122,59 @@
           "replace": "   - 宣称成功之前，重跑相关测试与复现路径，确认修复真的生效"
         }
       ]
+    },
+      {
+          "skill": "gsap-core",
+          "localFolder": "gsap-core",
+          "description": "GSAP core animation implementation: tweens, easing, responsive motion and reduced-motion handling. Use when GSAP is requested, already in use, or selected for coordinated, interruptible JavaScript animation. Do not trigger for generic UI beautification, simple CSS transitions, or components using another animation engine.",
+          "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below."
+      },
+      {
+          "skill": "gsap-react",
+          "localFolder": "gsap-react",
+          "description": "GSAP integration in React and Next.js: useGSAP, refs, scoped selectors and lifecycle cleanup. Use for existing or explicitly selected GSAP animations in React. Do not select GSAP solely because the project uses React; preserve Motion or other existing engines.",
+          "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below."
+      },
+      {
+          "skill": "gsap-frameworks",
+          "localFolder": "gsap-frameworks",
+          "description": "GSAP lifecycle integration in Vue, Nuxt, Svelte and other non-React frameworks. Use when GSAP is requested or already selected. Ordinary framework work and animation implemented with another engine do not trigger this skill; React GSAP work uses gsap-react.",
+          "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below.\n\nThe upstream examples referenced below are available in the external source checkout at `C:/Users/Computer/.agents/external/gsap-skills-source/examples/`. They are reference projects, not prerequisites for the active skill."
+      },
+    {
+      "skill": "gsap-performance",
+      "localFolder": "gsap-performance",
+      "description": "Optimize existing or explicitly selected GSAP animations: transform and opacity updates, batching, cleanup and animation workload. Use for performance problems in GSAP code. Generic FPS, browser performance, rendering jank or other animation engines do not trigger this skill.",
+      "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below.\n\nA generic keyword such as scroll, timeline, drag, SVG, FPS, clamp or snap is not enough to select this skill. Use this specialist only inside a GSAP implementation or when the user explicitly requests the named GSAP capability. For a slide deck, finished product video or interactive media-asset pipeline, the corresponding deliverable skill leads; GSAP guidance is supplementary only when that implementation uses GSAP."
+    },
+    {
+      "skill": "gsap-scrolltrigger",
+      "localFolder": "gsap-scrolltrigger",
+      "description": "Implement or debug GSAP ScrollTrigger: scroll-linked timelines, pinning, scrub, refresh and cleanup. Use when ScrollTrigger is explicitly requested or GSAP has already been selected. Ordinary scrolling, CSS or Motion scroll effects, and video/frame-sequence production do not select GSAP automatically.",
+      "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below.\n\nA generic keyword such as scroll, timeline, drag, SVG, FPS, clamp or snap is not enough to select this skill. Use this specialist only inside a GSAP implementation or when the user explicitly requests the named GSAP capability. For a slide deck, finished product video or interactive media-asset pipeline, the corresponding deliverable skill leads; GSAP guidance is supplementary only when that implementation uses GSAP."
+    },
+    {
+      "skill": "gsap-timeline",
+      "localFolder": "gsap-timeline",
+      "description": "Sequence and control GSAP tweens with gsap.timeline: labels, nesting, playback and position parameters. Use when the animation implementation uses GSAP or its timeline API is explicitly requested. Generic timeline planning, video editing, slide sequencing and other animation engines do not trigger this skill.",
+      "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below.\n\nA generic keyword such as scroll, timeline, drag, SVG, FPS, clamp or snap is not enough to select this skill. Use this specialist only inside a GSAP implementation or when the user explicitly requests the named GSAP capability. For a slide deck, finished product video or interactive media-asset pipeline, the corresponding deliverable skill leads; GSAP guidance is supplementary only when that implementation uses GSAP."
+    },
+    {
+      "skill": "gsap-plugins",
+      "localFolder": "gsap-plugins",
+      "description": "Implement named GSAP plugins such as Flip, Draggable, SplitText, MorphSVG and ScrollToPlugin, including registration and cleanup. Use when a GSAP plugin is explicitly requested or the target animation already uses GSAP. Generic dragging, SVG drawing, scrolling or plugin development alone do not trigger it.",
+      "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below.\n\nA generic keyword such as scroll, timeline, drag, SVG, FPS, clamp or snap is not enough to select this skill. Use this specialist only inside a GSAP implementation or when the user explicitly requests the named GSAP capability. For a slide deck, finished product video or interactive media-asset pipeline, the corresponding deliverable skill leads; GSAP guidance is supplementary only when that implementation uses GSAP."
+    },
+    {
+      "skill": "gsap-utils",
+      "localFolder": "gsap-utils",
+      "description": "Use and explain gsap.utils helpers such as clamp, mapRange, interpolate, snap, selector, wrap and pipe inside GSAP code. Trigger for explicit gsap.utils questions or an implementation that already uses GSAP; ordinary utility functions or similarly named methods in other libraries do not trigger it.",
+      "usageRule": "## Usage Rule\n\nUse GSAP guidance when GSAP is explicitly requested, already used by the target, or selected for a concrete need such as coordinated timelines or interruptible animation. A generic request to beautify a UI or add a simple transition does not select GSAP automatically. Keep Impeccable as the design entry point when design judgment is required. Preserve the animation engine used by existing components, including Rare UI components using Motion; do not migrate them solely to follow this skill. Simple CSS transitions can remain CSS. These local boundaries take precedence over broader upstream library recommendations below.\n\nA generic keyword such as scroll, timeline, drag, SVG, FPS, clamp or snap is not enough to select this skill. Use this specialist only inside a GSAP implementation or when the user explicitly requests the named GSAP capability. For a slide deck, finished product video or interactive media-asset pipeline, the corresponding deliverable skill leads; GSAP guidance is supplementary only when that implementation uses GSAP."
+    },
+    {
+      "skill": "no-ai-slop",
+      "localFolder": "no-ai-slop",
+      "description": "编辑中文草稿、公众号文章和长文，去除 AI 味、AI 腔、机器味、翻译腔与模板套话，保留作者的事实、观点和个人语气。用于去 AI 化、降 AI 感、润色、改得自然一点、像人写的，或只检测标注疑似 AI 套路。不判断 AI 作者身份、不提供检测率分数，不把口语、术语、作者口头禅和合理修辞当 AI 味，不因普通技术问答或从零起草新文章自动触发。"
     }
   ]
 }
