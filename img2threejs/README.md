@@ -9,12 +9,13 @@
 Quality-gated, animation-ready, and deliberately token-efficient — reconstruction-by-code, not photogrammetry, mesh extraction, or downloaded art packs.
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.1-green.svg)](CHANGELOG.md)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Runtime](https://img.shields.io/badge/runtime-Three.js-000000.svg)](https://threejs.org)
 [![Tooling](https://img.shields.io/badge/tooling-Python%203.10%2B%20stdlib-3776ab.svg)](forge)
 [![Sponsor](https://img.shields.io/badge/Sponsor-Ko--fi-FF5E5B.svg?logo=kofi&logoColor=white)](https://ko-fi.com/iamnick)
 [![Scripts](https://img.shields.io/badge/scripts-forge%20%2F%20scripts-3776ab.svg)](scripts)
+[![Sponsored by MiniMax](https://img.shields.io/badge/Sponsored%20by-MiniMax-000000.svg?labelColor=1a1a1a&logo=MiniMax&logoColor=white)](https://platform.minimax.io/subscribe/token-plan)
 [![Sponsored by Atlas Cloud](https://img.shields.io/badge/Sponsored%20by-Atlas%20Cloud-000000.svg?labelColor=1a1a1a&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NDUuOTUgNzkyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNzEyLjA1LDU5NC4zTDQyMi45OCwxNS40NiwxMzMuOSw1OTQuM2wtOTEuMDEsMTgyLjI1YzU3LjE4LTM0LjU1LDExOS40OS02MS40LDE4NS40NC03OS40NSw2Mi4wMi0xNi45NywxMjcuMjQtMjYuMjEsMTk0LjY1LTI2LjIxLDM0LjY5LDAsNjguNzksMi40OSwxMDIuMTksNy4xOGwtNjUuNzItMTQxLjc2Yy0xOC42MS0zLjIzLTEwMS4yOC0zLjIzLTE2MS44Myw5Ljg0bDEyNS4zNi0yNzMuMTYsMTk0LjY1LDQyNC4xMmMuMzUuMS42OS4yMSwxLjAzLjMsNjUuNTcsMTguMDQsMTI3LjUzLDQ0Ljc4LDE4NC40MSw3OS4xNGwtOTEuMDEtMTgyLjI1WiIvPjwvc3ZnPg%3D%3D)](https://www.atlascloud.ai/console/coding-plan)
 [![Sponsored by Tripo](https://img.shields.io/badge/Sponsored%20by-Tripo-000000.svg?labelColor=1a1a1a&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBmaWxsPSIjZmFjZTAwIiBkPSJNMTIuNjYxIDQuNzUyYS4wNC4wNCAwIDAwLS4wMTMtLjA1NS4wMzguMDM4IDAgMDAtLjAyLS4wMDVINi40OTZhLjE5LjE5IDAgMDEtLjE2NS0uMDkyTDQuMjQ1IDEuMDUyYS4wMzQuMDM0IDAgMDEuMDE0LS4wNDdBLjAzOC4wMzggMCAwMTQuMjc1IDFjNS40OTIgMCAxMC43MzMgMCAxNS43MjEuMDAyIDIuMDg5IDAgMy42OTkgMS41NCA0LjAwMyAzLjU5OC4wMDguMDYyLS4wMTkuMDkyLS4wOC4wOTJoLTYuNjdhLjIwNC4yMDQgMCAwMC0uMTc0LjFjLTEuNDE0IDIuNDEtMi44MiA0LjgwMy00LjIxOCA3LjE3OC0uMjguNDcyLS45Mi42Mi0xLjM3My4zNDItLjE5LS4xMTYtLjM1Ny0uMzA0LS41MDItLjU2MWEzNy45MTcgMzcuOTE3IDAgMDAtLjg4Mi0xLjQ4OWMtLjIyMi0uMzU2LS4yMzQtLjcwNy0uMDM1LTEuMDUyYTY2MS43NyA2NjEuNzcgMCAwMTIuNTk3LTQuNDZ2LjAwMnoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMTAuNzcyIDE2Ljk4NmMuNTcuOTcyIDEuOTM1LjkxNiAyLjQ4OS0uMDI4TDE5IDcuMTY0YS4xMjcuMTI3IDAgMDEuMTE2LS4wNjdoNC4yM2MuMDE3IDAgLjAzLjAxNC4wMjguMDMgMCAuMDA1LS4wMDEuMDEtLjAwMy4wMTMtMi42MDUgNC40MzItNS4yMzIgOC45MDYtNy44OCAxMy40Mi0xLjI4MyAyLjE5MS00LjI3OCAyLjUxNy02LjE3OS45NDctLjMwOC0uMjU0LS42NjUtLjcyNy0xLjA2OS0xLjQxNy0yLjUyNS00LjMyNC01LjA5OC04LjcxLTcuNzItMTMuMTYyLTEuMDYzLTEuODAzLS40MjQtMy45NDcgMS4xOS01LjIuMDUzLS4wNDEuMDk1LS4wMzMuMTI5LjAyMyAyLjkwNSA0Ljk1IDUuODgyIDEwLjAyOSA4LjkzIDE1LjIzNnoiLz48L3N2Zz4%3D)](https://www.tripo3d.ai/)
 [![Sponsored by Hyper3D](https://img.shields.io/badge/Sponsored%20by-Hyper3D-000000.svg?labelColor=1a1a1a&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADlElEQVRYCeWWbWiOURjH9wzDZoYs5i3aF%2FEBiTYZRQ35qGxS%2B2AoFNoHRcl7vlETGcWX1aLkLbKsJTNiXmpKpExt5v2lGWNte%2Fz%2Bd%2Ff9dO6z57mfe08p5arfc851netc57rP23PS0v53iYSZgGg0Ogy%2F5VACU%2BAnnIlEIjWUf1cYvAgaIZ7sxxjqI1LKkuCb4Ue8kV1bB%2BXElIIn60TgLdDnDhRULEsWa8DtjKZp7woa1W37TTljwAMEdSBgFjS5AyQrzuOQ7jKCcnBQ7FBtBCmHZPIdh0oYpaCUObATnoCS3wPzwwzo28F0GkKnezDX7fyJ8gF8hT54Bc3wmCP4mtIn9C%2FCcBbyoQv2QSW%2BqicXAhRAL7yFU3AI6uEoTE8ewZmNqfg%2BB8kL0FFdEqavpnI9qPNe0HRKdkOGHQBbBIbbdunYi6EbfsER%2BAC6yBILDgqoo3cavBOwPXEPZyDNWNxjiP0iSA6CTks7zAyKp8xLwBv8ZKCz24j%2FMVhj%2B2JbCRItoy4syW0YavvGdBovywvRHpgcawio4LcBWmG06YaeB7pFlUAneFJm%2BqWbCvWXrn6FndtqtSVSJ9GgPTLecviG3gDZYH71VjLRn5sjdgKNrv2CWwYWBNItOBZqYZ7l3IN%2BHyaAeUHNQS8AR8wGGe6AvlznP64w6FIaRrosoNTAs6AOTNGXt8Em00hdH10It8CXWRrT%2FpEBTmA3p0x%2BppSj2JtOF403e56vlmA25HoGo1TijtgzIONxiK2R4%2BX%2F6fWrjnaO3xbLnoduJ%2Bq55HgVew%2FIHoUMZiLTc7JKe3Y09TuYPV3VpixE8Z0Ms9Grx2aAAZWMprcCpsEzbFUErqJuyk0Ubbz3oMFr8NETzZagS6fddtYltBbiyeF%2BziEMBCqNF8y1lfpCYNQ1fDegw0batPNDCb6ZkAstYMsjDP6lwaA1b7Y9DV033S5YB1mJsqAtGyrAeSVRFkIj6CbUdVwH%2BWb%2F2HuAhus0rDAbrXotus61LhKt%2FTX4DBLNjv7tVkE9bGNfaDNrabW3dBx74Klnp%2B4XHBeD%2FrWCpJpGvRNMP%2FPh%2BoC20EvlzwCNzmVg%2FnGg9pOHWA7AJdDSeHKVyoCf6LEl8LIhiN5yekoVQ7x7Qq468w2gP68meAc3mN5uygFJvwS83iSyiPpqUELjYAwooU7QgG%2BgGjTwF8qUJGECZjSS0bWqy2cQdEBbKl9Lv39P%2FgAQ2ul5m76dAQAAAABJRU5ErkJggg%3D%3D)](https://hyper3d.ai/)
@@ -51,28 +52,27 @@ Every model in the gallery is generated code, running in your browser. No mesh f
 
 Reconstructions built entirely from primitives, procedural shaders, and generated geometry. Open any model to orbit it, inspect its reference, and read the generated source.
 
+<!-- showcase:start -->
 | Demo | Subject | Built with | View | Source |
 | --- | --- | --- | --- | --- |
-| Dual-Sword Warrior — TypeScript procedural surfaces ⚠︎ | character | `v1.5.1` | [Live](https://img2threejs.io/#/demo/girl-character) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/girl-character/createGirlCharacterModel.ts) |
-| Low-Poly Humanoid — Rigged Character ⚠︎ | character | `v1.5.0` | [Live](https://img2threejs.io/#/demo/low-poly-humanoid) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/low-poly-humanoid/createLowPolyHumanoidModel.ts) |
+| Tropical Island — Code-only Diorama | object | — | [Live](https://img2threejs.io/#/demo/tropical-island) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/tropical-island/createTropicalIslandModel.ts) |
+| Man Robot · Segment Color Studio | character | — | [Live](https://img2threejs.io/#/demo/man-robot-studio) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/man-robot-studio/robotModel.ts) |
+| Snowbound Crossing — Mini Game | object | — | [Live](https://img2threejs.io/#/demo/snowy-village) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/snowy-village/createSnowyVillageModel.ts) |
+| Ocean Blue PRS Guitar — Measured Surface Flow | object | `v1.5.2` | [Live](https://img2threejs.io/#/demo/prs-ocean) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/prs-ocean/createPrsOceanModel.ts) |
+| Groot — Heart of the Forest | character | `v1.5.2` | [Live](https://img2threejs.io/#/demo/monster-tree) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/monster-tree/createMonsterTreeModel.ts) |
+| Raz — Detonating Strike VFX | character | `v1.5.2` | [Live](https://img2threejs.io/#/demo/raz) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/raz/razVfx.ts) |
+| Starship + Super Heavy | object | `v1.2.0` | [Live](https://img2threejs.io/#/demo/starship-super-heavy) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/starship-super-heavy/createStarshipSuperHeavyModel.ts) |
+| Mars Cat — Measured Procedural Surfaces | character | `v1.5.1` | [Live](https://img2threejs.io/#/demo/mars-cat) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/mars-cat/createMarsCatModel.ts) |
+| Lee Sin — Game Character | character | `v1.5.1` | [Live](https://img2threejs.io/#/demo/leesin) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/leesin/createLeesinModel.ts) |
+| Dual-Sword Warrior — Procedural Character | character | `v1.5.1` | [Live](https://img2threejs.io/#/demo/girl-character-3) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/girl-character-3/createGirlCharacter3Model.ts) |
+| AWP \| Medusa (Minimal Wear) · V2 rebuild | object | `v1.4.4` | [Live](https://img2threejs.io/#/demo/awp-medusa-v2) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/awp-medusa-v2/createAwpMedusaModelV2.ts) |
 | ★ Talon Knife \| Doppler Ruby (Factory New) | object | `v1.4.4` | [Live](https://img2threejs.io/#/demo/talon-doppler-ruby) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/talon-doppler-ruby/createTalonDopplerRubyModel.ts) |
-| AWP \| Medusa (Minimal Wear) · V2 rebuild | object | `V2` | [Live](https://img2threejs.io/#/demo/awp-medusa-v2) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/awp-medusa-v2/createAwpMedusaModelV2.ts) |
-| Pikachu 10K Star Celebration ⚠︎ | character | `v1.5-beta` | [Live](https://img2threejs.io/#/demo/electric-mouse-mascot) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/electric-mouse-mascot/createElectricMouseMascotModel.ts) |
-| Glock-18 \| Ghost Protocol (Well-Worn) | object | `v1.4.1` | [Live](https://img2threejs.io/#/demo/glock-ghost-protocol) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/glock-ghost-protocol/createGlockGhostProtocolModel.ts) |
-| Classic Knife \| Fade (Minimal Wear) | object | `v1.3` | [Live](https://img2threejs.io/#/demo/classic-fade) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/classic-fade/createClassicFadeModel.ts) |
-| BMX Endurance Bike | object | `v1.3` | [Live](https://img2threejs.io/#/demo/bmx-endurance) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/bmx-endurance/createBmxEnduranceBikeModel.ts) |
-| M9 Bayonet \| Doppler Phase 2 | object | `v1.3` | [Live](https://img2threejs.io/#/demo/m9-doppler) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/m9-doppler/createM9DopplerModel.ts) |
-| Sony WF-1000XM3 Earbuds + Case | object | `v1.2` | [Live](https://img2threejs.io/#/demo/sony-wf1000xm3) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/sony-wf1000xm3/createSonyWf1000xm3Model.ts) |
-| ISSACA 12 Gauge Shotgun | object | `v1.2` | [Live](https://img2threejs.io/#/demo/issaca-shotgun) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/issaca-shotgun/createIssacaShotgunModel.ts) |
-| Gerber Paracord Knife | object | `v1.2` | [Live](https://img2threejs.io/#/demo/gerber-knife) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/gerber-knife/createGerberKnifeModel.ts) |
-| Doraemon House (isometric diorama) | object | `v1.2` | [Live](https://img2threejs.io/#/demo/doraemon-house) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/doraemon-house/createDoraemonHouseModel.ts) |
-| War-Hauler "SECTOR 07" | object | `v1.2` | [Live](https://img2threejs.io/#/demo/warhauler) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/warhauler/createWarHaulerModel.ts) |
-| Crowned Loot Chest ⚠︎ | object | `v1.2` | [Live](https://img2threejs.io/#/demo/crown-chest) | [code](https://github.com/img2threejs/img2threejs-showcase/blob/main/src/demos/crown-chest/createCrownChestModel.ts) |
+<!-- showcase:end -->
 
-⚠︎ marks a demo whose registry `status` is still `placeholder` rather than `final` — it renders, but it
-is not finished work. The **Built with** column is the version each demo's own registry entry records in
-`generatedWith`, not an inference from dates; `awp-medusa-v2` records `V2`, which is that demo's rebuild
-pass rather than a release number. Rows are ordered newest first by the commit that added the demo.
+The newest finished demos, generated from the gallery's
+[`demos.json`](https://img2threejs.io/demos.json) by `scripts/ci/showcase_table.py`. The gallery
+also has work in progress. **Built with** is the version tag in each demo's own `generatedWith`
+record (— when it names none).
 
 The gallery source lives in [img2threejs/img2threejs-showcase](https://github.com/img2threejs/img2threejs-showcase). If this project is useful, a star on this repo helps others find it.
 
@@ -82,7 +82,7 @@ The gallery source lives in [img2threejs/img2threejs-showcase](https://github.co
 
 You give it one reference image of an object. It produces a `THREE.Group` factory written in TypeScript that recreates that object from primitives, procedural shaders, and generated geometry — with a runtime hierarchy (pivots, sockets, colliders) so the result is ready to animate, not an inert lump.
 
-It runs under Claude Code, Codex, or OpenCode. It is agent-agnostic: wherever the docs say "agent vision" or "agent browser tool", it uses whatever the host provides — native image reading, a browser MCP, the project preview, or a user-supplied screenshot.
+It runs under Hermes, Claude Code, Codex, or OpenCode. It is agent-agnostic: wherever the docs say "agent vision" or "agent browser tool", it uses whatever the host provides — native image reading, a browser MCP, the project preview, or a user-supplied screenshot.
 
 ### Subjects and detail accuracy
 
@@ -99,9 +99,6 @@ It runs under Claude Code, Codex, or OpenCode. It is agent-agnostic: wherever th
 
 ## How it works
 
-A staged sculpting pipeline turns the reference image into a spec, then generates and vision-reviews one build pass at a time — `blockout → structural → form → material → surface → lighting → interaction → optimization` — self-correcting until every identity-defining feature clears its threshold.
-
-**→ Full pipeline diagram, gates, self-correction logic, and the token-efficiency design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
 A staged sculpting pipeline turns the reference image into a spec, then generates and vision-reviews one build pass at a time — `blockout → structural → form → material → surface → lighting → interaction → optimization` — self-correcting until every identity-defining feature clears its threshold. Deterministic Python scripts handle validation and gating; model tokens are spent only on visual judgment and code.
 
 **→ Full pipeline diagram, gates, self-correction logic, script reference, and the token-efficiency design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
@@ -110,116 +107,62 @@ A staged sculpting pipeline turns the reference image into a spec, then generate
 
 ## Quick start
 
-### Which project and CLI do I need?
-
-| Project | Role | CLI |
-|---|---|---|
-| **[img2threejs](https://github.com/img2threejs/img2threejs)** — this repository | Base reconstruction skill, procedural Three.js pipeline, scripts and quality gates | `npx --yes img2threejs@latest <command>` |
-| **[img2](https://github.com/img2threejs/img2)** | Optional plugin harness: catalog, registry, host links and capability lookup | `npx --yes @img2threejs/img2@latest <command>` |
-| **Domain and output plugins** — linked below | Additional workflows, domain rules or explicitly selected output routes | Install through `img2 add <plugin-id>` |
-
-The two CLIs are separate packages with independent versions. Installing the harness does
-**not** install this base skill; adding a plugin does **not** generate a model.
-Start with the base skill. Add the harness only when you need plugins.
+Needs **Node.js ≥ 18, Git and Python ≥ 3.10**, and one of Claude Code, Codex, OpenCode or Hermes.
 
 ### 1. Install the base skill
 
-The CLI needs **Node.js ≥ 18 and Git**; the reconstruction scripts need **Python ≥ 3.10**.
-Configure your agent host first. The base installer detects Hermes, Claude Code, Codex and
-OpenCode; the plugin harness currently integrates with Claude Code, Codex and OpenCode.
-
-Preview, install into all detected hosts, then inspect their base-skill links:
-
 ```bash
-npx --yes img2threejs@latest install --dry-run
-npx --yes img2threejs@latest install
-npx --yes img2threejs@latest doctor
+npx --yes img2threejs@latest install   # links the skill into every agent it finds
+npx --yes img2threejs@latest doctor    # one line per agent: "managed" means installed
 ```
 
-To install into just one detected host instead, use:
+**Hermes users**, also link the skill into your profile (the installer only writes `~/.hermes/skills/`):
 
 ```bash
-npx --yes img2threejs@latest install --host claude
+ln -sfn ~/.hermes/skills/img2threejs ~/.hermes/profiles/${HERMES_ACTIVE_PROFILE:-img2threejs}/skills/img2threejs
 ```
 
-The `--yes` above belongs to **npx**, allowing the CLI package download. It is not an
-overwrite flag for the base installer.
+Then **restart your agent** and go to [step 4](#4-run-a-reconstruction-in-your-agent). Prefer to let
+your agent install it, want a manual or single-agent install, or something failed:
+[`docs/INSTALL.md`](docs/INSTALL.md) (paste-to-agent prompt, expected output, troubleshooting,
+update and uninstall, other agents such as Cursor).
 
-Supported host directories are `~/.hermes`, `~/.claude`, `~/.codex`, and
-`$XDG_CONFIG_HOME/opencode` (default `~/.config/opencode`). The CLI fetches the base skill
-from GitHub at `v2.0.0` by default. Its `--ref` accepts a semantic tag (including prereleases)
-or a full 40-character commit SHA, **not a branch**:
-
-```bash
-npx --yes img2threejs@latest update --ref v2.0.0
-```
-
-Checkouts live under `~/.img2threejs/releases/<sha>/img2threejs`; hosts installing the same
-commit share that checkout. `update` refuses lower skill versions, including prerelease
-downgrades. The installer refuses manual installs and unrelated links rather than
-overwriting them. Keep those installations, or deliberately move their entries yourself
-before switching to CLI-managed installs. `--dry-run` is offline and writes nothing; it
-does not verify remote ref availability or downgrades.
-
-**Manual alternative — choose this or the CLI, not both at the same skill path:**
-
-```bash
-git clone https://github.com/img2threejs/img2threejs.git ~/.claude/skills/img2threejs
-```
-
-For multiple hosts, keep one checkout and point each host's `img2threejs` skill entry at
-it with a symlink so copies cannot drift apart. A manual clone follows the repository's
-default branch rather than the CLI's pinned release.
-
-You can also install the CLI globally with `npm install -g img2threejs`, then run
-`img2threejs install`. To test it from this checkout, run
-`node bin/img2threejs.mjs install --dry-run`; see [CONTRIBUTING.md](CONTRIBUTING.md)
-for packaging and publication checks.
+**Already installed?** Update with the row that matches your install in
+[`docs/INSTALL.md` §4](docs/INSTALL.md#4-update-an-existing-install).
 
 ### 2. Install the plugin harness, if needed
 
-Use harness CLI **0.4.0 or newer** for short plugin IDs:
+Skip this unless you need a plugin from the table below. Plugins come from a separate CLI, the
+`img2` harness (`~/.img2`); install it once:
 
 ```bash
 npx --yes @img2threejs/img2@latest install --yes
-npx --yes @img2threejs/img2@latest plugins
+npx --yes @img2threejs/img2@latest plugins       # the live catalog
 ```
 
-The harness uses `~/.img2` and tries to link an `img2` launcher onto your `PATH`. Read
-the install output for its location. `plugins` lists the official live catalog; `list`
-shows registrations on your machine.
-
-For short commands that use the latest published harness, set this bash/zsh alias:
-
-```bash
-alias img2='npx --yes @img2threejs/img2@latest'
-```
-
-It lasts for this shell session. Add it to `~/.zshrc` and run `source ~/.zshrc` to keep
-it in future zsh sessions. Every `img2 ...` command below also works with the explicit
-`npx --yes @img2threejs/img2@latest ...` prefix. An existing harness checkout and its
-older launcher are not automatically upgraded by running `install` again.
-
-The first `--yes` in the harness install command belongs to npx; the final one skips
-the harness consent prompt. Neither permits replacing an existing plugin.
+It links an `img2` command if `~/.local/bin`, `/opt/homebrew/bin` or `/usr/local/bin` is on your
+`PATH`; otherwise use the `npx --yes @img2threejs/img2@latest` form, or
+`alias img2='npx --yes @img2threejs/img2@latest'`. What it changes on your machine:
+[`docs/INSTALL.md` §3](docs/INSTALL.md#3-add-a-plugin-only-if-you-need-one).
 
 ### 3. Choose plugins — do not install everything by default
 
+<!-- plugins:start -->
 | Plugin / source README | Adds | Access | Install after harness setup |
 |---|---|---|---|
-| [cs2](https://github.com/img2threejs/plugin-cs2) | `cs2` profile — CS2 weapon/glove skin reconstruction, family adapters, finish rules and blocking domain review gates | Public | `img2 add cs2 --yes` |
-| [character](https://github.com/img2threejs/plugin-character) | `animated-character` profile — character workflow plus Stage R rigging/animation gates | Public | `img2 add character --yes` |
-| [environment](https://github.com/img2threejs/plugin-environment) | The environment plugin, distributed from a private repository | **Private — authorized Git access required** | `img2 add environment --yes` |
-| [img2glb](https://github.com/img2threejs/plugin-img2glb) | Explicit `image → glb` route through the hosted TRELLIS space; generated mesh output, not the default code-only route | Public | `img2 add img2glb --yes` |
-| [hello-cube](https://github.com/img2threejs/plugin-hello-cube) | Small deterministic image-to-Three.js cube example and plugin contract exerciser | Public | `img2 add hello-cube --yes` |
+| [character](https://github.com/img2threejs/plugin-character) | Character rigging and animation: skeleton from a GLB, skin conditioning, clip measurement, action design, and a twelve-check rig gate. | Public | `img2 add character --yes` |
+| [cs2](https://github.com/img2threejs/plugin-cs2) | Counter-Strike 2 weapon and glove skin reconstruction: intake contract, authoritative classification, finish/material recipes, and a blocking review gate. | Public | `img2 add cs2 --yes` |
+| [environment](https://github.com/img2threejs/plugin-environment) | Install and manage the private img2 environment plugin through the img2 harness. Authorized GitHub access is required. | **Private — authorized Git access required** | `img2 add environment --yes` |
+| [hello-cube](https://github.com/img2threejs/plugin-hello-cube) | Turn an image into a deterministic Three.js cube (contract exerciser) | Public | `img2 add hello-cube --yes` |
+| [img2glb](https://github.com/img2threejs/plugin-img2glb) | Turn an image into a GLB 3D mesh via the hosted TRELLIS space | Public | `img2 add img2glb --yes` |
+<!-- plugins:end -->
 
-These are announced plugins; use `img2 plugins` for the current catalog. Open each
-plugin's linked README for its input requirements, dependencies and tool setup.
-For CS2 and character workflows:
+The table above is generated from the live catalog (`scripts/ci/plugin_table.py`); list all
+plugins with `img2 plugins`. Open each plugin's linked README for its input requirements,
+dependencies and tool setup. Example (the `cs2` plugin; substitute any catalog id):
 
 ```bash
 img2 add cs2 --yes
-img2 add character --yes
 img2 list
 img2 doctor
 img2 sync --check
@@ -231,23 +174,16 @@ installed, the base has `generic` and `character` profiles. A profile whose plug
 missing (`cs2`, `animated-character`) fails loud naming what is installed; it never silently
 downgrades. The base skill is not a plugin: **do not use `img2 add` to install this repository.**
 
-**Private environment source:** GitHub access and working Git credentials are required.
-The link may return 404 when you are signed out or lack permission. The public
-[`img2-environment` npm installer](https://www.npmjs.com/package/img2-environment) can
-bootstrap the harness, but does not grant access to the private source:
-
-```bash
-npx --yes img2-environment install --dry-run
-npx --yes img2-environment install --yes
-```
-
-That installer has its own SDK pin and may retain older CLI presentation.
-For lifecycle and trust details, read the [harness usage guide](https://github.com/img2threejs/img2#quickstart).
+**Private `environment` plugin:** needs a GitHub account with access to its repository and working
+Git credentials. The public [`img2-environment`](https://www.npmjs.com/package/img2-environment)
+installer can bootstrap the harness but does not grant that access. Hermes users link each plugin
+by hand ([`docs/INSTALL.md` §3](docs/INSTALL.md#3-add-a-plugin-only-if-you-need-one)). Why a run
+cannot see an installed plugin, and how plugins reach the pipeline: [`docs/PLUGINS.md`](docs/PLUGINS.md).
 To write a plugin, follow [WRITING_A_PLUGIN.md](https://github.com/img2threejs/img2/blob/main/docs/WRITING_A_PLUGIN.md).
 
 ### 4. Run a reconstruction in your agent
 
-Start a new agent session or restart the current one after installing skills.
+Restart the agent (or start a new session) after installing skills.
 In Claude Code, attach an image or give its path and invoke:
 
 ```text
@@ -292,16 +228,9 @@ Neither doctor command proves visual likeness or animation quality; those requir
 reconstruction's render and domain gates. `img2 update --check` exits 1 when an update is
 pending, not only on errors. Local `--link` checkouts are live and are not fetched by update.
 
-| Finding / refusal | Meaning and next action |
-|---|---|
-| `WARN ... multi-capability provider` | The plugin declares multiple capabilities; each edge resolves independently. This warning alone does not fail `img2 doctor`. Do not delete capabilities or reinstall just to remove it. |
-| `FAIL ... opencode link missing` | The reported OpenCode skill link is missing. Inspect the reported path and registered checkout; it is not proof that the reconstruction code is broken. `sync` regenerates harness data, not host links. |
-| Plugin already registered | Use `img2 list` and `img2 update <id>`, not another ordinary `add`. Use `add --force` only when deliberately replacing a registration; it backs up and reinstalls rather than merely repairing a link. |
-| Unmanaged base skill | Keep the manual checkout, or deliberately move its host entry before using the base installer. The base CLI does not overwrite it. |
-| Private source returns 404 / access denied | Sign in with a GitHub account authorized for that repository and configure Git credentials. A public npm installer cannot bypass source permissions. |
-
-For plugin audit exit codes, replacement behavior and additional troubleshooting, see
-the [img2 README](https://github.com/img2threejs/img2#refs-replacement-and-common-refusals).
+Symptoms and fixes: [`docs/INSTALL.md` §6](docs/INSTALL.md#6-when-something-is-off); plugin
+audit exit codes and replacement behaviour: the
+[img2 README](https://github.com/img2threejs/img2#refs-replacement-and-common-refusals).
 
 ### Driving it harder
 
@@ -523,10 +452,21 @@ VietQR / MoMo / PayPal also work — see the [donate page](https://img2threejs.i
 ## Sponsors
 
 Reconstruction-by-code is an inference workload before it is a graphics one: every gate rerun, every
-render-vs-reference pass and every material fit spends tokens. These three pay for that loop.
+render-vs-reference pass and every material fit spends tokens. These four pay for that loop.
 
 <table>
   <tr>
+    <td align="center" width="200">
+      <a href="https://platform.minimax.io/subscribe/token-plan" target="_blank" rel="noopener noreferrer">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="assets/sponsors/minimax-logomark.svg" />
+          <source media="(prefers-color-scheme: light)" srcset="assets/sponsors/minimax-logomark.svg" />
+          <img alt="MiniMax" src="assets/sponsors/minimax-logomark.svg" width="72" height="60" />
+        </picture>
+      </a>
+      <br /><sub><b>MiniMax</b></sub>
+      <br /><sub>Token-plan model API</sub>
+    </td>
     <td align="center" width="200">
       <a href="https://www.atlascloud.ai/console/coding-plan" target="_blank" rel="noopener noreferrer">
         <picture>
@@ -562,6 +502,12 @@ render-vs-reference pass and every material fit spends tokens. These three pay f
     </td>
   </tr>
 </table>
+
+### MiniMax
+
+<img alt="" src="assets/sponsors/minimax-logomark.svg" width="38" height="32" align="right" />
+
+**[MiniMax](https://platform.minimax.io/subscribe/token-plan)** is a global AI foundation model company founded in early 2022, committed to advancing the frontiers of AI towards AGI under the mission "Intelligence with Everyone." MiniMax has independently developed a family of multimodal foundation models with strong code and agent capabilities plus ultra-long context processing — spanning text, audio, image, video, and music. The same company publishes [MiniMax Code](https://code.minimax.io), [MiniMax Design](https://design.minimax.io/), [MiniMax Audio](https://www.minimax.io/audio) and [Talkie](https://www.talkie-ai.com/), and serves a token-plan API platform for developers and enterprises at <https://platform.minimax.io/subscribe/token-plan>. Check the token plan for budget-friendly access to the M3, M2.7, M2.5, H3, Speech 2.8 and Music 3.0 model families.
 
 ### Atlas Cloud
 

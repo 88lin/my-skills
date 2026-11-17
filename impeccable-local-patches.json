@@ -17,6 +17,132 @@
       "reason": "Local path: pin helper lives under the user's global .agents tree.",
       "find": ".agents/skills/impeccable/scripts/impeccable pin <pin|unpin> <command>",
       "replace": "\"C:/Users/Computer/.agents/skills/impeccable/scripts/impeccable\" pin <pin|unpin> <command>"
+    },
+    {
+      "path": "reference/operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "Product defaults to Restrained. A single surface can earn Committed (a dashboard where one category color carries a report, an onboarding flow with a drenched welcome screen), but Restrained is the floor.",
+      "replace": "Choose colour intensity from the user's brief and the actual use scene. Restrained is one option, not a floor or a mandatory neutral shell. A committed or full palette is valid for a working application when hierarchy, contrast and semantic states stay clear."
+    },
+    {
+      "path": "reference/operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "- Accent color used for primary actions, current selection, and state indicators only, not decoration.",
+      "replace": "- Keep action and state colours distinguishable. Brand colour may also shape the shell and materials when the brief calls for it; do not reduce an explicit visual direction to a single accent on grey."
+    },
+    {
+      "path": "reference/operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "- 150–250 ms on most transitions. Users are in flow; don't make them wait for choreography.\n- Motion conveys state, not decoration. State change, feedback, loading, reveal: nothing else.\n- No orchestrated page-load sequences. Product loads into a task; users don't want to watch it load.",
+      "replace": "- Use 150–250 ms as a starting point for routine feedback, not a cap for every transition. Set timing from distance, continuity and the brief.\n- Motion can communicate state, material, character and spatial continuity. Preserve requested effects when they are usable and smooth.\n- Coordinated entrances and view transitions are allowed when requested or part of the chosen direction. Keep controls immediately usable, handle interruption, and respect reduced motion."
+    },
+    {
+      "path": "reference/operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "- Decorative motion that doesn't convey state.",
+      "replace": "- Motion that obstructs input, obscures state or ignores reduced motion. Expressive motion is not a defect by itself."
+    },
+    {
+      "path": "reference/operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "- Heavy color or full-saturation accents on inactive states.",
+      "replace": "- Colour that makes active, inactive, warning and disabled states indistinguishable; saturation itself is a design choice."
+    },
+    {
+      "path": "reference/craft-floor.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "- **Motion:** one authored moment, not scattered effects and not one identical entrance on every section. Exponential ease-out from an already-visible default. Reach past transform and opacity: blur, backdrop-filter, clip-path, mask, and shadow belong to the palette when they stay smooth.",
+      "replace": "- **Motion:** use a coherent motion language across the interactions that need it; there is no one-effect quota. Avoid mechanically repeating an entrance everywhere. Keep content usable, transitions interruptible and reduced-motion alternatives legible. Blur, backdrop-filter, clip-path, mask and shadow are valid materials when they stay smooth."
+    },
+    {
+      "path": "reference/craft-floor.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "- Declare elevation once, border or shadow. A 1px border under a wide soft shadow is the ghost card. Card radii stay at 12–16px; pills are for small controls.",
+      "replace": "- Derive corner radii and elevation from the brief and component role. There is no fixed 12–16px radius range and no blanket ban on combining a border with a shadow. Judge separation and material in the render; preserve requested rounded forms and depth. Keep structural overlays and hit areas distinct from control styling."
+    },
+    {
+      "path": "reference/new-work.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "Before implementation, get the user's answer through the structured question tool when available. Ask two or three related questions; a precise request needs only a compact confirmation. Skip settled facts, not the confirmation: DESIGN.md settles the visual world, not this surface's purpose or concept.",
+      "replace": "Before implementation, use the request, prior answers and current project context. Ask only for missing information that materially changes the result or for an action outside existing authorization. A clear brief, explicit reference or delegated redesign does not need another confirmation, preference interview or approval round. State a reasonable working choice and proceed with the authorized work."
+    },
+    {
+      "path": "reference/new-work.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "Across modes, ask what success looks like, what must remain untouched, and what would make a polished result feel wrong. Never ask for CSS values or canned aesthetic lanes.",
+      "replace": "Across modes, resolve success, preserved behavior and rejected directions from existing evidence first. Ask only about unresolved material constraints. Never ask for CSS values or reopen settled preferences."
+    },
+    {
+      "path": "reference/new-work.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "## 3. Choose the right amount of invention\n",
+      "replace": "## 3. Choose the right amount of invention\n\nThe concept tournament, random seed, decision page and comp choice below are optional exploration tools when direction is genuinely unresolved or the user requests alternatives. They are not mandatory gates. For a specified reference, rejected incumbent with delegated redesign, or already chosen direction, write the working direction directly and continue at section 4. No invented seed or approval is needed. If the user explicitly approved a comp, keep that comp's authority and actual review commitments.\n"
+    },
+    {
+      "path": "reference/new-work-world.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults. Repointed 2026-11-16 to new-work-world.md: upstream split this passage out of new-work.md, and the 'direct route' concept it referenced no longer exists.",
+      "find": "Run `.agents/skills/impeccable/scripts/impeccable concept-seed --scope direction --mode <mode>` and follow what it prints. No substitute, no skip: on a new or replacement world, writing artifact code before this script has run and its assignment is acknowledged is a contract violation, whatever the harness, the model, or the time pressure; the roll is what keeps every run from converging on the category default.",
+      "replace": "When this optional exploration route is useful, run `.agents/skills/impeccable/scripts/impeccable concept-seed --scope direction --mode <mode>` as a source of candidates. Its assignment is advisory; explicit user choices, a brief that pins the direction, and delegated implementation take precedence. Skipping the roll is valid whenever the direction is already decided by those means. When the roll does run, the rules below still apply."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "Someone who uses tools like this one should know where everything is before they notice the world. The world lends four things and only these: type, palette, density, and one signature move. It never supplies the layout, the navigation model, or the controls.",
+      "replace": "Make tasks and states understandable while giving the brief a complete visual expression. A redesign may change layout, navigation, icons, controls, materials, type, palette and motion together. Preserve discoverability and functional semantics; do not freeze the old composition or restrict expression to four cosmetic contributions."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "Read every candidate, the assigned direction, and every challenger through that limit before you fuse or judge it.",
+      "replace": "Evaluate each candidate against the task and the user's brief rather than a fixed list of permitted visual changes."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "take from it only what transfers as type, palette, density, and a signature move, or replace it from your list.",
+      "replace": "adapt only the relationships, materials and interactions that make the product easier to understand, or replace the candidate."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "When a catalog world's source is itself an interface language, the same limit holds: it lends type, density, palette, and one signature move, while navigation and controls stay the standard ones for the platform, web components on the web and native controls in an app.",
+      "replace": "When a reference is itself an interface, its useful layout and interaction relationships may inform the rebuild. Keep native semantics and accessible input behavior even when the visual treatment changes."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "The world enters only through type, palette, density, and the one signature move; it never supplies the page's organisation, so a working screen never reads as a newspaper, a poster, or any other artifact of the world.",
+      "replace": "The selected direction may shape organisation, material, icons and transitions as well as type and palette. It must remain a usable product screen with clear tasks and state."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "A variant that adds world material, texture, or ornament goes further in the wrong direction; on a working screen, more world is a costume.",
+      "replace": "Material, texture, depth and expressive details are valid when they serve the brief; assess readability, coherence and performance in the full screen rather than rejecting them by category."
+    },
+    {
+      "path": "reference/mode-operate.md",
+      "reason": "2026-10-19 user-authorized correction: explicit brief and existing authorization override generic visual/process defaults.",
+      "find": "the world held to its four contributions.",
+      "replace": "the visual direction reconciled with task clarity and the explicit brief."
+    },
+    {
+      "path": "reference/new-work.md",
+      "reason": "2026-10-19 forward review: record the real direct-route source without inventing or requiring a concept-seed run.",
+      "find": "FORM: the chosen form, its position on your ordered list, and the SEED REFERENCE concept-seed printed (`seed:` and 16 hex), never the raw seed key: the brief is committed, and on this machine the reference stands in for the key wherever a command takes one. When the roll printed SEED REFERENCE unavailable, write `seed: none (unavailable)` instead, and nothing else. When a direction pinned whole skipped the roll, write `seed: none (pinned)` in place of both the list position and the reference, followed by the quoted words that pin it.",
+      "replace": "FORM: the chosen form and its actual source. On the direct route, name the user brief, supplied reference or delegated working choice and record `seed: none (not run)`; no candidate list, list position or roll is required. If concept-seed ran, record the form's position on the ordered list and the SEED REFERENCE it printed (`seed:` and 16 hex), never the raw seed key: the brief is committed, and on this machine the reference stands in for the key wherever a command takes one. Use `seed: none (unavailable)` only when the roll actually printed SEED REFERENCE unavailable, and `seed: none (pinned)` when a direction pinned whole skipped the roll, followed by the quoted words that pin it."
+    },
+    {
+      "path": "reference/new-work.md",
+      "reason": "2026-10-19 forward review: record the real direct-route source without inventing or requiring a concept-seed run.",
+      "find": "After writing, read the brief once more and verify that all six contract blocks and the seed reference (or `seed: none (unavailable)` when the roll printed that, or `seed: none (pinned)` when a direction pinned whole skipped it) are present before building.",
+      "replace": "After writing, read the brief once more and verify all six contract blocks and the actual direction source before building. Accept `seed: none (not run)` for the direct route, the printed seed reference for a completed roll, `seed: none (unavailable)` only when the roll printed that, or `seed: none (pinned)` when a direction pinned whole skipped the roll. Do not run a skipped concept tournament merely to satisfy this record."
+    },
+    {
+      "path": "reference/new-work-comp.md",
+      "reason": "2026-10-19 forward review: record the real direct-route source without inventing or requiring a concept-seed run. Repointed 2026-11-16 to new-work-comp.md: upstream moved the build-phase start line into the comp branch.",
+      "find": "--direction <seed reference, or none when it was unavailable or a direction pinned whole skipped the roll>",
+      "replace": "--direction <seed reference, or none when the roll was not run, the reference was unavailable, or a direction pinned whole skipped the roll>"
     }
   ]
 }

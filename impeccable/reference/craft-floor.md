@@ -1,6 +1,6 @@
 # Craft floor
 
-Load this after the direction is settled, and build without announcing the checklist. A pinned brief or the committed visual world overrides anything here; your own habit does not. When the design hook is active it already enforces the mechanical checks below as you edit: act on its findings instead of re-auditing each rule.
+Load this after the direction is settled, and build without announcing the checklist. A pinned brief or the committed visual world overrides anything here except a line marked as a ban; your own habit does not. When the design hook is active it already enforces the mechanical checks below as you edit: act on its findings instead of re-auditing each rule.
 
 ## Verify
 
@@ -10,7 +10,7 @@ Each of these is a check on the built result, not an intention. Run them togethe
 - **Depth:** shadows carry an offset and a soft blur. A zero-offset colored halo is decoration.
 - **Spacing:** tight groups, generous separation, more space above a heading than below it. Read the computed values.
 - **Type:** body measure 65–75ch, display max 6rem, tracking floor -0.04em, balanced headings, obvious scale and weight steps. Run the real copy at every breakpoint and fix what overflows.
-- **Motion:** one authored moment, not scattered effects and not one identical entrance on every section. Exponential ease-out from an already-visible default. Reach past transform and opacity: blur, backdrop-filter, clip-path, mask, and shadow belong to the palette when they stay smooth.
+- **Motion:** use a coherent motion language across the interactions that need it; there is no one-effect quota. Avoid mechanically repeating an entrance everywhere. Keep content usable, transitions interruptible and reduced-motion alternatives legible. Blur, backdrop-filter, clip-path, mask and shadow are valid materials when they stay smooth.
 - **States:** hover, disabled, loading, error, empty. Plus real content, working controls, responsive composition, keyboard focus.
 - **Browser surfaces:** the parts you did not draw still carry the design. Text selection, the caret, custom scrollbars, focus rings, underline offset, and the numerals in tabular data all ship with browser defaults that belong to no design system. Theme them from the palette. This is the cheapest signal that a page was built rather than assembled, and the one models skip most reliably.
 - **Copy:** the product's own language. Controls name their action; errors name the problem and the recovery.
@@ -42,7 +42,7 @@ Surface habits:
 - Light or dark picked by category. Pick it from the use scene: who, where, under what ambient light.
 
 - Tracking stops at -0.04em. -0.02 to -0.03em usually reads better.
-- Declare elevation once, border or shadow. A 1px border under a wide soft shadow is the ghost card. Card radii stay at 12–16px; pills are for small controls.
+- Derive corner radii and elevation from the brief and component role. There is no fixed 12–16px radius range and no blanket ban on combining a border with a shadow. Judge separation and material in the render; preserve requested rounded forms and depth. Keep structural overlays and hit areas distinct from control styling.
 - Real illustration or none. Sketch-style SVG scenes, `loose-sketch` / `doodle` class names, and `feTurbulence` grain read as amateur. This bans SVG imitating pictures, never SVG doing geometry: crisp vector shapes, diagrams, animated linework, and shader-driven effects remain first-class media. A shaded, perspectived, or figure-bearing illustration is a picture even in line-art style; geometry means shapes a session can specify exactly.
 - Backgrounds are surfaces, textured only from the subject's world. `repeating-linear-gradient` stripes and two-axis grid overlays need an actual canvas, map, blueprint, or measuring tool under them.
 - Claims and configuration come from supplied truth; label illustrative values honestly. Naming a concept and then ironizing it is not a claim.

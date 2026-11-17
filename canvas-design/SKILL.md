@@ -21,7 +21,9 @@ Do **not** use this by default in these cases:
 
 - Web pages or app UI: prefer `impeccable`
 - HTML slide decks: prefer `html-ppt`
-- `.pptx` or PowerPoint deliverables: prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` runs manually, not a skill)
+- `.pptx` or PowerPoint deliverables: prefer the current client's available PowerPoint/presentation capability; external `ppt-master` is an optional manually invoked workflow
+
+Resolve format skills from the current client's available skills or tools; they may be supplied by plugins outside this folder. Do not assume a local directory or alias exists, and do not ask the user to repeat an already clear deliverable.
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 These are instructions for creating design philosophies - aesthetic movements that are then EXPRESSED VISUALLY. Output only .md files, .pdf files, and .png files.

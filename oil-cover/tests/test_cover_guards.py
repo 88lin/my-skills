@@ -30,6 +30,8 @@ class CoverGuardTests(unittest.TestCase):
         args.image_model = "test/custom-image-model"
         messages = COVER.build_analysis_messages(args, [], [], None, "", "")
         self.assertIn("Zenmux test/custom-image-model", messages[0]["content"])
+        self.assertIn("16%-22%", messages[0]["content"])
+        self.assertIn("NO pill capsule", messages[0]["content"])
         self.assertIn("tell test/custom-image-model", messages[1]["content"][0]["text"])
         self.assertNotIn("openai/gpt-image-2.", messages[0]["content"])
 
@@ -59,11 +61,12 @@ class CoverGuardTests(unittest.TestCase):
         }
         output = io.StringIO()
         with patch.object(sys, "argv", argv), patch.dict(os.environ, {"ZENMUX_API_KEY": ""}), \
-                patch.object(COVER, "run_analysis", return_value=copy.deepcopy(model_result)), \
+                patch.object(COVER, "run_analysis", return_value=copy.deepcopy(model_result)) as analysis_call, \
                 patch.object(COVER, "post_json", side_effect=AssertionError("不允许网络调用")), \
                 patch.object(COVER, "generate_images", side_effect=AssertionError("不允许生图调用")), \
                 redirect_stdout(output):
             COVER.main()
+        self.last_analysis_messages = analysis_call.call_args.args[2]
         manifest = json.loads(output.getvalue())
         analysis = json.loads(Path(manifest["analysis_path"]).read_text(encoding="utf-8"))
         return manifest, analysis
@@ -121,11 +124,80 @@ class CoverGuardTests(unittest.TestCase):
         for path in manifest["prompt_sidecars"].values():
             self.assertIn('Title text: "确定标题"', Path(path).read_text(encoding="utf-8"))
 
+    def test_chained_model_title_lines_do_not_survive_title_lock(self):
+        prompt = (
+            'Title text: "我的第一个付费 Skill" with exact line breaks "我的第一个付费 Skill" '
+            'and "上线复盘" with exact line breaks. Highlight the words "付费 Skill"; '
+            'optional short subtitle "69 元买断".'
+        )
+        manifest, _ = self.run_pipeline(title="我的第一个付费 Skill 上线复盘", prompt=prompt)
+        for path in manifest["prompt_sidecars"].values():
+            text = Path(path).read_text(encoding="utf-8")
+            self.assertNotIn('and "上线复盘" with exact line breaks', text)
+            self.assertEqual(text.count("Title text:"), 1)
+            self.assertEqual(text.count("with exact line breaks"), 1)
+            self.assertIn('optional short subtitle "69 元买断"', text)
+            self.assertIn("Apply highlights to existing title glyphs", text)
+
     def test_short_or_latin_titles_are_not_split_inside_the_word(self):
         for title in ("好", "Codex", "GPT-5.6"):
             with self.subTest(title=title):
                 _, analysis = self.run_pipeline(title=title)
                 self.assertEqual(analysis["title"]["line_breaks"], [title])
+
+    def test_model_line_breaks_preserve_the_exact_title_and_whole_identifiers(self):
+        title = "开源一个Git可视化小工具"
+        self.assertEqual(COVER.exact_title_lines(title, ["开源一个", "Git可视化小工具"]),
+                         ["开源一个", "Git可视化小工具"])
+        self.assertEqual(COVER.exact_title_lines("Git 可视化", ["Git", "可视化"]),
+                         ["Git", "可视化"])
+        for lines in (["开源一个", "Git可视化小工具", "Git可视化小工具"],
+                      ["开源一个Gi", "t可视化小工具"]):
+            self.assertEqual(COVER.exact_title_lines(title, lines), [title])
+        self.assertEqual(COVER.exact_title_lines("GPT-5.6", ["GPT-", "5.6"]), ["GPT-5.6"])
+
+    def test_numbered_title_lines_are_replaced_as_one_clause(self):
+        title = "开源一个Git可视化小工具"
+        analysis = {
+            "title": {"main": title, "line_breaks": ["开源一个", "Git可视化小工具"]},
+            "prompts": {aspect: {"prompt":
+                'Title text: "开源一个" on line 1, "Git可视化小工具" on line 2, '
+                'with a smaller subtitle "查看分支和代码变更". Composition: real branch graph.'}
+                for aspect in ("3x4", "4x3", "16x9")},
+        }
+        args = type("Args", (), {"title": title})()
+        COVER.lock_known_title(args, analysis)
+        for item in analysis["prompts"].values():
+            self.assertNotIn("on line", item["prompt"])
+            self.assertEqual(item["prompt"].count("Title text:"), 1)
+            self.assertEqual(item["prompt"].count("with exact line breaks"), 1)
+            self.assertIn('with a smaller subtitle "查看分支和代码变更"', item["prompt"])
+            self.assertIn("Composition: real branch graph.", item["prompt"])
+        before = copy.deepcopy(analysis)
+        COVER.lock_known_title(args, analysis)
+        self.assertEqual(analysis, before)
+
+    def test_portrait_pipeline_keeps_composite_without_reserving_layout_space(self):
+        asset = ROOT / "assets/product-logos/codex-openai.png"
+        with patch.dict(COVER.DEFAULT_CREATOR_PORTRAIT_OVERLAY, {"path": asset}):
+            manifest, analysis = self.run_pipeline(
+                extra=("--default-creator-portrait",), prompt="Create a clean cover."
+            )
+        self.assertTrue(analysis["creator_portrait_plan"]["enabled"])
+        self.assertEqual(analysis["creator_portrait_plan"]["mode"], "local_code_composite")
+        self.assertTrue(Path(manifest["creator_portrait_overlay"]["path"]).is_file())
+        outputs = [json.dumps(self.last_analysis_messages, ensure_ascii=False),
+                   json.dumps(analysis["creator_portrait_plan"])]
+        outputs.extend(Path(path).read_text() for path in manifest["prompt_sidecars"].values())
+        for text in outputs:
+            self.assertNotIn("overlay-safe", text)
+            self.assertNotIn("reserve_base_area", text)
+            self.assertNotIn("safe_area", text)
+            self.assertNotIn("x=48%-100%", text)
+            self.assertNotIn("remain unobstructed", text)
+        for prompt in analysis["prompts"].values():
+            self.assertIn("person-free", prompt["prompt"])
+            self.assertIn("deterministic local code", prompt["prompt"])
 
     def test_reapplying_guards_does_not_duplicate_title_instructions(self):
         manifest, analysis = self.run_pipeline(title="确定标题")
@@ -133,6 +205,70 @@ class CoverGuardTests(unittest.TestCase):
         args = type("Args", (), {"title": "确定标题", "default_creator_portrait": False, "allow_subtitle": True})()
         COVER.apply_script_guards(args, analysis, Path(manifest["analysis_path"]).parent, [])
         self.assertEqual(analysis["prompts"], before)
+
+    def test_parse_aspect_spec_supports_subsets_and_rejects_invalid(self):
+        self.assertEqual(COVER.parse_aspect_spec("all"), ("3x4", "4x3", "16x9"))
+        self.assertEqual(COVER.parse_aspect_spec("both"), ("3x4", "4x3"))
+        self.assertEqual(COVER.parse_aspect_spec("4x3,3x4"), ("3x4", "4x3"))
+        self.assertEqual(COVER.parse_aspect_spec("4x3,16x9"), ("4x3", "16x9"))
+        self.assertEqual(COVER.parse_aspect_spec("16x9"), ("16x9",))
+        with self.assertRaises(ValueError):
+            COVER.parse_aspect_spec("1x1")
+
+    def test_generate_images_streams_inline_portrait_composite_and_updates_cover_state(self):
+        from PIL import Image
+        import base64
+
+        portrait = self.work / "portrait.png"
+        Image.new("RGBA", (120, 160), (255, 0, 0, 200)).save(portrait, format="PNG")
+        overlay = {"label": "configured_creator_portrait", "path": str(portrait), "role": "local_code_composite"}
+        cover_state = self.work / "demo.cover-state.json"
+
+        def make_b64_png(w: int, h: int) -> str:
+            buf = io.BytesIO()
+            Image.new("RGB", (w, h), (245, 248, 252)).save(buf, format="PNG")
+            return base64.b64encode(buf.getvalue()).decode("ascii")
+
+        args = type("Args", (), {
+            "aspect": "both",
+            "portrait_size": "960x1280",
+            "landscape_size": "1280x960",
+            "bilibili_size": "1280x720",
+            "generation_only": True,
+            "image_model": "openai/gpt-image-2.5-flare",
+            "api_base": "https://zenmux.ai/api/v1",
+            "timeout": 30,
+            "default_creator_portrait": True,
+            "cover_state_file": cover_state,
+        })()
+        analysis = {
+            "selected_frame": {"label": "input_01", "path": ""},
+            "prompts": {
+                "3x4": {"prompt": "Generate 3x4 cover"},
+                "4x3": {"prompt": "Generate 4x3 cover"},
+                "16x9": {"prompt": "Generate 16x9 cover"},
+            },
+        }
+        sidecars = COVER.save_prompt_sidecars(args, self.work, analysis, [])
+        self.assertEqual(set(sidecars.keys()), {"3x4", "4x3"})
+
+        def fake_post_json(url, payload, api_key, timeout):
+            w, h = (int(v) for v in payload["size"].split("x"))
+            return {"data": [{"b64_json": make_b64_png(w, h)}]}
+
+        records: dict = {}
+        with patch.object(COVER, "post_json", side_effect=fake_post_json):
+            delivered = COVER.generate_images(
+                args, "fake-key", self.work, self.work, "demo", analysis, [], sidecars,
+                creator_portrait_overlay=overlay, portrait_records_out=records,
+            )
+        self.assertEqual(set(delivered.keys()), {"3x4", "4x3"})
+        self.assertEqual(set(records.keys()), {"3x4", "4x3"})
+        self.assertFalse((self.work / "demo_16x9.png").exists())
+        state_payload = json.loads(cover_state.read_text(encoding="utf-8"))
+        self.assertEqual(state_payload["aspects"]["3x4"]["status"], "generated")
+        self.assertEqual(state_payload["aspects"]["4x3"]["status"], "generated")
+        self.assertNotIn("16x9", state_payload["aspects"])
 
 
 if __name__ == "__main__":

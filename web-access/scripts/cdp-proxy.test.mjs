@@ -6,7 +6,7 @@ import fsp from 'node:fs/promises';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import test from 'node:test';
 
 const SCRIPTS = path.dirname(fileURLToPath(import.meta.url));
@@ -245,7 +245,7 @@ async function fixture(t, flags = {}) {
     port, root, scripts, events, waitEvent,
     release: name => fsp.writeFile(path.join(root, name + '-release'), ''),
     spawn() {
-      const child = spawn(process.execPath, ['--import', path.join(scripts, 'preload.mjs'), path.join(scripts, 'cdp-proxy.mjs')], {
+      const child = spawn(process.execPath, ['--import', pathToFileURL(path.join(scripts, 'preload.mjs')).href, path.join(scripts, 'cdp-proxy.mjs')], {
         env: { ...process.env, CDP_PROXY_PORT: String(port), TEST_RUNTIME_ROOT: root, ...flags },
         stdio: ['ignore', 'pipe', 'pipe'],
       });
@@ -306,7 +306,7 @@ test('两个子进程原子争抢同一端口，只有赢家发现和连接浏�
   const first = f.spawn();
   const second = f.spawn();
   const loser = await Promise.race([first.exited, second.exited]);
-  assert.equal(loser.code, 0);
+  assert.equal(loser.code, 0, `losing process failed: ${loser.code}; first=${first.output}; second=${second.output}`);
   const winner = loser.pid === first.child.pid ? second : first;
   const health = await f.ready(winner);
   assert.equal(health.pid, winner.child.pid);

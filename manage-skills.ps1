@@ -12,12 +12,44 @@
     [int]$GitTimeoutSec = 180,
 
     # npm cold installs are far slower than git transfers, hence the wider bound.
-    [int]$NpxTimeoutSec = 600
+    [int]$NpxTimeoutSec = 600,
+
+    # Ceiling for the working-tree rewrite phase of a pull. Status probes keep
+    # the short $GitTimeoutSec above; only an actual pull uses this one. Large
+    # repositories (archify: 305 files) routinely need several minutes, and the
+    # fetch half of the same command finishes in seconds — killing at 180s lands
+    # right in the checkout, which is why the update could never complete.
+    [int]$GitPullTimeoutSec = 900,
+
+    # Protected sources: checks read cached observations; updates refresh only when due.
+    [ValidateSet('cached', 'due', 'force')]
+    [string]$UpstreamWatchMode,
+    [string]$UpstreamWatchCacheRoot = (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.agents\external\skill-upstream-watch\observations'),
+    [ValidateRange(1, 720)][int]$UpstreamWatchFreshHours = 72,
+    [ValidateRange(1, 1440)][int]$UpstreamWatchRetryMinutes = 15,
+    # Total refresh budget per protected skill, shared by Git and HTTP requests.
+    [ValidateRange(1, 300)][int]$UpstreamWatchTimeoutSec = 30,
+
+    # Structured sidecar is opt-in; ordinary cached check leaves persistent state untouched.
+    [string]$ResultPath,
+    [switch]$FailOnUnhealthy,
+    [switch]$SyncClientRouting,
+    [string]$ClientInstructionsPath = (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.codex\AGENTS.md'),
+
+    # Reuse the real routing/package functions without running the main loop.
+    [switch]$LoadOnly
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+if (-not $UpstreamWatchMode) { $UpstreamWatchMode = if ($Mode -eq 'update') { 'due' } else { 'cached' } }
+# Follow the host code page instead of forcing UTF-8. On Windows PowerShell
+# 5.1 running in a cmd window on code page 936, setting UTF-8 here makes every
+# CJK character render twice ("人人工工维维护护"), because the console decodes
+# UTF-8 bytes as the active ANSI code page. Text files and JSON sidecars are
+# still written explicitly as UTF-8 at their call sites, so this only affects
+# console rendering.
+[Console]::OutputEncoding = [System.Text.Encoding]::Default
 $OutputEncoding = [Console]::OutputEncoding
 
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -123,6 +155,100 @@ function Get-SyncSkillSourcePath {
     return (Join-Path (Get-GitRepositoryPath -Entry $Entry) $Entry.syncSkillFile)
 }
 
+function Get-SyncSkillExtraFileMappings {
+    param([object]$Entry)
+
+    $Mappings = New-Object System.Collections.Generic.List[object]
+    if (-not ($Entry.PSObject.Properties.Name -contains 'syncSkillFiles') -or $null -eq $Entry.syncSkillFiles) {
+        return $Mappings.ToArray()
+    }
+
+    foreach ($Configured in @($Entry.syncSkillFiles)) {
+        if ($null -eq $Configured) {
+            continue
+        }
+
+        if ($Configured -is [string]) {
+            $Source = $Configured
+            $Destination = Split-Path -Leaf ($Configured.TrimEnd('\', '/'))
+        }
+        else {
+            $Source = if ($Configured.PSObject.Properties.Name -contains 'source') { [string]$Configured.source } else { '' }
+            $Destination = if ($Configured.PSObject.Properties.Name -contains 'destination') { [string]$Configured.destination } else { Split-Path -Leaf ($Source.TrimEnd('\', '/')) }
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($Source) -and -not [string]::IsNullOrWhiteSpace($Destination)) {
+            $null = $Mappings.Add([pscustomobject]@{
+                Source      = $Source
+                Destination = $Destination
+            })
+        }
+    }
+
+    return $Mappings.ToArray()
+}
+
+function Get-SyncSkillExtraFileStatus {
+    param([object]$Entry)
+
+    $Mappings = @(Get-SyncSkillExtraFileMappings -Entry $Entry)
+    if ($Mappings.Count -eq 0) {
+        return 'not-configured'
+    }
+
+    $RepositoryRoot = Get-GitRepositoryPath -Entry $Entry
+    $LocalRoot = Get-LocalSkillPath -Entry $Entry
+    foreach ($Mapping in $Mappings) {
+        $SourcePath = Join-Path $RepositoryRoot $Mapping.Source
+        $DestinationPath = Join-Path $LocalRoot $Mapping.Destination
+        if (-not (Test-Path -LiteralPath $SourcePath -PathType Leaf) -or -not (Test-Path -LiteralPath $DestinationPath -PathType Leaf)) {
+            return 'outdated'
+        }
+
+        if ($Mapping.Destination.Replace('\', '/') -eq 'agents/openai.yaml' -and $null -ne (Get-CodexSkillPolicy -Entry $Entry)) {
+            $Expected = Merge-CodexPolicyYaml -Text (Get-FileText -Path $SourcePath) -Policy (Get-CodexSkillPolicy -Entry $Entry)
+            if ((Get-TextHash -Text $Expected) -ne (Get-TextHash -Text (Get-FileText -Path $DestinationPath))) { return 'outdated' }
+        }
+        elseif ((Get-FileHashValue -Path $SourcePath) -ne (Get-FileHashValue -Path $DestinationPath)) {
+            return 'outdated'
+        }
+    }
+
+    return 'synced'
+}
+
+function Sync-LocalSkillExtraFiles {
+    param([object]$Entry)
+
+    $Mappings = @(Get-SyncSkillExtraFileMappings -Entry $Entry)
+    if ($Mappings.Count -eq 0) {
+        return $false
+    }
+
+    $RepositoryRoot = Get-GitRepositoryPath -Entry $Entry
+    $LocalRoot = Get-LocalSkillPath -Entry $Entry
+    $Changed = $false
+    foreach ($Mapping in $Mappings) {
+        $SourcePath = Join-Path $RepositoryRoot $Mapping.Source
+        $DestinationPath = Join-Path $LocalRoot $Mapping.Destination
+        if (-not (Test-Path -LiteralPath $SourcePath -PathType Leaf)) {
+            throw "缺少同步源文件: $SourcePath"
+        }
+
+        $DestinationParent = Split-Path -Parent $DestinationPath
+        if (-not (Test-Path -LiteralPath $DestinationParent)) {
+            $null = New-Item -ItemType Directory -Path $DestinationParent -Force
+        }
+
+        if ((Get-FileHashValue -Path $SourcePath) -ne (Get-FileHashValue -Path $DestinationPath)) {
+            Copy-Item -LiteralPath $SourcePath -Destination $DestinationPath -Force
+            $Changed = $true
+        }
+    }
+
+    return $Changed
+}
+
 function Get-CanonicalSkillFilePath {
     param([object]$Entry)
 
@@ -219,8 +345,27 @@ function Get-SyncSkillDirectoryStatus {
                 return 'outdated'
             }
 
-            $SourceHash = Get-FileHashValue -Path $SourceFile.FullName
-            $DestinationHash = Get-FileHashValue -Path $Destination
+            $Override = if ($Relative -eq 'SKILL.md') { Get-RoutingOverride -Entry $Entry } else { $null }
+            if ($null -ne $Override) {
+                # The active entry point intentionally contains generated local
+                # routing text, so compare it with the same override applied to
+                # the upstream source instead of reporting permanent drift.
+                $script:CurrentApplyMissingPatches = @()
+                $ExpectedText = Apply-RoutingOverrideToText -Text (Get-FileText -Path $SourceFile.FullName) -Override $Override
+                if (@($script:CurrentApplyMissingPatches).Count -gt 0) { throw 'patch-stale: sync source no longer matches a local body patch.' }
+                $script:CurrentApplyMissingPatches = @()
+                $SourceHash = Get-TextHash -Text $ExpectedText
+                $DestinationHash = Get-TextHash -Text (Get-FileText -Path $Destination)
+            }
+            elseif ([IO.Path]::GetFullPath($Destination) -ieq [IO.Path]::GetFullPath((Join-Path $LocalRoot 'agents/openai.yaml')) -and $null -ne (Get-CodexSkillPolicy -Entry $Entry)) {
+                $ExpectedYaml = Merge-CodexPolicyYaml -Text (Get-FileText -Path $SourceFile.FullName) -Policy (Get-CodexSkillPolicy -Entry $Entry)
+                $SourceHash = Get-TextHash -Text $ExpectedYaml
+                $DestinationHash = Get-TextHash -Text (Get-FileText -Path $Destination)
+            }
+            else {
+                $SourceHash = Get-FileHashValue -Path $SourceFile.FullName
+                $DestinationHash = Get-FileHashValue -Path $Destination
+            }
             if ($SourceHash -ne $DestinationHash) {
                 return 'outdated'
             }
@@ -404,6 +549,8 @@ function Apply-RoutingOverrideToText {
         return $Text
     }
 
+    if (@($Override.PSObject.Properties.Name | Where-Object { $_ -in @('description', 'usageRule', 'bodyPatches') }).Count -eq 0) { return $Text }
+
     $TrailingNewlines = [regex]::Match($Text, '(\r?\n*)$').Groups[1].Value
     $Result = $Text
     $FrontMatterMatch = Get-FrontMatterMatch -Text $Result
@@ -473,6 +620,7 @@ function Apply-RoutingOverrideToText {
                 $script:CurrentApplyMissingPatches += [pscustomobject]@{
                     Reason      = $ReasonText
                     FindPreview = $Preview
+                    AlreadyApplied = (-not [string]::IsNullOrEmpty($ReplaceText) -and $Result.Contains($ReplaceText))
                 }
             }
         }
@@ -512,7 +660,7 @@ function Apply-RoutingOverrideToLocalSkill {
 
     $Override = Get-RoutingOverride -Entry $Entry
     if ($null -eq $Override) {
-        return $false
+        return (Apply-CodexSkillPolicy -Entry $Entry)
     }
 
     $SkillFile = Get-LocalSkillFile -Entry $Entry
@@ -522,12 +670,13 @@ function Apply-RoutingOverrideToLocalSkill {
     }
 
     $UpdatedText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
+    # Validate/apply metadata first so an unsupported YAML does not partially rewrite SKILL.md.
+    $Changed = Apply-CodexSkillPolicy -Entry $Entry
     if ($UpdatedText -ne $LocalText) {
         Write-TextFile -Path $SkillFile -Text $UpdatedText
-        return $true
+        $Changed = $true
     }
-
-    return $false
+    return $Changed
 }
 
 function Invoke-ApplyOverrides {
@@ -537,7 +686,7 @@ function Invoke-ApplyOverrides {
 
     foreach ($Entry in $TargetEntries) {
         $Override = Get-RoutingOverride -Entry $Entry
-        if ($null -eq $Override) {
+        if ($null -eq $Override -and $null -eq (Read-CodexPolicyReceipt -Entry $Entry)) {
             $ApplyResults += [pscustomobject]@{
                 Name      = $Entry.name
                 Type      = $Entry.type
@@ -624,6 +773,32 @@ function Stop-ProcessTree {
     }
 }
 
+function Clear-StaleGitLock {
+    param([string]$RepositoryPath)
+
+    # taskkill /T /F terminates git hard, so it never removes its own
+    # .git\index.lock. That stale lock then makes every later git command in the
+    # repository fail with "Unable to create ...index.lock: File exists", which
+    # looks like a network problem and never heals on its own — a single timeout
+    # would silently freeze that skill forever.
+    #
+    # Only clear it when no git process is alive. A live git will recreate the
+    # lock immediately, and deleting it underneath a running process risks a
+    # corrupt index.
+    $LockPath = Join-Path $RepositoryPath '.git\index.lock'
+    if (-not (Test-Path -LiteralPath $LockPath)) { return $false }
+    if (@(Get-Process git -ErrorAction SilentlyContinue).Count -gt 0) { return $false }
+
+    try {
+        Remove-Item -LiteralPath $LockPath -Force -ErrorAction Stop
+        Write-Host "已清理残留的 Git 锁: $LockPath"
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
+
 function Invoke-ExternalCommand {
     param(
         [string]$FilePath,
@@ -695,6 +870,8 @@ function Invoke-ExternalCommand {
             }
         }
 
+        $CapturedStdOut = if (Test-Path -LiteralPath $StdOutPath) { Get-NormalizedText -Text ([IO.File]::ReadAllText($StdOutPath, [Text.Encoding]::UTF8)) } else { '' }
+        $CapturedStdErr = if (Test-Path -LiteralPath $StdErrPath) { Get-NormalizedText -Text ([IO.File]::ReadAllText($StdErrPath, [Text.Encoding]::UTF8)) } else { '' }
         $Output = ($Segments -join "`n").Trim()
         if ($TimedOut) {
             $TimeoutNote = "$FilePath 超过 $TimeoutSec 秒未返回，已终止进程树"
@@ -704,6 +881,8 @@ function Invoke-ExternalCommand {
         return [pscustomobject]@{
             ExitCode = $ExitCode
             Output   = $Output
+            StdOut   = $CapturedStdOut
+            StdErr   = $CapturedStdErr
             TimedOut = $TimedOut
         }
     }
@@ -741,8 +920,19 @@ function Get-GitGuardEnvironment {
 function Invoke-Git {
     param(
         [string]$Path,
-        [string[]]$Arguments
+        [string[]]$Arguments,
+
+        # Per-call ceiling. 0 means "use $GitTimeoutSec".
+        #
+        # The two kinds of git call have opposite profiles: a status probe only
+        # needs to detect a hang, while a pull that rewrites hundreds of files
+        # legitimately takes minutes. archify needs ~6 minutes for 305 files and
+        # was being killed at 180s even though the fetch had already succeeded —
+        # the timeout landed mid-checkout, so the update never completed.
+        [int]$TimeoutSec = 0
     )
+
+    $EffectiveTimeout = if ($TimeoutSec -gt 0) { $TimeoutSec } else { $GitTimeoutSec }
 
     # git reports progress and summaries ("From https://...", "Switched to
     # branch ...") on stderr even when it succeeds, so success is judged by exit
@@ -750,15 +940,33 @@ function Invoke-Git {
     # `& git ... 2>&1` form turned those lines into a terminating RemoteException,
     # which made -Mode update fail for every git skill that actually had new
     # commits to fetch — silently leaving the active skill directory out of sync.
+    #
+    # Self-heal a lock left behind by an earlier force-killed run *before*
+    # touching git. Without this, a stale lock makes every probe fail and the
+    # repository can never recover on its own. One Test-Path when no lock exists.
+    $ReadOnly = $Arguments[0] -in @('status', 'rev-parse', 'show', 'ls-tree', 'cat-file', 'diff')
+    if (-not $ReadOnly) { $null = Clear-StaleGitLock -RepositoryPath $Path }
+    $GitEnvironment = Get-GitGuardEnvironment
+    if ($ReadOnly) { $GitEnvironment['GIT_OPTIONAL_LOCKS'] = '0' }
+
     $Result = Invoke-ExternalCommand `
         -FilePath 'git' `
         -Arguments (@(Get-GitGuardArguments) + @('-C', $Path) + $Arguments) `
-        -TimeoutSec $GitTimeoutSec `
-        -Environment (Get-GitGuardEnvironment)
+        -TimeoutSec $EffectiveTimeout `
+        -Environment $GitEnvironment
+
+    # A timed-out git was force-killed and therefore left index.lock behind.
+    # Clear it now so the next run (or the next command in this run) is not
+    # permanently blocked by "File exists".
+    if ($Result.TimedOut -and -not $ReadOnly) {
+        $null = Clear-StaleGitLock -RepositoryPath $Path
+    }
 
     return [pscustomobject]@{
         ExitCode = $Result.ExitCode
         Output   = $Result.Output
+        StdOut   = $Result.StdOut
+        StdErr   = $Result.StdErr
         TimedOut = $Result.TimedOut
     }
 }
@@ -766,13 +974,14 @@ function Invoke-Git {
 function Get-GitRemoteHead {
     param(
         [string]$Remote,
-        [string]$Branch
+        [string]$Branch,
+        [int]$TimeoutSec = $GitTimeoutSec
     )
 
     $Result = Invoke-ExternalCommand `
         -FilePath 'git' `
         -Arguments (@(Get-GitGuardArguments) + @('ls-remote', $Remote, "refs/heads/$Branch")) `
-        -TimeoutSec $GitTimeoutSec `
+        -TimeoutSec $TimeoutSec `
         -Environment (Get-GitGuardEnvironment)
 
     if ($Result.TimedOut -or $Result.ExitCode -ne 0) {
@@ -790,8 +999,8 @@ function Get-GitRemoteHead {
     return (($Line[0].ToString().Trim()) -split "\s+")[0]
 }
 
-function Get-SkillStatus {
-    param([object]$Entry)
+function Get-SkillLocalStatus {
+    param([object]$Entry, [switch]$LocalOnly)
 
     $FolderPath = Get-LocalSkillPath -Entry $Entry
     $SkillFile = Get-LocalSkillFile -Entry $Entry
@@ -830,7 +1039,7 @@ function Get-SkillStatus {
 
                 $script:CurrentApplyMissingPatches = @()
                 $ExpectedLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
-                $MissingHere = @($script:CurrentApplyMissingPatches)
+                $MissingHere = @($script:CurrentApplyMissingPatches | Where-Object { -not $_.AlreadyApplied })
                 $script:CurrentApplyMissingPatches = @()
 
                 $HashMatches = (Get-TextHash -Text $LocalText) -eq (Get-TextHash -Text $ExpectedLocalText)
@@ -881,9 +1090,29 @@ function Get-SkillStatus {
                 }
 
                 $Branch = if ($Entry.branch) { $Entry.branch } else { 'main' }
-                $RemoteHead = Get-GitRemoteHead -Remote $Entry.remote -Branch $Branch
-                $Dirty = Invoke-Git -Path $RepositoryPath -Arguments @('status', '--porcelain')
+                $RemoteHead = if ($LocalOnly) { $Head.Output } else { Get-GitRemoteHead -Remote $Entry.remote -Branch $Branch }
+                $Dirty = Invoke-Git -Path $RepositoryPath -Arguments @('status', '--porcelain', '--untracked-files=all')
                 $DirtySuffix = if (-not [string]::IsNullOrWhiteSpace($Dirty.Output)) { '; local changes present' } else { '' }
+
+                # Git HEAD equality does not prove the generated local routing
+                # is current. Check the managed description/Usage Rule as well.
+                # Already-applied body patches need not match their old anchors.
+                $RoutingOverrideOutdated = $false
+                $Override = Get-RoutingOverride -Entry $Entry
+                if ($null -ne $Override) {
+                    $LocalText = Get-FileText -Path $SkillFile
+                    if ($null -eq $LocalText) {
+                        throw "缺少本地文件: $SkillFile"
+                    }
+                    $script:CurrentApplyMissingPatches = @()
+                    try {
+                        $ExpectedLocalText = Apply-RoutingOverrideToText -Text $LocalText -Override $Override
+                        $RoutingOverrideOutdated = (Get-TextHash -Text $LocalText) -ne (Get-TextHash -Text $ExpectedLocalText)
+                    }
+                    finally {
+                        $script:CurrentApplyMissingPatches = @()
+                    }
+                }
                 $CanonicalSkillFile = Get-CanonicalSkillFilePath -Entry $Entry
                 if ($null -ne $CanonicalSkillFile -and -not (Test-Path -LiteralPath $CanonicalSkillFile)) {
                     throw "缺少 canonical skill 入口文件: $CanonicalSkillFile"
@@ -895,7 +1124,10 @@ function Get-SkillStatus {
                         throw "缺少同步源文件: $SyncSourcePath"
                     }
 
-                    $SourceText = Get-FileText -Path $SyncSourcePath
+                    $script:CurrentApplyMissingPatches = @()
+                    $SourceText = Apply-RoutingOverrideToText -Text (Get-FileText -Path $SyncSourcePath) -Override $Override
+                    if (@($script:CurrentApplyMissingPatches).Count -gt 0) { throw 'patch-stale: sync source no longer matches a local body patch.' }
+                    $script:CurrentApplyMissingPatches = @()
                     $DestinationText = Get-FileText -Path $SkillFile
                     if ($null -eq $DestinationText) {
                         $SyncStatus = 'missing'
@@ -909,9 +1141,21 @@ function Get-SkillStatus {
                 }
 
                 $SyncDirectoryStatus = Get-SyncSkillDirectoryStatus -Entry $Entry
+                $SyncExtraFileStatus = Get-SyncSkillExtraFileStatus -Entry $Entry
+                $ManagedPaths = @(Get-GitSkillManagedPaths -Entry $Entry)
+                $ObsoleteCount = 0
+                if ($ManagedPaths.Count -gt 0) {
+                    $RemovalPlan = Get-SkillManagedRemovalPlan -Entry $Entry -ExpectedPaths $ManagedPaths
+                    Assert-SkillRemovalPlan -Plan $RemovalPlan
+                    $ObsoleteCount = @($RemovalPlan.Removed).Count
+                }
 
-                $Status = if ($Head.Output -eq $RemoteHead -and $SyncStatus -in @('not-configured', 'synced') -and $SyncDirectoryStatus -in @('not-configured', 'synced')) { 'up-to-date' } else { 'outdated' }
-                $SyncSuffix = if ($SyncStatus -eq 'outdated') { '; local SKILL.md entry out of sync' } elseif ($SyncStatus -eq 'missing') { '; local SKILL.md entry missing' } elseif ($SyncDirectoryStatus -eq 'outdated') { '; local skill directory out of sync' } else { '' }
+                $Status = if ($Head.Output -eq $RemoteHead -and $SyncStatus -in @('not-configured', 'synced') -and $SyncDirectoryStatus -in @('not-configured', 'synced') -and $SyncExtraFileStatus -in @('not-configured', 'synced') -and -not $RoutingOverrideOutdated -and $ObsoleteCount -eq 0) { 'up-to-date' } else { 'outdated' }
+                $SyncSuffix = if ($SyncStatus -eq 'outdated') { '; local SKILL.md entry out of sync' } elseif ($SyncStatus -eq 'missing') { '; local SKILL.md entry missing' } elseif ($SyncDirectoryStatus -eq 'outdated') { '; local skill directory out of sync' } elseif ($SyncExtraFileStatus -eq 'outdated') { '; local extra skill file out of sync' } else { '' }
+                if ($ObsoleteCount -gt 0) { $SyncSuffix += "; obsolete managed files: $ObsoleteCount" }
+                if ($RoutingOverrideOutdated) {
+                    $SyncSuffix += "; local override 未同步，请运行 manage-skills.ps1 -Mode apply-overrides -Only $($Entry.name)"
+                }
 
                 return [pscustomobject]@{
                     Name      = $Entry.name
@@ -940,7 +1184,8 @@ function Get-SkillStatus {
                     throw "缺少本地文件: $SkillFile"
                 }
 
-                $RemoteText = Get-WebText -Url $Entry.rawSkillUrl
+                $Package = Get-SkillCliSourceSnapshot -Entry $Entry
+                $RemoteText = $Package.EntryText
                 $Override = Get-RoutingOverride -Entry $Entry
 
                 $script:CurrentApplyMissingPatches = @()
@@ -984,7 +1229,14 @@ function Get-SkillStatus {
                     $Status = 'patch-stale'
                 }
                 else {
-                    $Status = if ($HashMatches) { 'up-to-date' } else { 'outdated' }
+                    $PackageStatus = Get-SkillCliPackageStatus -Entry $Entry -Snapshot $Package
+                    $Status = if ($HashMatches -and $PackageStatus.InSync) { 'up-to-date' } else { 'outdated' }
+                    $VersionDetail += "; package $($Package.Commit.Substring(0, 7)), $($Package.Files.Count) files"
+                    if (-not $PackageStatus.InSync) {
+                        $VersionDetail += "; missing=$($PackageStatus.Missing.Count), changed=$($PackageStatus.Different.Count), obsolete=$(@($PackageStatus.RemovalPlan.Removed).Count)"
+                        $Examples = @($PackageStatus.Missing) + @($PackageStatus.Different) + @($PackageStatus.RemovalPlan.Removed | ForEach-Object { $_.Relative })
+                        $VersionDetail += '; ' + (($Examples | Select-Object -First 3) -join ', ')
+                    }
                 }
 
                 return [pscustomobject]@{
@@ -1020,41 +1272,86 @@ function Get-SkillStatus {
     }
 }
 
+function New-SkillUpdateBackup {
+    param([object]$Entry)
+
+    # No mutation is allowed unless a complete readable snapshot exists.
+    # Keep Git metadata in its repository; record HEAD alongside copied files.
+    $FolderPath = Get-LocalSkillPath -Entry $Entry
+    $RootFull = [IO.Path]::GetFullPath($SkillsRoot).TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+    $FolderFull = [IO.Path]::GetFullPath($FolderPath)
+    if (-not $FolderFull.StartsWith($RootFull, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "备份目标不在活动 skills 目录内: $FolderFull"
+    }
+    if ($Entry.localFolder -match '[/\\]' -or $Entry.localFolder -in @('.', '..')) {
+        throw '备份仅支持已登记的单层 skill 目录名'
+    }
+    $BackupRoot = Join-Path (Split-Path -Parent $SkillsRoot) 'external\skill-update-backups'
+    $BackupDir = Join-Path (Join-Path $BackupRoot $Entry.localFolder) ((Get-Date -Format 'yyyyMMdd-HHmmss-fff') + '-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
+
+    function Copy-SnapshotTree {
+        param([string]$Source, [string]$Destination)
+        $Item = Get-Item -LiteralPath $Source -Force
+        if ($Item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw "备份遇到链接，停止更新以免越界复制: $Source"
+        }
+        if ($Item.PSIsContainer) {
+            New-Item -ItemType Directory -Path $Destination -Force | Out-Null
+            foreach ($Child in Get-ChildItem -LiteralPath $Source -Force) {
+                if ($Child.Name -eq '.git') { continue }
+                Copy-SnapshotTree -Source $Child.FullName -Destination (Join-Path $Destination $Child.Name)
+            }
+        }
+        else {
+            Copy-Item -LiteralPath $Source -Destination $Destination -Force
+            if ((Get-FileHashValue -Path $Source) -ne
+                (Get-FileHashValue -Path $Destination)) {
+                throw "备份校验失败: $Source"
+            }
+        }
+    }
+
+    $Head = $null
+    if ($Entry.type -eq 'git') {
+        $GitHead = Invoke-Git -Path (Get-GitRepositoryPath -Entry $Entry) -Arguments @('rev-parse', 'HEAD')
+        if ($GitHead.ExitCode -ne 0) { throw $GitHead.Output }
+        $Head = $GitHead.Output.Trim()
+    }
+    Copy-SnapshotTree -Source $FolderFull -Destination (Join-Path $BackupDir 'files')
+    [ordered]@{
+        createdAt = (Get-Date).ToString('o')
+        originalPath = $FolderFull
+        entry = $Entry
+        routingOverride = (Get-RoutingOverride -Entry $Entry)
+        gitHead = $Head
+        excludes = @('.git')
+        note = 'Pre-update files only. Restore after reviewing later changes; Git history and client links are not automatically reset.'
+    } | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $BackupDir 'metadata.json') -Encoding UTF8
+    Write-Host "更新前备份: $BackupDir"
+    return $BackupDir
+}
+
 function Update-Skill {
     param([object]$Entry)
 
     $Current = Get-SkillStatus -Entry $Entry
-    if ($Current.Status -in @('missing', 'error')) {
-        return [pscustomobject]@{
-            Name      = $Entry.name
-            Type      = $Entry.type
-            Action    = 'skipped'
-            Status    = $Current.Status
-            Detail    = $Current.Detail
-        }
+    if ($Current.Status -in @('missing', 'error', 'patch-stale')) {
+        $Current | Add-Member -NotePropertyName Action -NotePropertyValue 'skipped' -Force
+        return $Current
     }
 
-    if ($Entry.type -eq 'manual' -and -not $IncludeManual) {
-        return [pscustomobject]@{
-            Name      = $Entry.name
-            Type      = $Entry.type
-            Action    = 'skipped'
-            Status    = 'skipped'
-            Detail    = $Entry.reason
-        }
-    }
-
-    if (-not $Entry.autoUpdate -and -not $IncludeManual) {
-        return [pscustomobject]@{
-            Name      = $Entry.name
-            Type      = $Entry.type
-            Action    = 'skipped'
-            Status    = 'skipped'
-            Detail    = '已禁用自动更新'
-        }
+    if ($Entry.type -eq 'manual' -or -not $Entry.autoUpdate) {
+        # IncludeManual cannot bypass an explicit protected-source policy.
+        $Current | Add-Member -NotePropertyName Action -NotePropertyValue 'skipped' -Force
+        $Current.Detail = '自动覆盖保持关闭；' + $Current.Detail
+        return $Current
     }
 
     if ($Current.Status -eq 'up-to-date') {
+        try { Save-SkillManagedManifest -Entry $Entry }
+        catch {
+            return [pscustomobject]@{ Name = $Entry.name; Type = $Entry.type; Action = 'failed'; Status = 'error'; Detail = $_.Exception.Message }
+        }
         return [pscustomobject]@{
             Name      = $Entry.name
             Type      = $Entry.type
@@ -1065,24 +1362,37 @@ function Update-Skill {
     }
 
     Write-Host "正在更新 $($Entry.name)..."
+    $UpdateBackup = ''
+    $CliMutationStarted = $false
+    $CliOriginalState = @{}
 
     try {
         switch ($Entry.type) {
             'git' {
                 $RepositoryPath = Get-GitRepositoryPath -Entry $Entry
-                $Dirty = Invoke-Git -Path $RepositoryPath -Arguments @('status', '--porcelain')
-                if (-not [string]::IsNullOrWhiteSpace($Dirty.Output)) {
-                    throw '检测到本地 Git 改动，已跳过更新'
-                }
-
+                $GeneratedPolicyChange = Get-GeneratedPolicyGitChanges -Entry $Entry
+                $UpdateBackup = New-SkillUpdateBackup -Entry $Entry
+                Suspend-GeneratedPolicyForPull -Entry $Entry -HasGeneratedChange $GeneratedPolicyChange
+                try {
                 $Branch = if ($Entry.branch) { $Entry.branch } else { 'main' }
-                $Pull = Invoke-Git -Path $RepositoryPath -Arguments @('pull', '--ff-only', 'origin', $Branch)
+                $Pull = Invoke-Git -Path $RepositoryPath -Arguments @('pull', '--ff-only', 'origin', $Branch) -TimeoutSec $GitPullTimeoutSec
                 if ($Pull.ExitCode -ne 0) {
                     throw $Pull.Output
                 }
 
+                $ManagedPaths = @(Get-GitSkillManagedPaths -Entry $Entry)
+                $RemovalPlan = Get-SkillManagedRemovalPlan -Entry $Entry -ExpectedPaths $ManagedPaths
+                Assert-SkillRemovalPlan -Plan $RemovalPlan
                 $null = Sync-LocalSkillDirectory -Entry $Entry
                 $null = Sync-LocalSkillEntryPoint -Entry $Entry
+                $null = Sync-LocalSkillExtraFiles -Entry $Entry
+                Remove-StaleManagedSkillFiles -Entry $Entry -Plan $RemovalPlan
+                $null = Apply-RoutingOverrideToLocalSkill -Entry $Entry
+                }
+                finally {
+                    # Restore the policy even if pull fails; merge against the surviving HEAD.
+                    if ($GeneratedPolicyChange) { $null = Apply-CodexSkillPolicy -Entry $Entry }
+                }
             }
             'skills-cli' {
                 # Routed through cmd.exe because npx is a .cmd/.ps1 shim on
@@ -1091,6 +1401,12 @@ function Update-Skill {
                 # (verified: "%1 is not a valid Win32 application"). Output is
                 # streamed rather than captured so a slow npm install still
                 # shows progress.
+                if (Test-Path -LiteralPath (Join-Path (Get-LocalSkillPath -Entry $Entry) '.git')) { throw 'skills-cli 目标含 Git 元数据，请使用 Git 管理流程。' }
+                $UpdateBackup = New-SkillUpdateBackup -Entry $Entry
+                foreach ($StatePath in @((Get-SkillManifestPath -Entry $Entry), (Get-CodexPolicyReceiptPath -Entry $Entry))) {
+                    $CliOriginalState[$StatePath] = if (Test-Path -LiteralPath $StatePath) { [IO.File]::ReadAllBytes($StatePath) } else { $null }
+                }
+                $CliMutationStarted = $true
                 $Install = Invoke-ExternalCommand `
                     -FilePath 'cmd.exe' `
                     -Arguments @('/c', 'npx', '-y', 'skills', 'add', "$($Entry.repo)@$($Entry.skill)", '-g', '-y') `
@@ -1104,6 +1420,8 @@ function Update-Skill {
                     throw 'skills add 命令执行失败'
                 }
 
+                $RemovalPlan = Get-SkillManagedRemovalPlan -Entry $Entry -ExpectedPaths @((Get-SkillCliExpectedFiles -Entry $Entry -Snapshot (Get-SkillCliSourceSnapshot -Entry $Entry)).Keys)
+                Remove-StaleManagedSkillFiles -Entry $Entry -Plan $RemovalPlan
                 $null = Apply-RoutingOverrideToLocalSkill -Entry $Entry
             }
             default {
@@ -1112,29 +1430,55 @@ function Update-Skill {
         }
 
         $After = Get-SkillStatus -Entry $Entry
+        if ($Entry.type -eq 'skills-cli' -and $After.Status -ne 'up-to-date') {
+            throw ("安装后校验失败 [$($After.Status)]: " + $After.Detail)
+        }
         $Action = if ($After.Status -eq 'up-to-date') { 'updated' } else { 'failed' }
+        if ($After.Status -eq 'up-to-date') { Save-SkillManagedManifest -Entry $Entry }
 
         return [pscustomobject]@{
             Name      = $Entry.name
             Type      = $Entry.type
             Action    = $Action
             Status    = $After.Status
-            Detail    = $After.Detail
+            Detail    = ($After.Detail + $(if ($UpdateBackup) { "; backup: $UpdateBackup" } else { '' }))
         }
     }
     catch {
+        $Failure = $_.Exception.Message
+        if ($CliMutationStarted -and $UpdateBackup) {
+            try {
+                Restore-SkillUpdateBackup -Entry $Entry -BackupDirectory $UpdateBackup
+                foreach ($StatePath in $CliOriginalState.Keys) {
+                    if ($null -ne $CliOriginalState[$StatePath]) {
+                        $null = New-Item -ItemType Directory -Path (Split-Path -Parent $StatePath) -Force
+                        [IO.File]::WriteAllBytes($StatePath, [byte[]]$CliOriginalState[$StatePath])
+                    }
+                    elseif (Test-Path -LiteralPath $StatePath) { Remove-Item -LiteralPath $StatePath -Force }
+                }
+                $Failure += '; 已恢复更新前文件和客户端策略'
+            }
+            catch { $Failure += '; 自动恢复未完成: ' + $_.Exception.Message }
+        }
         return [pscustomobject]@{
             Name      = $Entry.name
             Type      = $Entry.type
             Action    = 'failed'
             Status    = 'error'
-            Detail    = $_.Exception.Message
+            Detail    = ($Failure + $(if ($UpdateBackup) { "; pre-update backup: $UpdateBackup" } else { '' }))
         }
     }
 }
 
+. (Join-Path $ScriptRoot 'skill-package-state.ps1')
+. (Join-Path $ScriptRoot 'skill-client-policy.ps1')
+. (Join-Path $ScriptRoot 'skill-upstream-watch.ps1')
+if ($LoadOnly) { return }
+
+try {
 Write-Host "Skill 管理模式: $Mode"
 Write-Host "配置文件: $ConfigPath"
+Write-Host "人工维护项上游观察: $UpstreamWatchMode (缓存有效 ${UpstreamWatchFreshHours}h，失败退避 ${UpstreamWatchRetryMinutes}min)"
 
 if ($Only.Count -gt 0) {
     Write-Host ('仅处理: ' + ($Only -join ', '))
@@ -1145,14 +1489,8 @@ $Results = @()
 if ($Mode -eq 'check') {
     foreach ($Entry in $Entries) {
         $Status = Get-SkillStatus -Entry $Entry
-        $Results += [pscustomobject]@{
-            Name      = $Status.Name
-            Type      = $Status.Type
-            Installed = $Status.Installed
-            Action    = 'checked'
-            Status    = $Status.Status
-            Detail    = $Status.Detail
-        }
+        $Status | Add-Member -NotePropertyName Action -NotePropertyValue 'checked' -Force
+        $Results += $Status
     }
 }
 elseif ($Mode -eq 'apply-overrides') {
@@ -1164,16 +1502,43 @@ else {
     }
 }
 
-$SortedResults = $Results | Sort-Object Name
+if ($SyncClientRouting) {
+    if ($Mode -ne 'apply-overrides') { throw '-SyncClientRouting requires -Mode apply-overrides.' }
+    $ClientChanged = Sync-CodexRoutingInstructions -Path $ClientInstructionsPath
+    Write-Host ('Codex 全局路由: ' + $(if ($ClientChanged) { 'applied' } else { 'unchanged' }))
+}
+$SortedResults = @($Results | Sort-Object Name)
+if ($ResultPath) {
+    $Sidecar = [ordered]@{ schemaVersion = 1; mode = $Mode; upstreamWatchMode = $UpstreamWatchMode; checkedAt = (Get-Date).ToString('o'); results = $SortedResults }
+    Write-TextFile -Path $ResultPath -Text ($Sidecar | ConvertTo-Json -Depth 15)
+}
 
 ""
 Write-Host '结果:'
 $SortedResults | Format-Table Name, Type, Installed, Action, Status, Detail -AutoSize
 
 ""
+foreach ($Result in $SortedResults) {
+    if ($Result.Status -eq 'error') {
+        Write-Host ('SKILL_ERROR_DETAIL: ' + ($Result.Detail | ConvertTo-Json -Compress))
+    }
+}
 Write-Host '汇总:'
 $SortedResults |
     Group-Object Status |
     Sort-Object Name |
     ForEach-Object { "- $($_.Name): $($_.Count)" } |
     ForEach-Object { Write-Host $_ }
+
+$WatchRows = @($SortedResults | Where-Object { $_.PSObject.Properties.Name -contains 'Upstream' -and $_.Upstream })
+if ($WatchRows.Count -gt 0) {
+    Write-Host '人工维护项上游观察（独立于安装/同步结果）:'
+    foreach ($Row in $WatchRows) {
+        $Watch = $Row.Upstream
+        Write-Host ("  {0}: {1}; source={2}; freshness={3}; checkedAt={4}" -f $Row.Name, $Watch.status, $Watch.source, $Watch.freshness, $Watch.checkedAt)
+        if ($Watch.warning) { Write-Host ('  UPSTREAM_OBSERVATION_WARNING: ' + $Row.Name + ': ' + $Watch.warning) }
+    }
+}
+}
+finally { Close-SkillPackageSession }
+if ($FailOnUnhealthy -and @($Results | Where-Object { $_.Status -notin @('up-to-date', 'skipped', 'unchanged', 'applied', 'updated') }).Count -gt 0) { exit 1 }

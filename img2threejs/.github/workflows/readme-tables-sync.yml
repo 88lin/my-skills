@@ -1,0 +1,95 @@
+name: README tables sync
+
+# Keeps the generated README tables equal to their sources: the plugin table to the img2 catalog
+# (scripts/ci/plugin_table.py) and the demo table to the gallery's demos.json (scripts/ci/showcase_table.py).
+# Stdlib Python + the preinstalled gh CLI only; no third-party actions beyond checkout/setup-python.
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [catalog-updated]
+  pull_request:
+    paths:
+      - README.md
+      - scripts/ci/plugin_table.py
+      - scripts/ci/showcase_table.py
+
+permissions:
+  contents: read
+
+jobs:
+  drift-warning:
+    # Non-blocking: reports drift as a warning annotation, never fails the PR.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Check README tables against their sources
+        run: |
+          cd scripts/ci
+          for t in plugin_table showcase_table; do
+            python3 $t.py --readme ../../README.md --check \
+              || echo "::warning file=README.md::$t differs from its source; the daily sync opens an issue; run scripts/ci/$t.py --write to refresh it."
+          done
+
+  sync:
+    # Actions may not create PRs in this repo, so drift is reported as an issue
+    # (one open issue, updated in place); a maintainer runs --write and opens the PR.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TITLE: "README generated tables are out of date"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Regenerate the tables
+        id: regen
+        # One unreachable source must not block the other table; the job still fails at the end.
+        run: |
+          failed=""
+          for t in plugin_table showcase_table; do
+            (cd scripts/ci && python3 $t.py --readme ../../README.md --write) || failed="$failed $t"
+          done
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+      - name: Open or update the drift issue
+        run: |
+          existing=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number,title \
+            -q ".[] | select(.title == env.TITLE) | .number" | head -1)
+          if git diff --quiet -- README.md; then
+            echo "README already matches the catalog"
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" --comment "README matches the catalog again."
+            fi
+            exit 0
+          fi
+          {
+            echo "A generated table in README.md no longer matches its source (img2 catalog or gallery demos.json)."
+            echo
+            echo "To fix: \`cd scripts/ci && python3 plugin_table.py --readme ../../README.md --write && python3 showcase_table.py --readme ../../README.md --write\`, then open a PR with the README change."
+            echo
+            echo '```diff'
+            git diff -- README.md
+            echo '```'
+          } > body.md
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file body.md
+          else
+            gh issue create --title "$TITLE" --body-file body.md
+          fi
+      - name: Fail if a source could not be read
+        if: steps.regen.outputs.failed != ''
+        run: |
+          echo "::error::could not regenerate:${{ steps.regen.outputs.failed }}"
+          exit 1

@@ -3,7 +3,7 @@ name: schema
 description: >-
   Use this skill when the task is specifically about schema markup, structured data, JSON-LD, schema.org markup, or rich-result eligibility. Good fit for implementing, fixing, or optimizing markup for FAQ, product, review, breadcrumb, organization, article, and similar schema types. Do NOT use as the default for broader SEO audits or AI-search optimization.
 metadata:
-  version: 2.0.2
+  version: 2.0.5
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->

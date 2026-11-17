@@ -1,1 +1,0 @@
-Original procedural UI sounds made with scripts/make_sfx.py. No samples, external recordings, or reference-video audio used. Replace these sounds when another sound better suits the product.

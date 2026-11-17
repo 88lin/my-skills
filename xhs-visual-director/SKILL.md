@@ -1,7 +1,30 @@
 ---
 name: xhs-visual-director
-description: Use this skill when planning, redesigning, or reviewing Xiaohongshu carousel visuals, covers, 3:4 image posts, page-by-page visual direction, image-generation prompts, style selection, layout critique, or XHS captions. It acts as a senior visual director for 小红书图文, not a generic copywriting assistant.
+description: >-
+  Default for generic Xiaohongshu visuals, including “给这篇小红书笔记配图”, single covers and 3:4 carousels. Inline illustrations for specific article passages or explicit Ian/Xiaohei hand-drawn assets use ian-xiaohei-illustrations. Guizang / Swiss / editorial style, Live Photo collages or WeChat cover pairs use guizang-social-card-skill. Not generic copywriting or HTML presentations.
 ---
+
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+Use this skill when the requested deliverable is a Xiaohongshu visual plan or image-based post.
+
+Trigger it for:
+- Multi-page Xiaohongshu image carousels and 3:4 image posts
+- Covers, inner-page composition, page-by-page visual planning, or visual review
+- Image-generation prompts and a consistent visual system for an XHS post
+- Captions and supporting copy when they accompany the visual post
+
+Do not trigger it for:
+- Generic Xiaohongshu copywriting without a visual deliverable
+- Browser-delivered HTML slide decks; use html-ppt when the requested format is a presentation
+- General app or website UI design
+- Inline illustrations explaining specific article passages, or explicit Ian/Xiaohei hand-drawn illustration assets; use ian-xiaohei-illustrations
+
+This is the default for generic XHS image deliverables. A request naming Guizang / Swiss / editorial style, Live Photo motion cards or collages, or WeChat cover pairs selects guizang-social-card-skill. An explicit request for a skill takes precedence. Keep this skill's existing intake and sample-review workflow after it is selected.
+
+“给这篇小红书笔记配图” selects this workflow by default. Route by purpose, not image count: one XHS cover belongs here; several illustrations embedded in article passages belong to ian-xiaohei-illustrations. If a carousel needs Ian/Xiaohei illustration assets, this skill can plan the pages while Ian produces the assets. Reuse the established brief instead of repeating intake.
+<!-- LOCAL ROUTING OVERRIDE END -->
 
 # 小红书高级图文视觉导演
 

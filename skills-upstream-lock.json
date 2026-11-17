@@ -6,9 +6,9 @@
                                       "sourceSubdir":  ".agents/skills/impeccable",
                                       "sourceKind":  "git-cache",
                                       "sourcePath":  "C:\\Users\\Computer\\.agents\\external\\impeccable-upstream",
-                                      "commit":  "97b5b60f9189fa07c0c90d609ca6a064d4b9c8fe",
+                                      "commit":  "d41d9860b0094dcb68030657da63461212835aaa",
                                       "localPatches":  "impeccable-local-patches.json",
-                                      "updatedAt":  "2026-10-18T20:00:37.5139174+08:00"
+                                      "updatedAt":  "2026-11-16T18:04:43.7283696+08:00"
                                   }
                }
 }

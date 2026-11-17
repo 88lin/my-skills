@@ -1,13 +1,20 @@
 ---
 name: modlens
-description: "Plug-in vision for text-only models. Hard rule: when a file path or URL with an image extension (.png, .jpg, .jpeg, .webp, .gif, .heic, .heif) appears anywhere in the conversation (typed by the user, injected as a `[Image: source: <path>]` line, or inside a tag) and you cannot see that image's content, run this skill on it before any other approach: no self-built OCR, no PIL, no tesseract. Also triggers on pasted-image placeholders such as `[Image #1]` and `[Unsupported Image]`. If you can actually see the image, do not use this skill. When unsure, run `modlens guard` before the first read of a session: a deny verdict means the active model has native vision and must read the image itself. Runs the modlens CLI to convert the image into structured JSON evidence: every word transcribed, layout regions, semantics, visual clues. Also use when the user asks how to install, configure, or switch modlens providers (Gemini API key, OpenAI-compatible endpoints, Claude API or Claude Code CLI)."
+description: >-
+  Use only when the task requires reading an image whose content is unavailable to native vision, or when the user asks to configure/install modlens. Do not trigger for images already visible or incidental image filenames in code, logs, or unrelated conversation. Honor the modlens guard before a fallback read.
 compatibility: Requires network access and one of node 22.19+/npx, bun/bunx, or a preinstalled modlens binary on PATH.
 allowed-tools: Bash
 ---
 
+<!-- LOCAL ROUTING OVERRIDE START -->
+## Usage Rule
+
+First determine whether the current task actually requires understanding an image and whether its content is visible through native vision. Use native vision when available. Use ModLens only for an unavailable image that needs to be read, or an explicit request to install/configure ModLens. A filename extension mentioned in code, logs, documentation, or an unrelated task is not a trigger. Once selected for a fallback read, preserve the launcher, guard, provider, and evidence rules below.
+<!-- LOCAL ROUTING OVERRIDE END -->
+
 # ModLens — Vision Bridge Skill
 
-Use this skill when an image is in play and you cannot see its content: a path or URL with an image extension (the path alone is the trigger, hand it to modlens, never Read the bytes or build your own OCR), a placeholder like `[Image #1]`, `[Unsupported Image]`, or a `[Image: source: <path>]` line, or the user asking to configure modlens. Do not use it for web search or fetch (that is `modsearch`), or for images you can already see natively.
+Use this skill only when the current task needs image understanding and the image content is not available to native vision, or when the user asks to configure ModLens. A relevant image may be supplied by path, URL, or an unsupported-image placeholder. Incidental image filenames in code, logs, or unrelated conversation do not trigger it. Preserve the guard before fallback reads. Do not use it for images already visible, web search, or ordinary webpage retrieval.
 
 ## Run it
 
@@ -20,11 +27,11 @@ powershell -ExecutionPolicy Bypass -File <skill-dir>\scripts\run.ps1 <args>     
 
 It resolves a working runtime (PATH `modlens`, then `npx`, then `bunx`) and forwards your arguments unchanged. Exit 78 means no runtime: relay the `nextSteps` from its stderr JSON instead of retrying.
 
-If your harness forbids running scripts, reason through the same order by hand and run the first line that works (the pinned version is 3.27.1):
+If your harness forbids running scripts, reason through the same order by hand and run the first line that works (the pinned version is 3.27.5):
 
-1. A `modlens` on `PATH` whose major version is 3 and is at least 3.27.1: `modlens <args>`.
-2. Otherwise, if `npx` exists: `npx --yes --package @liustack/modlens@3.27.1 modlens <args>`.
-3. Otherwise, if `bunx` exists: `bunx --bun @liustack/modlens@3.27.1 <args>`.
+1. A `modlens` on `PATH` whose major version is 3 and is at least 3.27.5: `modlens <args>`.
+2. Otherwise, if `npx` exists: `npx --yes --package @liustack/modlens@3.27.5 modlens <args>`.
+3. Otherwise, if `bunx` exists: `bunx --bun @liustack/modlens@3.27.5 <args>`.
 4. Otherwise tell the user no JavaScript runtime was found and that installing Node 22.19+ (https://nodejs.org) or Bun (https://bun.sh) is the next step. Do not claim modlens itself failed.
 
 `references/runtime.md` documents the pin and the diagnostic fields.

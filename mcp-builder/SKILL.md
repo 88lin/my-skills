@@ -1,7 +1,7 @@
 ---
 name: mcp-builder
 description: 在构建 MCP 服务器或 MCP 工具时使用 —— 系统化的生产级 MCP 构建方法论，覆盖工具设计、错误处理、传输层选择与测试，让 AI 助手连接外部能力
-version: "1.0.0"
+version: "1.9.1"
 license: MIT
 metadata:
   hermes:
@@ -151,7 +151,7 @@ const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
 await server.connect(serverTransport);
 const client = new Client({ name: "test", version: "1.0.0" });
 await client.connect(clientTransport);
-const result = await client.callTool("search_users", { query: "test" });
+const result = await client.callTool({ name: "search_users", arguments: { query: "test" } });
 expect(result.isError).toBeFalsy();
 ```
 

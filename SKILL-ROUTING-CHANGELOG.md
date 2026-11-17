@@ -1,5 +1,46 @@
 # Skill Routing Changelog
 
+## 2026-11-17：安装并纳管 ECC 五个精选技能
+
+- 来源 `affaan-m/ECC`，初始检查提交 `8abdf329ecbc9315dc4e3334a5702782f70b8b02`；保留真实技能名，源码统一存放在 `.agents\external\ecc-source`。
+- 五项按 Git main 自动更新，嵌套目录与 LICENSE 单独同步；本地触发、执行补丁、自动调用策略通过持久 override 重放。
+- 修正 Claude 专属上手输出、反复确认、未安装关联技能、PowerShell 不兼容命令、固定覆盖率、错误 Diff 范围和可能输出凭证原文的示例。
+- 按需与已有 impeccable、systematic-debugging、webapp-testing 配合，避免普通小修改触发全套流程；未分发完整 ECC 插件或运行时。
+- Claude Code、WorkBuddy、Qoder CN 使用共享目录 Junction；Codex 与 OpenCode 使用其原生共享目录发现机制。
+
+## 2026-11-12：检查噪声与双向路由边界复核
+
+- 人工维护项观察增加 cached/due/force 模式；缓存有效期 72 小时，失败退避 15 分钟，保留上次成功观察和待审阅指纹。默认 check 不再为这些来源请求远端。
+- 安装/同步结果与观察不可用分离；刷新失败不冒充本地 error，过期缓存不冒充实时核实。包装器单列提示并防止误清除既有告警。
+- Ian / XHS 按正文插图与社交页面策划区分，不按单图/多图区分；Archify / Impeccable / html-ppt 明确独立技术图解、应用界面和多页演示的相互边界。保留业务工作流及既有授权规则。
+- 完整包校验未弱化；性能结论以实测记录为准。文本覆盖与加载器校验不视为运行时模型路由准确率证明。
+
+## 2026-11-12
+
+- 按最终产物收敛 XHS / 归藏、Figma / Archify / Mermaid 主入口；保留明确点名优先及 XHS 现有审阅流程。
+- Codex 三个中文参考技能和 oil-cover 使用持久显式调用策略；全局目的应用规则从 override 重放到实际加载的 AGENTS.md。
+- web-access 静态获取无需 CDP；保留共享 Proxy 与用户资料规则。modlens 只对当前任务必要且原生视觉不可见的图片触发。
+- 修正 mcp-builder 的 callTool 参数对象；OfficeCLI 经用户授权升级至 1.0.160，核实 MCP 单 command API 及批处理回滚，关闭绕过纳管的后台刷新。
+- 人工来源增加只读子目录观察、独立审阅参考基线与提醒去重；新增结构化结果和可选严格退出码。
+- 补齐隔离 subset-font / HV PDF 依赖，并统一任务输出路径。
+
+## 2026-10-24：体检复核与维护修复
+
+- 复核顶层 13 个文件和 AI 报告；确认通用 update 已重放 override、定时任务为每 3 天且有补跑、日志保留 40 份，版本号缺失不影响内容哈希检查。
+- 分离 DryRun 与实际更新摘要，修正 checked 状态与提醒清除条件，保留完整错误明细并优先识别 HTTP 4xx。
+- 通用覆盖更新前保存校验过的文件快照；patch-stale 直接停止。Impeccable 应用异常恢复本次文件和版本锁，错误提示报告真实恢复结果。
+- web-access 保留 Git 来源探测但转为人工合并补丁，发现上游差异显示 review-required；浏览器代码、Proxy 和会话未更改。
+- 修正 Office 格式能力引用、过时 GSAP/归藏/HTML 演示路由与备份说明；补充 officecli 来源以及 Impeccable 专用锁说明。
+- 未新增或删除 skill，未同步备份 Git 仓库，未提交、推送或清理 external。历史记录保留在下方。
+
+
+## 2026-10-22：明确 web-access 与 webapp-testing 的操作边界
+
+- 为 `web-access` 新增持久 description 和简短 Usage Rule；本地运行时验证交给 `webapp-testing`，日常浏览器/既有登录会话的显式要求仍优先。
+- 收窄 `webapp-testing` 的 description，并在原有轻量验证规则后补充外部网站和混合任务的阶段分工；本地页面加载外部资源不额外触发联网流程。
+- Git 类型的 `check` 增加本地 override 一致性检查，避免提交已同步时漏报 description 或 Usage Rule 漂移。
+- 保留 `web-access` 的 Git 自动更新登记和现有三处代码/路径补丁。带本地修改时更新器仍拒绝拉取；本次不宣称该既存补丁的自动合并问题已解决。
+
 ## 2026-10-18：补强 no-ai-slop 的中文识别依据、改写规格与误判边界
 
 - 18 组原版模式逐条补齐识别依据、常见变体、过度改写提示和保留边界；U04、U18 原先缺失的保留边界已补上。改写示范不再只有一条改法，同时说明“过度改写长什么样”。

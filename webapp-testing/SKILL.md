@@ -1,7 +1,7 @@
 ---
 name: webapp-testing
 description: >-
-  Use this skill only for explicit browser/runtime verification of a local web application, or when interactive behavior cannot be established from code and static checks. Do NOT auto-trigger for copy changes, isolated CSS/style edits, small component maintenance, or routine frontend fixes; those use direct inspection and the smallest relevant static check unless the user requests browser testing.
+  Use for browser/runtime verification of a local web application when explicitly requested or when relevant interaction, rendering, responsive behavior, or console output cannot be established from code and static checks. Do NOT auto-trigger for routine copy, CSS, or small component edits. Use web-access for information retrieval and account operations on external websites, or explicit requests to use the user's everyday browser. Loading external resources while testing a local app does not require web-access.
 license: Complete terms in LICENSE.txt
 ---
 
@@ -13,6 +13,8 @@ Use browser testing proportionally, not as a default completion gate.
 Trigger this skill only when the user explicitly requests browser verification, when reproducing a runtime-only UI bug, or when interaction, responsive behavior, rendering, or console output cannot be established from code and static checks.
 
 For small copy, style, token, or existing-component edits, do not start a server or Playwright by default. Read static HTML directly when sufficient, reuse an already-running server when available, and start a local server only when the targeted runtime scenario requires it. Capture screenshots only when visual evidence is relevant. Test the smallest scenario that answers the question instead of running a broad browser suite.
+
+Route each operation by purpose. This skill covers local development apps, loopback/localhost servers, and local HTML files, including tests of their login flows. Use web-access for information retrieval and account operations on external websites (including internal business systems), or an explicit request to use the user's everyday browser. A task may use both skills in separate phases; external resources loaded by the local app do not require the web-access workflow.
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # Web Application Testing

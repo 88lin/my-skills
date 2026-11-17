@@ -17,10 +17,10 @@ Product UI's failure mode isn't flatness, it's strangeness without purpose: over
 
 ## Color
 
-Product defaults to Restrained. A single surface can earn Committed (a dashboard where one category color carries a report, an onboarding flow with a drenched welcome screen), but Restrained is the floor.
+Choose colour intensity from the user's brief and the actual use scene. Restrained is one option, not a floor or a mandatory neutral shell. A committed or full palette is valid for a working application when hierarchy, contrast and semantic states stay clear.
 
 - State-rich semantic vocabulary: hover, focus, active, disabled, selected, loading, error, warning, success, info. Standardize these.
-- Accent color used for primary actions, current selection, and state indicators only, not decoration.
+- Keep action and state colours distinguishable. Brand colour may also shape the shell and materials when the brief calls for it; do not reduce an explicit visual direction to a single accent on grey.
 - A second neutral layer for sidebars, toolbars, and panels (slightly cooler or warmer than the content surface).
 
 ## Layout
@@ -38,17 +38,17 @@ Every interactive component has: default, hover, focus, active, disabled, loadin
 
 ## Motion
 
-- 150–250 ms on most transitions. Users are in flow; don't make them wait for choreography.
-- Motion conveys state, not decoration. State change, feedback, loading, reveal: nothing else.
-- No orchestrated page-load sequences. Product loads into a task; users don't want to watch it load.
+- Use 150–250 ms as a starting point for routine feedback, not a cap for every transition. Set timing from distance, continuity and the brief.
+- Motion can communicate state, material, character and spatial continuity. Preserve requested effects when they are usable and smooth.
+- Coordinated entrances and view transitions are allowed when requested or part of the chosen direction. Keep controls immediately usable, handle interruption, and respect reduced motion.
 
 ## Product constraints
 
-- Decorative motion that doesn't convey state.
+- Motion that obstructs input, obscures state or ignores reduced motion. Expressive motion is not a defect by itself.
 - Inconsistent component vocabulary across screens. If the "save" button looks different in two places, one is wrong.
 - Display fonts in UI labels, buttons, data.
 - Reinventing standard affordances for flavor (custom scrollbars, weird form controls, non-standard modals).
-- Heavy color or full-saturation accents on inactive states.
+- Colour that makes active, inactive, warning and disabled states indistinguishable; saturation itself is a design choice.
 - Modal as first thought. Modals are usually laziness. Exhaust inline / progressive alternatives first.
 
 ## Product permissions

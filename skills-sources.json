@@ -1,405 +1,295 @@
 {
-    "skills":  [
-                   {
-                       "name":  "add-notionnext-book",
-                       "localFolder":  "add-notionnext-book",
-                       "type":  "manual",
-                       "autoUpdate":  false,
-                       "reason":  "Local workflow for syncing E:\\knowledge-base finished-book notes into the NotionNext Heo /book shelf"
-                   },
-                   {
-                       "name":  "ai-seo",
-                       "localFolder":  "ai-seo",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "coreyhaines31/marketingskills",
-                       "skill":  "ai-seo",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/ai-seo/SKILL.md"
-                   },
-                   {
-                       "name":  "archify",
-                       "localFolder":  "archify",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/tt-a1i/archify.git",
-                       "branch":  "main",
-                       "repositoryFolder":  "..\\external\\archify-source",
-                       "syncSkillDirectory":  "archify",
-                       "notes":  "Git source is kept under .agents\\external; active skill folder contains only the packaged Archify skill runtime"
-                   },
-                   {
-                       "name":  "guizang-product-video-skill",
-                       "localFolder":  "guizang-product-video-skill",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/op7418/guizang-product-video-skill.git",
-                       "branch":  "main",
-                       "repositoryFolder":  "..\\external\\guizang-product-video-skill-source",
-                       "syncSkillFile":  "SKILL.md",
-                       "syncSkillDirectories":  [
-                           "agents",
-                           "assets",
-                           "references",
-                           "scripts",
-                           "tests"
-                       ],
-                       "notes":  "Git source is kept under .agents\\external; active skill contains the entry, runtime resources, and README/LICENSE needed for usage and license references"
-                   },
-                   {
-                       "name":  "book-dissection",
-                       "localFolder":  "book-dissection",
-                       "type":  "manual",
-                       "autoUpdate":  false,
-                       "reason":  "QoderWork-adapted from esthersjw/book-dissection-skill; upstream checked by the skill's built-in Auto-Update section (.update-meta.json, 14-day interval), do not overwrite with raw Cola upstream"
-                   },
-                   {
-                       "name":  "canvas-design",
-                       "localFolder":  "canvas-design",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "canvas-design",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/canvas-design/SKILL.md"
-                   },
-                   {
-                       "name":  "chinese-code-review",
-                       "localFolder":  "chinese-code-review",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "jnMetaCode/superpowers-zh",
-                       "skill":  "chinese-code-review",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-code-review/SKILL.md"
-                   },
-                   {
-                       "name":  "chinese-commit-conventions",
-                       "localFolder":  "chinese-commit-conventions",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "jnMetaCode/superpowers-zh",
-                       "skill":  "chinese-commit-conventions",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-commit-conventions/SKILL.md"
-                   },
-                   {
-                       "name":  "chinese-documentation",
-                       "localFolder":  "chinese-documentation",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "jnMetaCode/superpowers-zh",
-                       "skill":  "chinese-documentation",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-documentation/SKILL.md"
-                   },
-                   {
-                        "name":  "create-crush",
-                        "localFolder":  "create-crush",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "xiaoheizi8/crush-skills",
-                       "skill":  "create-crush",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/xiaoheizi8/crush-skills/main/SKILL.md"
-                   },
-                   {
-                       "name":  "docx",
-                       "localFolder":  "docx",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "docx",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/docx/SKILL.md"
-                   },
-                   {
-                       "name":  "html-ppt",
-                       "localFolder":  "html-ppt",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "lewislulu/html-ppt-skill",
-                       "skill":  "html-ppt",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/lewislulu/html-ppt-skill/main/SKILL.md"
-                   },
-                   {
-                       "name":  "hv-analysis",
-                       "localFolder":  "hv-analysis",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "KKKKhazix/khazix-skills",
-                       "skill":  "hv-analysis",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/hv-analysis/SKILL.md"
-                   },
-                   {
-                       "name":  "ian-xiaohei-illustrations",
-                       "localFolder":  "ian-xiaohei-illustrations",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/helloianneo/ian-xiaohei-illustrations.git",
-                       "branch":  "main",
-                       "repositoryFolder":  "..\\external\\ian-xiaohei-illustrations-source",
-                       "syncSkillDirectory":  "ian-xiaohei-illustrations",
-                       "notes":  "Git source is kept under .agents\\external; active skill folder contains the synced nested entry and required resource directories"
-                   },
-                   {
-                       "name":  "img2threejs",
-                       "localFolder":  "img2threejs",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/img2threejs/img2threejs.git",
-                       "branch":  "main",
-                       "notes":  "Full repository required: forge/, grimoire/, scripts/, and docs/"
-                   },
-                   {
-                       "name":  "impeccable",
-                       "localFolder":  "impeccable",
-                       "type":  "manual",
-                       "autoUpdate":  false,
-                       "reason":  "Local mirror of pbakaus/impeccable .agents skill; update from reviewed upstream bundle, do not overwrite blindly"
-                   },
-                   {
-                       "name":  "khazix-writer",
-                       "localFolder":  "khazix-writer",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "KKKKhazix/khazix-skills",
-                       "skill":  "khazix-writer",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/khazix-writer/SKILL.md"
-                   },
-                   {
-                       "name":  "knowledge-base",
-                       "localFolder":  "knowledge-base",
-                       "type":  "manual",
-                       "autoUpdate":  false,
-                       "reason":  "QoderWork-adapted from esthersjw/learn-from-books; upstream checked by the skill's built-in Auto-Update section (.update-meta.json, 14-day interval), do not overwrite with raw Cola upstream"
-                   },
-                   {
-                       "name":  "luo-xiang-perspective",
-                       "localFolder":  "luo-xiang-perspective",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "YixiaJack/luo-xiang-skill",
-                       "skill":  "luo-xiang-perspective",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/YixiaJack/luo-xiang-skill/main/SKILL.md"
-                   },
-                   {
-                       "name":  "mcp-builder",
-                       "localFolder":  "mcp-builder",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "jnMetaCode/superpowers-zh",
-                       "skill":  "mcp-builder",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
-                   },
-                   {
-                       "name":  "modlens",
-                       "localFolder":  "modlens",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/liustack/modlens.git",
-                       "branch":  "main",
-                       "repositoryFolder":  "..\\external\\modlens-source",
-                       "syncSkillDirectory":  "skills\\modlens",
-                       "notes":  "Git source is kept under .agents\\external; active skill folder contains only the Codex/Claude skill entry, launcher scripts, and references"
-                   },
-                   {
-                       "name":  "officecli",
-                       "localFolder":  "officecli",
-                       "type":  "manual",
-                       "autoUpdate":  false,
-                       "reason":  "Specialized cross-format Office CLI; keep manual and route only for explicit officecli, OpenXML, validation, or cross-format CLI work"
-                   },
-                   {
-                       "name":  "oil-cover",
-                       "localFolder":  "oil-cover",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/oil-oil/oil-cover.git",
-                       "branch":  "main",
-                       "notes":  "Full repository required: scripts/, references/, and assets/"
-                   },
-                   {
-                       "name":  "pdf",
-                       "localFolder":  "pdf",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "pdf",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/pdf/SKILL.md"
-                   },
-                   {
-                       "name":  "pptx",
-                       "localFolder":  "pptx",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "pptx",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/pptx/SKILL.md"
-                   },
-                   {
-                       "name":  "receiving-code-review",
-                       "localFolder":  "receiving-code-review",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "jnMetaCode/superpowers-zh",
-                       "skill":  "receiving-code-review",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/receiving-code-review/SKILL.md"
-                   },
-                   {
-                       "name":  "schema",
-                       "localFolder":  "schema",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "coreyhaines31/marketingskills",
-                       "skill":  "schema",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/schema/SKILL.md"
-                   },
-                   {
-                       "name":  "seo-audit",
-                       "localFolder":  "seo-audit",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "coreyhaines31/marketingskills",
-                       "skill":  "seo-audit",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
-                   },
-                   {
-                       "name":  "systematic-debugging",
-                       "localFolder":  "systematic-debugging",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "jnMetaCode/superpowers-zh",
-                       "skill":  "systematic-debugging",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
-                   },
-                   {
-                       "name":  "web-access",
-                       "localFolder":  "web-access",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/eze-is/web-access.git",
-                       "branch":  "main",
-                       "notes":  "Standalone Git repository"
-                   },
-                   {
-                       "name":  "webapp-testing",
-                       "localFolder":  "webapp-testing",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "webapp-testing",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
-                   },
-                   {
-                       "name":  "xhs-visual-director",
-                       "localFolder":  "xhs-visual-director",
-                       "type":  "git",
-                       "autoUpdate":  true,
-                       "remote":  "https://github.com/ziguishian/xhs-visual-director-skill.git",
-                       "branch":  "main",
-                       "repositoryFolder":  "..\\external\\xhs-visual-director-source",
-                       "syncSkillDirectory":  "skill",
-                       "syncSkillDirectories":  [
-                           "assets",
-                           "docs",
-                           "examples",
-                           "templates"
-                       ],
-                       "notes":  "Git source is kept under .agents\\external; active skill folder contains only the synced nested skill directory"
-                   },
-                   {
-                       "name":  "xlsx",
-                       "localFolder":  "xlsx",
-                       "type":  "skills-cli",
-                       "autoUpdate":  true,
-                       "repo":  "anthropics/skills",
-                       "skill":  "xlsx",
-                       "rawSkillUrl":  "https://raw.githubusercontent.com/anthropics/skills/main/skills/xlsx/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-core",
-                       "localFolder": "gsap-core",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-core",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-core/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-timeline",
-                       "localFolder": "gsap-timeline",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-timeline",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-timeline/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-scrolltrigger",
-                       "localFolder": "gsap-scrolltrigger",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-scrolltrigger",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-scrolltrigger/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-plugins",
-                       "localFolder": "gsap-plugins",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-plugins",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-plugins/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-utils",
-                       "localFolder": "gsap-utils",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-utils",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-utils/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-react",
-                       "localFolder": "gsap-react",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-react",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-react/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-performance",
-                       "localFolder": "gsap-performance",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-performance",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-performance/SKILL.md"
-                   },
-                   {
-                       "name": "gsap-frameworks",
-                       "localFolder": "gsap-frameworks",
-                       "type": "skills-cli",
-                       "autoUpdate": true,
-                       "repo": "greensock/gsap-skills",
-                       "skill": "gsap-frameworks",
-                       "rawSkillUrl": "https://raw.githubusercontent.com/greensock/gsap-skills/main/skills/gsap-frameworks/SKILL.md"
-                   },
-                   {
-                       "name": "oil-motion",
-                       "localFolder": "oil-motion",
-                       "type": "git",
-                       "autoUpdate": true,
-                       "remote": "https://github.com/oil-oil/oil-motion.git",
-                       "branch": "main",
-                       "repositoryFolder": "..\\external\\oil-motion-source",
-                       "syncSkillFile": "SKILL.md",
-                       "syncSkillDirectories": [
-                           "agents",
-                           "assets",
-                           "references",
-                           "scripts",
-                           "tests"
-                       ],
-                       "notes": "Source checkout stays under .agents/external; runtime resources are synced separately. Python environment is at .agents/external/oil-motion-runtime/.venv. README and LICENSE are retained locally."
-                   },
+  "skills": [
+    {
+      "name": "ai-seo",
+      "localFolder": "ai-seo",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "coreyhaines31/marketingskills",
+      "skill": "ai-seo",
+      "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/ai-seo/SKILL.md"
+    },
+    {
+      "name": "archify",
+      "localFolder": "archify",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/tt-a1i/archify.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\archify-source",
+      "syncSkillDirectory": "archify",
+      "notes": "Git source is kept under .agents\\external; active skill folder contains only the packaged Archify skill runtime"
+    },
+    {
+      "name": "canvas-design",
+      "localFolder": "canvas-design",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "anthropics/skills",
+      "skill": "canvas-design",
+      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/canvas-design/SKILL.md"
+    },
+    {
+      "name": "chinese-code-review",
+      "localFolder": "chinese-code-review",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "jnMetaCode/superpowers-zh",
+      "skill": "chinese-code-review",
+      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-code-review/SKILL.md"
+    },
+    {
+      "name": "chinese-commit-conventions",
+      "localFolder": "chinese-commit-conventions",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "jnMetaCode/superpowers-zh",
+      "skill": "chinese-commit-conventions",
+      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-commit-conventions/SKILL.md"
+    },
+    {
+      "name": "chinese-documentation",
+      "localFolder": "chinese-documentation",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "jnMetaCode/superpowers-zh",
+      "skill": "chinese-documentation",
+      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/chinese-documentation/SKILL.md"
+    },
+    {
+      "name": "guizang-social-card-skill",
+      "localFolder": "guizang-social-card-skill",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/op7418/guizang-social-card-skill.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\guizang-social-card-skill-source",
+      "syncSkillFile": "SKILL.md",
+      "syncSkillDirectories": [
+        "agents",
+        "assets",
+        "references",
+        "scripts"
+      ],
+      "syncSkillFiles": [
+        ".gitignore",
+        "AGENT.md",
+        "COMMERCIAL_LICENSING.md",
+        "HANDOFF.md",
+        "LICENSE",
+        "PRODUCT.md",
+        "README.md",
+        "README.en.md",
+        "package.json",
+        "package-lock.json",
+        "validate-social-deck.mjs"
+      ],
+      "notes": "Complete Git source stays under .agents/external; runtime, templates, references, scripts, validator and license are synced separately. Node dependencies resolve from .agents/node_modules outside the skill scan. Existing oil-cover and xhs-visual-director files and routing are preserved."
+    },
+    {
+      "name": "html-ppt",
+      "localFolder": "html-ppt",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "lewislulu/html-ppt-skill",
+      "skill": "html-ppt",
+      "rawSkillUrl": "https://raw.githubusercontent.com/lewislulu/html-ppt-skill/main/SKILL.md"
+    },
+    {
+      "name": "hv-analysis",
+      "localFolder": "hv-analysis",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "KKKKhazix/khazix-skills",
+      "skill": "hv-analysis",
+      "rawSkillUrl": "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/hv-analysis/SKILL.md"
+    },
+    {
+      "name": "ian-xiaohei-illustrations",
+      "localFolder": "ian-xiaohei-illustrations",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/helloianneo/ian-xiaohei-illustrations.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\ian-xiaohei-illustrations-source",
+      "syncSkillDirectory": "ian-xiaohei-illustrations",
+      "notes": "Git source is kept under .agents\\external; active skill folder contains the synced nested entry and required resource directories"
+    },
+    {
+      "name": "img2threejs",
+      "localFolder": "img2threejs",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/img2threejs/img2threejs.git",
+      "branch": "main",
+      "notes": "Full repository required: forge/, grimoire/, scripts/, and docs/"
+    },
+    {
+      "name": "impeccable",
+      "localFolder": "impeccable",
+      "type": "manual",
+      "autoUpdate": false,
+      "reason": "Local mirror of pbakaus/impeccable .agents skill; update from reviewed upstream bundle, do not overwrite blindly",
+      "notes": "Dedicated upstream source and reviewed revision are recorded in skills-upstream-lock.json; use update-impeccable.ps1 preview/apply, not the generic installer."
+    },
+    {
+      "name": "khazix-writer",
+      "localFolder": "khazix-writer",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "KKKKhazix/khazix-skills",
+      "skill": "khazix-writer",
+      "rawSkillUrl": "https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/khazix-writer/SKILL.md"
+    },
+    {
+      "name": "luo-xiang-perspective",
+      "localFolder": "luo-xiang-perspective",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "YixiaJack/luo-xiang-skill",
+      "skill": "luo-xiang-perspective",
+      "rawSkillUrl": "https://raw.githubusercontent.com/YixiaJack/luo-xiang-skill/main/SKILL.md"
+    },
+    {
+      "name": "mcp-builder",
+      "localFolder": "mcp-builder",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "jnMetaCode/superpowers-zh",
+      "skill": "mcp-builder",
+      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/mcp-builder/SKILL.md"
+    },
+    {
+      "name": "modlens",
+      "localFolder": "modlens",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/liustack/modlens.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\modlens-source",
+      "syncSkillDirectory": "skills\\modlens",
+      "notes": "Git source is kept under .agents\\external; active skill folder contains only the Codex/Claude skill entry, launcher scripts, and references"
+    },
+    {
+      "name": "officecli",
+      "localFolder": "officecli",
+      "type": "manual",
+      "autoUpdate": false,
+      "reason": "Specialized cross-format Office CLI; keep manual and route only for explicit officecli, OpenXML, validation, or cross-format CLI work",
+      "remote": "https://github.com/iOfficeAI/OfficeCLI.git",
+      "notes": "Original pre-repair installed commit was unknown. On 2026-11-12 the user explicitly approved latest OfficeCLI; v1.0.160 binary digest verified against official GitHub release. The release skill at upstreamCommit is installed with local routing replay. OfficeCLI own auto-update is disabled and the guarded launcher sets OFFICECLI_SKIP_UPDATE=1 to prevent implicit skill overwrite.",
+      "upstreamWatch": {
+        "path": "skills/officecli",
+        "reviewedCommit": "7c33491934e8adfeddaa648a934240606801e912",
+        "reviewedAt": "2026-11-12T14:54:06.239231+08:00",
+        "reviewNote": "Original historical install baseline was unknown. A new verified v1.0.160 binary and release SKILL.md are explicitly installed in this repair; release skill bytes equal this observed branch subtree. Preserve specialized local routing and guarded invocation. Validate single-command MCP API and atomic batch semantics."
+      },
+      "upstreamSkillPath": "skills/officecli",
+      "upstreamCommit": "c56512c8c7b76fe284f09940e4cd492470099d3e",
+      "installedBinaryVersion": "1.0.160"
+    },
+    {
+      "name": "oil-cover",
+      "localFolder": "oil-cover",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/oil-oil/oil-cover.git",
+      "branch": "main",
+      "notes": "Full repository required: scripts/, references/, and assets/"
+    },
+    {
+      "name": "receiving-code-review",
+      "localFolder": "receiving-code-review",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "jnMetaCode/superpowers-zh",
+      "skill": "receiving-code-review",
+      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/receiving-code-review/SKILL.md"
+    },
+    {
+      "name": "schema",
+      "localFolder": "schema",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "coreyhaines31/marketingskills",
+      "skill": "schema",
+      "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/schema/SKILL.md"
+    },
+    {
+      "name": "seo-audit",
+      "localFolder": "seo-audit",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "coreyhaines31/marketingskills",
+      "skill": "seo-audit",
+      "rawSkillUrl": "https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/skills/seo-audit/SKILL.md"
+    },
+    {
+      "name": "systematic-debugging",
+      "localFolder": "systematic-debugging",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "jnMetaCode/superpowers-zh",
+      "skill": "systematic-debugging",
+      "rawSkillUrl": "https://raw.githubusercontent.com/jnMetaCode/superpowers-zh/main/skills/systematic-debugging/SKILL.md"
+    },
+    {
+      "name": "web-access",
+      "localFolder": "web-access",
+      "type": "git",
+      "autoUpdate": false,
+      "remote": "https://github.com/eze-is/web-access.git",
+      "branch": "main",
+      "notes": "Standalone Git repository with intentional local patches. Preserve the current working diff and .agents\\external\\web-access-local-patches before reviewing upstream in an isolated copy. The saved patch may predate later edits. Reapply routing overrides after merging; do not reset the active browser workflow or reconnect browsers to make Git clean.",
+      "reason": "本地浏览器共享 Proxy、路径与路由补丁需要人工合并上游；保留 Git 来源检查，出现新版本时报告 review-required。",
+      "upstreamWatch": {
+        "path": ""
+      }
+    },
+    {
+      "name": "webapp-testing",
+      "localFolder": "webapp-testing",
+      "type": "skills-cli",
+      "autoUpdate": true,
+      "repo": "anthropics/skills",
+      "skill": "webapp-testing",
+      "rawSkillUrl": "https://raw.githubusercontent.com/anthropics/skills/main/skills/webapp-testing/SKILL.md"
+    },
+    {
+      "name": "xhs-visual-director",
+      "localFolder": "xhs-visual-director",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/ziguishian/xhs-visual-director-skill.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\xhs-visual-director-source",
+      "syncSkillDirectory": "skill",
+      "syncSkillDirectories": [
+        "assets",
+        "docs",
+        "examples",
+        "templates"
+      ],
+      "notes": "Git source is kept under .agents\\external; active skill folder contains only the synced nested skill directory"
+    },
+    {
+      "name": "oil-motion",
+      "localFolder": "oil-motion",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/oil-oil/oil-motion.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\oil-motion-source",
+      "syncSkillFile": "SKILL.md",
+      "syncSkillDirectories": [
+        "agents",
+        "assets",
+        "references",
+        "scripts",
+        "tests"
+      ],
+      "notes": "Source checkout stays under .agents/external; runtime resources are synced separately. Python environment is at .agents/external/oil-motion-runtime/.venv. README and LICENSE are retained locally."
+    },
     {
       "name": "no-ai-slop",
       "localFolder": "no-ai-slop",
@@ -412,6 +302,95 @@
       "upstreamCommit": "000650b156983f5159695b441477f4e63b25dc85",
       "reason": "用户授权的中文定制版：原版 18 组模式中文化，补充 32 组中文模式、公众号流程、编辑强度、误判边界与三类样稿自检。人工审阅合并上游，避免通用自动更新覆盖中文正文和参考库。",
       "notes": "Source checkout is preserved clean under .agents\\external; active runtime and backup retain the localized skill and MIT license. Description is replayed from local-routing-overrides.json. WorkBuddy uses a junction to the active runtime."
+    },
+    {
+      "name": "agent-reach",
+      "localFolder": "agent-reach",
+      "type": "manual",
+      "autoUpdate": false,
+      "remote": "https://github.com/Panniantong/Agent-Reach.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\agent-reach-source",
+      "upstreamSkillPath": "agent_reach/skill",
+      "upstreamCommit": "94f06c1969dfc1834001269d79d3ad0972d9dee6",
+      "reason": "用户授权的四平台读取精简定制；使用隔离 OpenCLI 2.0.2 与 bilibili-cli 0.6.2，人工合并上游，避免恢复宽泛触发和全量安装。",
+      "notes": "Active skill contains only local instructions, references and MIT license. Full source and dependencies stay in .agents\\external. Stable entry: agent-reach-runtime\\bin\\platform-read.ps1. No Agent-Reach Python CLI, PATH changes or MCP changes. WorkBuddy uses a junction to the active runtime, added at user request on 2026-10-24.",
+      "upstreamWatch": {
+        "path": "agent_reach/skill",
+        "reviewedCommit": "c70ae6da5d39bc90e09ad2ae0575ccc89f31e284",
+        "reviewedAt": "2026-11-12T14:54:06.239231+08:00",
+        "reviewNote": "Reviewed subtree diff against installed 94f06c1. Keep the four-platform OpenCLI/bilibili implementation, shared Proxy and no-cookie-export rules. Adopt only content-completeness guidance; do not import the upstream Python CLI, 14-platform routing, dedicated browser lifecycle or session-copy workflow. This reference is not a full merge."
+      }
+    },
+    {
+      "name": "codebase-onboarding",
+      "localFolder": "codebase-onboarding",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/affaan-m/ECC.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\ecc-source",
+      "syncSkillDirectory": "skills/codebase-onboarding",
+      "syncSkillFiles": [
+        "LICENSE"
+      ],
+      "notes": "Shared ECC Git source stays outside active skills. Sync only this nested skill and MIT license, then replay persistent routing/body/client-policy overrides. Do not use the full ECC installer."
+    },
+    {
+      "name": "change-impact",
+      "localFolder": "change-impact",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/affaan-m/ECC.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\ecc-source",
+      "syncSkillDirectory": "skills/change-impact",
+      "syncSkillFiles": [
+        "LICENSE"
+      ],
+      "notes": "Shared ECC Git source stays outside active skills. Sync only this nested skill and MIT license, then replay persistent routing/body/client-policy overrides. Do not use the full ECC installer."
+    },
+    {
+      "name": "verification-loop",
+      "localFolder": "verification-loop",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/affaan-m/ECC.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\ecc-source",
+      "syncSkillDirectory": "skills/verification-loop",
+      "syncSkillFiles": [
+        "LICENSE"
+      ],
+      "notes": "Shared ECC Git source stays outside active skills. Sync only this nested skill and MIT license, then replay persistent routing/body/client-policy overrides. Do not use the full ECC installer."
+    },
+    {
+      "name": "search-first",
+      "localFolder": "search-first",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/affaan-m/ECC.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\ecc-source",
+      "syncSkillDirectory": "skills/search-first",
+      "syncSkillFiles": [
+        "LICENSE"
+      ],
+      "notes": "Shared ECC Git source stays outside active skills. Sync only this nested skill and MIT license, then replay persistent routing/body/client-policy overrides. Do not use the full ECC installer."
+    },
+    {
+      "name": "frontend-patterns",
+      "localFolder": "frontend-patterns",
+      "type": "git",
+      "autoUpdate": true,
+      "remote": "https://github.com/affaan-m/ECC.git",
+      "branch": "main",
+      "repositoryFolder": "..\\external\\ecc-source",
+      "syncSkillDirectory": "skills/frontend-patterns",
+      "syncSkillFiles": [
+        "LICENSE"
+      ],
+      "notes": "Shared ECC Git source stays outside active skills. Sync only this nested skill and MIT license, then replay persistent routing/body/client-policy overrides. Do not use the full ECC installer."
     }
-               ]
+  ]
 }

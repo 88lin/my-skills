@@ -1,5 +1,73 @@
 # Skill Routing Rules
 
+## 2026-11-17：ECC 开发工作流触发
+
+五项保持自动选择，也支持按名称显式调用。触发以当前任务和真实范围为依据：
+
+| 当前任务 | 入口 | 边界 |
+|---|---|---|
+| 首次接手或明确要求看懂代码库 | codebase-onboarding | 默认输出报告，项目约定仅按用户请求写入 |
+| 新依赖、外部集成或存在复用可能的新功能 | search-first | 先查仓库和现有能力，按需要联网 |
+| 跨模块、共享数据、接口、认证或部署改动 | change-impact | 按实际依赖确认影响，复用已有文档和授权 |
+| React/Next.js 组件、状态、数据、表单或性能实现 | frontend-patterns | 设计判断用 impeccable，普通样式维护直接做 |
+| 重要实现完成、PR 前或用户要求验证 | verification-loop | 使用当前 shell 和项目脚本，按风险选检查，不强制统一覆盖率 |
+
+复杂故障继续按需使用 systematic-debugging；必要的本地运行时证据交给 webapp-testing。普通文案、CSS 和明显的小修复不加载一整套工作流。关联技能按可用性选择，不新增隐含依赖。
+
+## 2026-11-12：按产物用途补齐双向边界
+
+| 请求 | 默认入口 | 边界 |
+| --- | --- | --- |
+| 给这篇小红书笔记配图 / 单张小红书封面 / 3:4 轮播 | xhs-visual-director | 明确 Ian/小黑插画素材时可交给 Ian；页面策划仍由 XHS 负责 |
+| 给正文的若干段落配解释插图 / Ian 小黑手绘 | ian-xiaohei-illustrations | 一张或多张都可，不以图数划界 |
+| 做一个技术架构说明页面（独立分享的图解） | archify | 无需字面包含 HTML；应用中的导航、搜索、表单等 UI 另按界面产物选择 |
+| 做有导航和搜索的架构管理应用 / 产品界面 | impeccable | 需要视觉/交互设计判断时使用 |
+| 把技术架构讲解做成多页 HTML 演示 | html-ppt | 独立图解页交给 archify |
+
+以上边界同时写入双方 description、Usage Rule 和 `codexGlobalRouting`；不通过虚构数值 priority 实现。显式技能/产物要求与更高优先级指令优先；Figma 插件未改动。配置、覆盖重放和加载器检查不能证明模型在每次提示词中的运行时选择，本文示例是路由验收规格。
+
+## 跨技能主入口与显式调用（2026-11-12）
+
+先遵从用户明确点名和目标应用，再判断最终产物，最后判断风格及专门能力。
+
+| 任务条件 | 主入口 |
+|---|---|
+| 通用小红书图文、3:4 轮播、封面、逐页视觉策划 | xhs-visual-director |
+| 明确归藏 / Swiss / 编辑杂志风格，Live Photo、视频拼图、三联动图或公众号封面对 | guizang-social-card-skill |
+| 明确 oil-cover | oil-cover；Codex 禁用隐式调用 |
+| Figma / FigJam 目标中的图表 | 当前客户端的 Figma 插件 |
+| 明确独立 HTML 技术图 / 图解网页 | archify |
+| 普通聊天中的图、明确 Mermaid | 内联 Mermaid |
+| 外部公共静态网页信息 | web-access 静态检索分支，无 CDP 预检 |
+| 必须动态渲染、登录、交互或明确日常浏览器 | web-access 浏览器分支，复用现有服务 |
+| 本地应用必要的运行时验证 | webapp-testing |
+| 当前任务确需读取但原生视觉不可见的图片 | modlens；已有可见图片和无关扩展名不触发 |
+
+三个中文参考技能 `chinese-code-review`、`chinese-commit-conventions`、`chinese-documentation` 也通过 Codex `allow_implicit_invocation: false` 维持显式调用。XHS 的既有 10 问与样图审阅流程保留。业务工作流只在对应技能选中后适用。
+
+OfficeCLI 是受保护的工具层。当前已验证版本 1.0.160；Windows 调用使用 `.agents/external/officecli-runtime/Invoke-OfficeCli.ps1`，防止程序自带的自动升级/skill 刷新覆盖本地规则。新版 MCP 接收一个 command 字段（字符串或参数数组），旧版多参数对象不再适用。
+
+## Agent-Reach 四平台专用读取（2026-10-24）
+
+- 明确需要 B站、小红书、Twitter/X、Reddit 的专用搜索、视频/笔记/帖子详情、评论等结构化读取时使用本地定制 `agent-reach`。
+- 普通 URL、泛泛调研、日常浏览器或已有标签页操作继续使用 `web-access`；本地应用验证使用 `webapp-testing`。小红书图文/封面/文案创作继续走原有创作入口。
+- 活动技能只包含四平台读取指引，不复制原版“所有 URL 必须使用”的路由。后端位于 `.agents\external\agent-reach-runtime`，稳定入口为 `bin\platform-read.ps1`。
+- `manual` / `autoUpdate: false` 保护本地裁剪；来源登记保留上游嵌套路径 `agent_reach/skill` 和基线。description/usageRule 由 `local-routing-overrides.json` 重放。
+
+## 外部网页访问与本地应用验证（2026-10-22）
+
+按当前操作的目的分流，而不是仅凭“浏览器”或 URL 是否联网触发：
+
+| 当前操作 | 默认入口 |
+|---|---|
+| 外部网站（含内网业务系统）的搜索、抓取、登录态访问和交互 | `web-access` |
+| 本地开发应用、localhost/回环服务或本地 HTML 的必要运行时验证 | `webapp-testing` |
+| 用户明确要求使用日常浏览器或既有登录会话 | 遵从要求，使用 `web-access` |
+| 先查外部资料，再验证本地应用 | 按阶段分别使用两个 skill |
+| 静态检查足以确认的普通文案、CSS 或小组件修改 | 直接处理，不默认启动浏览器 |
+
+本地页面加载 CDN、字体或远端 API 本身不触发 `web-access`。两个 description 与正文顶部的阶段边界由 `local-routing-overrides.json` 持久维护。
+
 ## no-ai-slop 中文编辑（2026-10-18）
 
 - 用户要求给中文草稿去 AI 味、去 AI 腔、去机器味、去翻译腔、润色得自然，或只检测标注模板套话时使用 `no-ai-slop`。
@@ -10,7 +78,7 @@
 
 这份文档用于解决多个 skill 都能处理同一请求时的默认路由问题。它是维护参考，不直接参与运行时触发。
 
-真正参与触发的是各 skill `SKILL.md` frontmatter 中的 `description`。需要长期保留本地边界时，修改 `local-routing-overrides.json`，再运行 `manage-skills.ps1 -Mode apply-overrides`。
+实际选择会使用各 skill 的 description、Codex 的 `agents/openai.yaml` 调用策略和客户端已加载的指令。持久边界源于 `local-routing-overrides.json`；普通重放使用 `apply-overrides`，跨插件的全局区块使用 `apply-overrides -SyncClientRouting`。本说明文件本身不会自动成为运行时指令。
 
 ## 总原则
 
@@ -60,12 +128,18 @@
 
 #### GSAP 动画技能、Oil Motion 与 Rare UI
 
-- GSAP 是动画实现专项。`gsap-core` 处理基础动画；时间线、ScrollTrigger、插件、utils、React、其他框架和性能按实际需要加载，不同时加载整套技能。八项入口均要求明确的 GSAP 上下文，不能只凭滚动、拖拽、时间线、FPS、clamp 等通用词触发。
+- 当前全局清单没有 GSAP 八项技能，不把历史安装记录当作可用入口。需要 GSAP 时按项目现有代码和依赖处理；未来如重新安装，按届时实际清单路由。
 - 普通 UI 美化仍按 `impeccable` 的设计判断边界执行；简单 CSS 过渡直接实现。已经采用 Motion 的 Rare UI 组件保持其原有引擎，不为技能偏好迁移。
 - `oil-motion` 用于 AI 生成或已有视频、序列帧到交互网页资源的处理；普通界面过渡和微交互、独立成片、单张配图不由它接管。保留上游明确边界，不增加冗余 override。
 - Rare UI 为按需复制代码的 shadcn 组件注册表，不是 skill。使用 `@rare-ui` 名称或完整注册表 URL；交付组件时遵守署名与 Commons Clause，不能按无附加条件 MIT 处理。
 
 #### `impeccable`
+
+已授权的明确设计要求优先于通用模式规则：不重复确认已确定的重构范围，不强制随机
+概念选择，不把 Operate 模式解释成灰白底、小圆角或少量动效。用户否定现有设计后，
+旧 token、组件样例和方向契约应退出活动规范；保留功能及数据约束，视觉选择重新建立。
+这些执行边界保存在 `local-routing-overrides.json` 的 impeccable usageRule；参考文件
+修正保存在 `impeccable-local-patches.json`，由 `update-impeccable.ps1` 更新时重放。
 
 用于需要设计判断的前端工作：
 
@@ -88,7 +162,7 @@
 
 #### `html-ppt`
 
-用于浏览器交付的 HTML deck、reveal-style slides、演示型多页网页、小红书图文或 PPT 风格静态展示页。
+用于浏览器交付的 HTML deck、reveal-style slides 和明确作为演示稿的多页 HTML 报告。小红书图片轮播归对应图文技能。
 
 普通产品网站和应用界面归 `impeccable`；最终需要可编辑 `.pptx` 时归 PowerPoint 工作流。
 
@@ -112,7 +186,7 @@
 
 #### `archify`
 
-用于把系统架构、基础设施/安全拓扑、技术工作流、API 调用时序、数据管线或状态生命周期制作成经过 schema 和布局校验的独立交互式 HTML 技术图。也适合把 Mermaid 的 `flowchart`、`sequenceDiagram` 或 `stateDiagram` 重新组织为 Archify 图。
+用户明确要求独立 HTML 技术图、可分享的技术图解网页或明确指定 Archify 时使用。可把系统架构、工作流、调用时序、数据流与状态生命周期制作成经过校验的 HTML 图；只有用户要求转换为这种产物时才重组现有 Mermaid。普通聊天里的图或明确 Mermaid 请求使用内联 Mermaid，Figma/FigJam 目标使用对应插件。
 
 - 用户要的是可浏览、可搜索、可聚焦、可导出的技术图时触发；如果图必须反映真实代码，先读取仓库证据。
 - 普通产品网页和应用界面归 `impeccable`，多页浏览器演示归 `html-ppt`，Figma 文件内的流程图归 Figma diagram 能力，简单文字说明或无需正式产物的小图不自动触发。
@@ -126,14 +200,11 @@
 
 只在用户明确指定 `oil-cover`、`$oil-cover` 或要求使用它时触发。它专门生成小红书 / B 站 AI 工具实操视频封面，默认处理真实视频证据、3:4/4:3/16:9 三种画幅和可选创作者头像；普通封面、首图或视频封面请求不自动抢占。
 
-#### `guizang-product-video-skill`
+#### `guizang-social-card-skill`
 
-只在用户要制作软件版本更新宣传片、changelog promo、产品功能演示片或明确点名该 skill 时触发。它从真实更新和产品组件出发，制作可继续修改的视频工程、关键静帧、配乐、动作音效和最终 MP4。
+用于明确归藏 / Swiss / 编辑杂志风格的社交图片，以及 Live Photo、实况视频拼图、三联动图和公众号 21:9 + 1:1 封面对。普通小红书图片与 3:4 轮播默认使用 xhs-visual-director；明确点名本技能时遵从用户选择。
 
-- 普通网页 UI、产品宣传页或 HTML deck 归 `impeccable` / `html-ppt`；普通视频剪辑、单张封面或静态视觉稿不自动加载它。
-- 这是重量级视频制作流程。小范围改文案、做一张封面或只要分镜建议时，不自动启动环境检查、浏览器渲染、FFmpeg 或完整交付链。
-- 默认优先使用真实产品组件和仓库证据；需要 Node、Python、FFmpeg、Playwright 等环境时，只检查当前项目实际缺项，不把安装依赖当作 skill 安装的一部分。
-- 注意上游许可证：主流程为 AGPL-3.0，`assets/fallback` 中的 CodePilot 默认样式另受 BUSL-1.1 约束；使用默认样式或分发产物时按上游说明核对授权。
+它不是旧的 `guizang-product-video-skill`，不承担完整幻灯片、长篇宣传视频或纯图像编辑。上游完整代码与依赖放在活动扫描目录之外；创作产物放在当前任务目录。
 
 #### `ian-xiaohei-illustrations`
 
@@ -186,14 +257,9 @@
 
 ### Office 与文件格式
 
-按最终文件格式路由：
+按最终文件格式，选择当前客户端实际提供的文档、表格、演示或 PDF 能力。
 
-- Word / `.docx`：`docx`
-- Excel / `.xlsx` / `.xlsm` / `.csv` / `.tsv`：`xlsx`
-- PowerPoint / `.pptx`：`pptx`
-- PDF：`pdf`
-
-Codex 当前环境存在对应的第一方 artifact skill 时优先使用第一方能力；本地格式 skill 保留为显式调用、后备以及 Claude/OpenCode 等客户端入口。
+当前 Codex 会话由第一方插件提供 `documents:documents`、`spreadsheets:Spreadsheets`、`presentations:Presentations` 和 `pdf:pdf`。它们不必位于 `.agents\skills`，其他客户端的可用名称以该客户端清单为准；当前本地没有独立 `docx`、`xlsx`、`pptx`、`pdf` 目录，不虚构别名或后备入口。
 
 仅写作、分析或整理内容而不需要文件交付时，不因“报告”“表格”“PPT”等泛称自动加载格式 skill。
 
@@ -212,9 +278,9 @@ Codex 当前环境存在对应的第一方 artifact skill 时优先使用第一�
 
 #### `web-access`
 
-按上游原始规则作为统一联网入口，覆盖搜索、网页读取、公开资源、登录态、动态 JavaScript、反爬平台、浏览器交互和本机浏览器书签/历史。
+负责外部网站的信息检索、登录态访问、网页交互，以及用户明确要求的日常浏览器操作。与本地应用验证的边界见文档顶部。
 
-加载后由 skill 自己根据任务选择 WebSearch、WebFetch、curl、Jina 或浏览器 CDP。恢复上游规则后，不再维护本地窄 description 或 Usage Rule。
+加载后按 skill 的现有访问策略选择工具；description 与 Usage Rule 仍由 `local-routing-overrides.json` 维护。需要浏览器时复用共享 Proxy，不为检查配置反复重新连接。
 
 ### 显式参考 Skill
 
@@ -253,7 +319,8 @@ Codex 当前环境存在对应的第一方 artifact skill 时优先使用第一�
 | 明确指定的 AI 工具视频封面，需真实视频证据 | `oil-cover` |
 | 中文文章的 16:9 小黑正文配图 | `ian-xiaohei-illustrations` |
 | 普通海报、封面或静态视觉物料 | `canvas-design` 或对应图像生成能力 |
-| 普通小红书文案、标题或摘要 | 直接处理，不自动加载上述三个 skill |
+| 归藏风格图文、实况拼图、公众号封面对 | `guizang-social-card-skill` |
+| 普通小红书文案、标题或摘要 | 直接处理，不自动加载图像创作 skill |
 
 ### 图片读取与图片创作
 
@@ -278,9 +345,9 @@ Codex 当前环境存在对应的第一方 artifact skill 时优先使用第一�
 
 | 目标 | 默认路由 |
 |---|---|
-| 修改现有 `.pptx` 或交付可编辑 PowerPoint | Codex 第一方 presentation skill；本地 `pptx` 为后备 |
+| 修改现有 `.pptx` 或交付可编辑 PowerPoint | 当前客户端可用的演示能力；Codex 使用第一方 presentations 插件 |
 | 浏览器中翻页或分享的 deck | `html-ppt` |
-| 从 PDF/DOCX/URL/Markdown 生成正式 PPTX | 外部 `ppt-master` 工作流 |
+| 从 PDF/DOCX/URL/Markdown 生成正式 PPTX | 默认使用当前客户端的演示能力；明确采用外部流程时可手动调用 `ppt-master` |
 
 `ppt-master` 位于 `C:\Users\Computer\.agents\external\ppt-master`，不是当前全局 skill 清单成员。
 

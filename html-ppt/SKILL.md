@@ -1,44 +1,27 @@
 ---
 name: html-ppt
 description: >-
-  HTML PPT Studio — author professional static HTML presentations in many styles, layouts, and animations, all driven by templates. Use when the user's goal clearly implies a browser-delivered, presentation-style HTML artifact: reveal-style slides, a static web presentation, a shareable online deck, presenter-mode slides, 小红书图文, a multi-slide HTML report, or even a single-page HTML site that is intentionally composed like a PPT or editorial presentation. The user does not need to say “HTML” verbatim if the requested delivery style makes it obvious. Do NOT use as the default for generic PPT or presentation requests; prefer `pptx` for editing existing decks (or the external `ppt-master` workflow when generating a new PPTX from PDF/DOCX/URL/Markdown — `ppt-master` runs manually from its own repo, it is not a skill in this system) when an editable PowerPoint file is more likely.
+  Create browser-delivered HTML presentations, reveal-style decks, presenter-mode slides and multi-slide reports. Standalone technical diagrams or architecture explainer pages use archify, including “做一个技术架构说明页面”. App/site UI uses impeccable. Not editable PowerPoint files or Xiaohongshu image/carousel planning.
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
 ## Usage Rule
 
-Use this skill **on demand**, not as the default answer to every "PPT" or "presentation" request.
+Use this skill only when the deliverable is a browser-based HTML presentation.
 
-This local routing rule is the intended boundary for this skill and should take precedence over any broader upstream "When to use" wording below.
+Trigger it for:
+- Reveal-style or other browser-native slide decks
+- Static HTML presentations with presenter mode or keyboard navigation
+- Multi-slide HTML reports intended to be presented or shared as a deck
 
-Trigger it when the task clearly involves one of these goals:
+Do not trigger it for:
+- Standalone technical diagrams or shareable architecture explainer pages, including “做一个技术架构说明页面”; use archify. A multi-slide technical talk still belongs here.
+- Ordinary websites, landing pages, or app UI; use impeccable when design judgment is needed
+- Editable .pptx files; use the current client's available PowerPoint/presentation capability
+- Xiaohongshu image carousels, 3:4 covers, or page-by-page visual direction; use xhs-visual-director
+- A request that merely contains the word HTML
 
-- Creating an **HTML** or **browser-based** presentation
-- Creating reveal-style slides or a static web deck
-- Creating a shareable multi-slide HTML report, sharing deck, or 小红书图文-style deck
-- Creating a presentation where presenter mode, keyboard navigation, or browser delivery is part of the goal
-- Creating a single-page HTML page, landing page, or website that is intentionally styled like a presentation, editorial deck, or PPT-style composition
-
-The user does **not** need to use exact trigger words. If the real request is for something that is meant to be opened in a browser, shared as a web deck, or presented with browser-native slide behavior, this skill can trigger.
-
-Important: the mere presence of the word `HTML` is **not** enough.
-
-- `做一个 HTML 单页网站`
-- `做一个普通企业官网`
-- `做一个常规产品 landing page`
-
-These are still usually **website/UI** requests, so they should normally go to `impeccable` unless the real goal is clearly presentation-style composition.
-
-But these are valid matches for `html-ppt`:
-
-- `做一个 PPT 风格的单页网站`
-- `做一个像演示稿一样排版的 landing page`
-- `做一个浏览器里直接展示的静态分享页`
-
-Do **not** use this as the default when the user only says "做个 PPT" or "做个演示文稿" without specifying HTML. In those cases:
-
-- If the user needs a `.pptx` or PowerPoint deliverable, prefer `pptx` (or the external `ppt-master` workflow for generating a new PPTX from raw materials — `ppt-master` is run manually, it is not a skill in this system)
-- If the user needs a normal product web page, application page, or non-presentation website UI, prefer `impeccable`
+Resolve format skills from the current client's available skills or tools; they may be supplied by plugins outside this folder. Do not assume a local directory or alias exists, and do not ask the user to repeat an already clear deliverable.
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # html-ppt — HTML PPT Studio

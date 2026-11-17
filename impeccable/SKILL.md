@@ -1,9 +1,9 @@
 ---
 name: impeccable
 description: >-
-  Unified Impeccable frontend design skill for substantial or intentional interface work. Use when the goal is to design or build a new frontend surface, establish or replace visual/UX direction, redesign an existing interface, introduce a new interaction pattern, perform a design-focused audit or polish, or explicitly invoke an Impeccable command such as `$impeccable shape`, `$impeccable audit`, `$impeccable doctor`, or `$impeccable hooks`. Do NOT auto-trigger for routine frontend maintenance with a clear requested result, including copy changes, isolated spacing/color/typography tweaks, straightforward CSS fixes, small existing-component edits, or restoring existing behavior; handle those directly unless the user explicitly asks for design judgment. Do NOT use for backend work, document/PDF/PPT/spreadsheet deliverables, external-site design inspection without an implementation deliverable, static artwork, or HTML slide decks.
+  Use Impeccable for new or substantially redesigned app/site interfaces where visual or UX judgment matters. Standalone technical diagrams and architecture explainer pages use archify; HTML slide decks use html-ppt. Also use for explicit Impeccable commands, new interaction patterns and design audits/polish. Routine copy, spacing, color, CSS or existing-component fixes use ordinary implementation unless design judgment is requested. Not backend work, Office/PDF deliverables, static artwork or external-site inspection without a UI implementation deliverable.
 metadata:
-  version: 4.6.0
+  version: 4.9.2
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -11,12 +11,23 @@ metadata:
 
 Use this skill as the frontend design entry point only when design judgment materially affects the outcome.
 
+### Brief, authorization and rejected designs
+
+These local rules also apply when a reference file or generated CLI directive says otherwise:
+
+- Explicit user requirements and existing authorization control the task. Continue a clearly requested or delegated redesign without repeating settled preference questions, concept tournaments or approval steps. Ask only for missing material information or genuinely unauthorized actions; do not bypass an explicit user review checkpoint.
+- Operate/Read are usability modes, not a command to produce neutral, flat or minimally animated visuals. Radius ranges, palette restraint, material restrictions and effect counts are examples. Use the requested visual character, accessible contrast, immediate controls, interruption handling and reduced-motion alternatives together.
+- A request to reject or replace the current design permits new composition, icons, typography, colour, material and motion. Preserve product behavior and data contracts, not unapproved visual choices. A later broad rejection supersedes earlier partial acceptance unless the user retains an exception.
+- When rejection invalidates design context, move the rejected specifications out of active authority, leave an explicit pending-replacement status, and update the active brief/sidecar consistently. Historical tokens and specimens may be consulted for migration only; do not reload them as brand commitments or invent a replacement approval.
+- Give components ownership of their styles and motion. During migration remove replaced rules; do not solve a component requirement with blanket radius rules or document-wide press handlers. A change of component library must preserve click, keyboard, focus and form behavior.
+- Validate the real screen and relevant journeys. Builds, screenshots, hashes and functional passes establish their actual scope; none establishes user aesthetic approval. Review requirements should be proportional to the task; a rules-only maintenance request does not require a full UI redesign or browser run.
+
 ### Trigger priority
 
 Apply these checks in order:
 
 1. An explicit `$impeccable <command>` request or a direct request to use Impeccable takes priority and should follow the named command's reference. This includes `shape`, `init`, `document`, `extract`, `critique`, `audit`, `polish`, `bolder`, `quieter`, `distill`, `harden`, `onboard`, `animate`, `colorize`, `typeset`, `layout`, `delight`, `overdrive`, `clarify`, `adapt`, `optimize`, `live`, `doctor`, `hooks`, and `pin`/`unpin`.
-2. If no command is explicit, route by the final deliverable: a new or substantially redesigned frontend interface belongs here; HTML/browser slide decks belong to `html-ppt`; static poster, cover, PNG, or PDF artwork belongs to `canvas-design`; Office and PDF file work belongs to the corresponding format skill.
+2. If no command is explicit, route by the final deliverable: standalone technical diagrams or shareable architecture explainer pages belong to `archify`, including “做一个技术架构说明页面”; multi-slide HTML/browser decks belong to `html-ppt`; app/product interfaces with navigation, search, forms or dashboards belong here when design judgment is needed; static artwork and Office/PDF work belong to their format skills. The word “page” alone does not select Impeccable.
 3. If the deliverable is a frontend interface, trigger this skill only when visual or UX direction, a new interaction model, or design judgment materially affects the result.
 4. If the task is ordinary engineering, a clear small maintenance edit, or runtime verification only, do not trigger this skill.
 
@@ -53,6 +64,7 @@ The old standalone design helper skills (`adapt`, `animate`, `audit`, `clarify`,
 
 Boundary rules:
 
+- Standalone technical diagrams and architecture explainer pages belong to `archify`; technical subject matter in an actual app interface does not change that interface’s routing
 - Inspecting an external site's design language without building a UI is handled directly with targeted web access and analysis
 - Static poster, cover, PNG, or PDF artwork belongs to `canvas-design`
 - HTML or browser slide decks belong to `html-ppt`
@@ -70,10 +82,10 @@ Core principles:
 ## Setup
 
 1. Run `<skill-base-dir>/scripts/impeccable context` once per session, where `<skill-base-dir>` is the directory that contains this SKILL.md (the skill folder, not a plugin root two levels above it); keep cwd at the user's project. That base directory resolves every `.agents/skills/impeccable/scripts/impeccable <verb>` command in this skill and its references, and `.agents/skills/impeccable/scripts` is the fallback only when the runtime reports no base directory. On a Windows shell without `sh`, call `.agents/skills/impeccable/scripts/impeccable.cmd` instead. The launcher runs a self-contained binary that ships next to it or is downloaded once on first run; no Node or other runtime is required. Pass a named source file or route as `--target <path>`. It loads PRODUCT.md, DESIGN.md, the matching surface brief, and native-platform guidance when applicable; follow its directives and do not rerun it.
-2. Load the request's playbook: its Commands-table reference for an explicit/implied sub-command, or [reference/new-work.md](reference/new-work.md) for a new surface or replacement visual world. Inspect target and incumbent visual truth before editing. When the app cannot run, start with committed visual-regression goldens or screenshot fixtures; verify target and freshness against current tokens, CSS, components, or assets, resolve conflicts, and compare theme/variant captures.
+2. Load the request's playbook: its Commands-table reference for an explicit/implied sub-command, or [reference/new-work.md](reference/new-work.md) for a new surface, a replacement visual world, or a build from an approved comp. Some playbooks come in parts; read the part this request needs in the same step, not when the playbook later mentions it: [reference/new-work-world.md](reference/new-work-world.md) when a visual world is created or replaced (a redesign, a new look, or no established world), [reference/new-work-comp.md](reference/new-work-comp.md) for a build from an approved comp or on a comp-led build path, and [reference/critique-rubric.md](reference/critique-rubric.md) for a critique whose Assessment A runs in this context (a native platform, or no sub-agent tool); a delegated Assessment A gets the rubric's path in its prompt instead. Inspect target and incumbent visual truth before editing. When the app cannot run, start with committed visual-regression goldens or screenshot fixtures; verify target and freshness against current tokens, CSS, components, or assets, resolve conflicts, and compare theme/variant captures.
 3. After resolving analysis and direction, read [reference/craft-floor.md](reference/craft-floor.md) immediately before any UI edit, including small refinements. It carries the quality floor, the absolute bans, and the reflexes no detector catches. Do not load it for planning-only work.
 
-**Launcher unavailable:** On refusal or failure, send a separate message **before the next tool call**: “Context loading did not run; I’ll read the existing project context directly.” Then read existing PRODUCT.md and DESIGN.md without inventing missing context, follow applicable steps 2–3, and continue through permitted tools. This applies to planning and editing; launcher failure alone does not block either.
+**Launcher unavailable:** On refusal or failure, send a separate message **before the next tool call**: “Context loading did not run; I’ll read the existing project context directly.” Then read existing PRODUCT.md and DESIGN.md without inventing missing context, follow applicable steps 2–3, including reading [reference/craft-floor.md](reference/craft-floor.md) immediately before any UI edit, and continue through permitted tools. This applies to planning and editing; launcher failure alone does not block either.
 
 ## How to design
 
@@ -137,5 +149,7 @@ After init writes PRODUCT.md, resume without rerunning `impeccable context`; ini
 **Hooks:** `$impeccable hooks <on|off|status|ignore-rule|ignore-file|ignore-value|reset>` manages the design detector hook for this project (auto-runs the detector after UI file edits and surfaces findings). Load [reference/hooks.md](reference/hooks.md) when the user invokes it with any argument.
 
 **Doctor:** `$impeccable doctor` reports and repairs drift between this project's Impeccable artifacts (PRODUCT.md, DESIGN.md and its sidecar, config, surface briefs, the hook) and what this version reads. Load [reference/doctor.md](reference/doctor.md) when the user invokes it, or when they ask what is out of date, stale, or needs refreshing. A `CONTEXT_STALE` directive in Setup's output is the cheap subset of the same report; act on it there per its own instructions rather than running doctor unasked.
+
+**Foundations:** `$impeccable foundations` runs `.agents/skills/impeccable/scripts/impeccable foundations` and walks the user through the product-foundations roadmap (secrets, 404 page, icons, CI and more); `$impeccable foundations <id>` fixes that one item. Load [reference/foundations.md](reference/foundations.md) when the user invokes it.
 
 **Never repair drift as a side effect of a design task.** A `CONTEXT_STALE` finding is reported, not acted on, unless the user asks. The one exception is a finding marked `auto`, which the next write to that file performs anyway.

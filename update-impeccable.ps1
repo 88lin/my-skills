@@ -10,6 +10,22 @@
 
     [string]$CacheDir = (Join-Path (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.agents\external') 'impeccable-upstream'),
 
+    # Use whatever commit the cache already holds instead of fetching again.
+    #
+    # The preview pass refreshes the cache immediately before apply runs, so a
+    # second fetch adds nothing but risk: a transient TLS error aborts an apply
+    # whose content was already validated, and if upstream moved in between, the
+    # applied commit would differ from the one preview checked. auto-update
+    # therefore passes this switch for the apply pass.
+    [switch]$SkipFetch,
+
+    # Read-only diagnostic: copy the cached upstream into a temp directory,
+    # apply every local patch there, and report each anchor's status. Never
+    # touches the installed skill and never fetches. Use this when a preview
+    # failure names only some patches -- it shows the complete picture in one
+    # pass, including anchors that match more than once.
+    [switch]$ValidatePatches,
+
     [switch]$LoadOnly
 )
 
@@ -198,7 +214,8 @@ function Resolve-ImpeccableSource {
         [string]$SourcePath = '',
         [string]$RepoUrl = 'https://github.com/pbakaus/impeccable.git',
         [string]$Branch = 'main',
-        [string]$CacheDir = (Join-Path (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.agents\external') 'impeccable-upstream')
+        [string]$CacheDir = (Join-Path (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.agents\external') 'impeccable-upstream'),
+        [switch]$SkipFetch
     )
 
     if (-not [string]::IsNullOrWhiteSpace($SourcePath)) {
@@ -252,9 +269,14 @@ function Resolve-ImpeccableSource {
             throw "Git cache has local changes; clean it before updating: $CacheFull"
         }
 
-        Invoke-GitChecked -Arguments @('-C', $CacheFull, 'fetch', 'origin', $Branch) | Out-Null
-        Invoke-GitChecked -Arguments @('-C', $CacheFull, 'checkout', $Branch) | Out-Null
-        Invoke-GitChecked -Arguments @('-C', $CacheFull, 'pull', '--ff-only', 'origin', $Branch) | Out-Null
+        if (-not $SkipFetch) {
+            Invoke-GitChecked -Arguments @('-C', $CacheFull, 'fetch', 'origin', $Branch) | Out-Null
+            Invoke-GitChecked -Arguments @('-C', $CacheFull, 'checkout', $Branch) | Out-Null
+            Invoke-GitChecked -Arguments @('-C', $CacheFull, 'pull', '--ff-only', 'origin', $Branch) | Out-Null
+        }
+        else {
+            Write-Host 'Reusing the cached commit (no fetch).'
+        }
     }
 
     $Found = Find-ImpeccableSkillDir -Root $CacheFull -PreferredSubdir $SourceSubdir
@@ -363,9 +385,14 @@ function Apply-ImpeccableLocalPatches {
     $Patches = if ($Config -and $Config.PSObject.Properties.Name -contains 'patches') { @($Config.patches) } else { @() }
     $AppliedCount = 0
     $Missing = @()
+    $PatchIndex = 0
     $SkillRootFull = (Get-FullPath -Path $SkillDir).TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
 
     foreach ($Patch in $Patches) {
+        # 1-based position in the JSON array. Several patches can share the same
+        # path and reason; without the index a failure report cannot tell them
+        # apart well enough to know which entry to edit.
+        $PatchIndex += 1
         if ($null -eq $Patch -or -not ($Patch.PSObject.Properties.Name -contains 'path') -or -not ($Patch.PSObject.Properties.Name -contains 'find')) {
             continue
         }
@@ -392,6 +419,7 @@ function Apply-ImpeccableLocalPatches {
 
         if (-not (Test-Path -LiteralPath $TargetPath)) {
             $Missing += [pscustomobject]@{
+                Index       = $PatchIndex
                 Path        = $RelativePath
                 Reason      = $Reason
                 FindPreview = '[target file missing]'
@@ -400,8 +428,20 @@ function Apply-ImpeccableLocalPatches {
         }
 
         $Text = Get-NormalizedText -Text (Read-TextFileUtf8 -Path $TargetPath)
-        $Matched = if ($UseRegex) { [regex]::IsMatch($Text, $FindText) } else { $Text.Contains($FindText) }
-        if ($Matched) {
+
+        # Count matches instead of testing for existence. String.Replace rewrites
+        # *every* occurrence, so an anchor that appears twice silently edits text
+        # the patch never intended to touch. Anything other than exactly one
+        # match is therefore a failure: 0 means the upstream rewrote the passage,
+        # >1 means the anchor is ambiguous and must be made more specific.
+        $MatchCount = if ($UseRegex) {
+            ([regex]::Matches($Text, $FindText)).Count
+        }
+        else {
+            ([regex]::Matches($Text, [regex]::Escape($FindText))).Count
+        }
+
+        if ($MatchCount -eq 1) {
             $Updated = if ($UseRegex) {
                 [regex]::Replace($Text, $FindText, $ReplaceText)
             }
@@ -413,10 +453,15 @@ function Apply-ImpeccableLocalPatches {
         }
         else {
             $PreviewLen = [Math]::Min(80, $FindText.Length)
+            $FindPreview = $FindText.Substring(0, $PreviewLen).Replace("`n", ' \n ')
+            if ($MatchCount -gt 1) {
+                $FindPreview = "[ambiguous: matched $MatchCount times] $FindPreview"
+            }
             $Missing += [pscustomobject]@{
+                Index       = $PatchIndex
                 Path        = $RelativePath
                 Reason      = $Reason
-                FindPreview = $FindText.Substring(0, $PreviewLen).Replace("`n", ' \n ')
+                FindPreview = $FindPreview
             }
         }
     }
@@ -848,10 +893,15 @@ function Invoke-ImpeccableUpdate {
         [string]$SourcePath = '',
         [string]$RepoUrl = 'https://github.com/pbakaus/impeccable.git',
         [string]$Branch = 'main',
-        [string]$CacheDir = (Join-Path (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.agents\external') 'impeccable-upstream')
+        [string]$CacheDir = (Join-Path (Join-Path ([Environment]::GetFolderPath('UserProfile')) '.agents\external') 'impeccable-upstream'),
+        [switch]$SkipFetch
     )
 
-    $Source = Resolve-ImpeccableSource -SourcePath $SourcePath -RepoUrl $RepoUrl -Branch $Branch -CacheDir $CacheDir
+    $ApplyStarted = $false
+    $BackupDir = ''
+    $OriginalLock = $null
+    $LockExisted = $false
+    $Source = Resolve-ImpeccableSource -SourcePath $SourcePath -RepoUrl $RepoUrl -Branch $Branch -CacheDir $CacheDir -SkipFetch:$SkipFetch
     $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("impeccable-update-" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $TempRoot -Force | Out-Null
 
@@ -890,7 +940,10 @@ function Invoke-ImpeccableUpdate {
             $Errors += ('missing command references: ' + (@($Bundle.MissingReferences) -join ', '))
         }
         if (@($PatchResult.Missing).Count -gt 0) {
-            $Errors += ('local patch anchors missing: ' + (@($PatchResult.Missing | ForEach-Object { "$($_.Path): $($_.Reason)" }) -join '; '))
+            # Index + find preview, because several patches commonly share one
+            # path and an identical reason string; without them the report
+            # cannot say which JSON entry failed.
+            $Errors += ('local patch anchors missing: ' + (@($PatchResult.Missing | ForEach-Object { "#$($_.Index) $($_.Path): $($_.Reason) [$($_.FindPreview)]" }) -join '; '))
         }
         if (@($RoutingResult.Missing).Count -gt 0) {
             $Errors += ('routing bodyPatch anchors missing: ' + (@($RoutingResult.Missing | ForEach-Object { $_.Reason }) -join '; '))
@@ -905,13 +958,19 @@ function Invoke-ImpeccableUpdate {
 
         if ($Mode -eq 'apply') {
             $ChangeCount = @($Diff.Added).Count + @($Diff.Modified).Count + @($Diff.Deleted).Count
+            $BackupRoot = Join-Path (Split-Path -Parent $ScriptRoot) 'external\impeccable-backups'
+            $BackupDir = Join-Path $BackupRoot ((Get-Date -Format 'yyyyMMdd-HHmmss-fff') + '-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
+            New-Item -ItemType Directory -Path $BackupRoot -Force | Out-Null
+            Copy-DirectoryClean -SourceDir $LocalSkillDir -DestinationDir $BackupDir -AllowedParent $BackupRoot
+            $LockExisted = Test-Path -LiteralPath $LockPath
+            if ($LockExisted) {
+                $OriginalLock = [IO.File]::ReadAllBytes($LockPath)
+                [IO.File]::WriteAllBytes("$BackupDir.upstream-lock.json", $OriginalLock)
+            }
+            Write-Host "Backup written: $BackupDir"
+            $ApplyStarted = $true
             if ($ChangeCount -gt 0) {
-                $BackupRoot = Join-Path (Split-Path -Parent $ScriptRoot) 'external\impeccable-backups'
-                $BackupDir = Join-Path $BackupRoot (Get-Date -Format 'yyyyMMdd-HHmmss')
-                New-Item -ItemType Directory -Path $BackupRoot -Force | Out-Null
-                Copy-DirectoryClean -SourceDir $LocalSkillDir -DestinationDir $BackupDir -AllowedParent $BackupRoot
                 Copy-DirectoryClean -SourceDir $CandidateDir -DestinationDir $LocalSkillDir -AllowedParent $ScriptRoot
-                Write-Host "Backup written: $BackupDir"
             }
             else {
                 Write-Host 'No local file changes to apply.'
@@ -926,6 +985,25 @@ function Invoke-ImpeccableUpdate {
             Write-Host 'Preview only; no local skill files were changed.'
         }
     }
+    catch {
+        $FailureMessage = $_.Exception.Message
+        if ($ApplyStarted) {
+            try {
+                Copy-DirectoryClean -SourceDir $BackupDir -DestinationDir $LocalSkillDir -AllowedParent $ScriptRoot
+                if ($LockExisted) {
+                    [IO.File]::WriteAllBytes($LockPath, $OriginalLock)
+                }
+                elseif (Test-Path -LiteralPath $LockPath) {
+                    Remove-Item -LiteralPath $LockPath -Force
+                }
+            }
+            catch {
+                throw "Apply failed: $FailureMessage`n自动恢复也失败: $($_.Exception.Message)`n请从备份核对恢复: $BackupDir"
+            }
+            throw "Apply failed: $FailureMessage`n已恢复本次应用前的文件与版本锁；备份: $BackupDir"
+        }
+        throw
+    }
     finally {
         if (Test-Path -LiteralPath $TempRoot) {
             Remove-Item -LiteralPath $TempRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -937,6 +1015,53 @@ if ($LoadOnly) {
     return
 }
 
+if ($ValidatePatches) {
+    # Diagnostic only: work on a throwaway copy so the installed skill and the
+    # cache are both left untouched. Never fetches -- the point is to inspect
+    # exactly the commit that a preview/apply would use.
+    $Source = Resolve-ImpeccableSource `
+        -SourcePath $SourcePath `
+        -RepoUrl $RepoUrl `
+        -Branch $Branch `
+        -CacheDir $CacheDir `
+        -SkipFetch
+
+    $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('impeccable-validate-' + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $TempRoot -Force | Out-Null
+
+    try {
+        $CandidateDir = Join-Path $TempRoot $SkillName
+        Copy-DirectoryClean -SourceDir $Source.SkillDir -DestinationDir $CandidateDir -AllowedParent $TempRoot
+
+        $PatchResult = Apply-ImpeccableLocalPatches -SkillDir $CandidateDir -PatchConfigPath $LocalPatchConfigPath
+        $MissingCount = @($PatchResult.Missing).Count
+
+        Write-Host ("Source commit:   {0}" -f $Source.Commit)
+        Write-Host ("Patches matched: {0}" -f $PatchResult.AppliedCount)
+        Write-Host ("Patches failing: {0}" -f $MissingCount)
+
+        if ($MissingCount -eq 0) {
+            Write-Host 'All local patches match exactly once.'
+            exit 0
+        }
+
+        Write-Host ''
+        Write-Host 'Failing anchors:'
+        foreach ($Item in @($PatchResult.Missing)) {
+            Write-Host ("  #{0}  {1}" -f $Item.Index, $Item.Path)
+            Write-Host ("       reason: {0}" -f $Item.Reason)
+            Write-Host ("       find:   {0}" -f $Item.FindPreview)
+        }
+
+        Write-Host ''
+        Write-Host 'Fix: update these entries in impeccable-local-patches.json, then re-run with -ValidatePatches.'
+        exit 1
+    }
+    finally {
+        Remove-Item -LiteralPath $TempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
 # Failure guidance lives with the script that produces the failures. Without
 # this, the desktop .bat could only surface a raw PowerShell exception dump —
 # the one actionable line buried between "所在位置", CategoryInfo and
@@ -945,8 +1070,9 @@ $FailureGuidance = @(
     [pscustomobject]@{
         Match = 'local patch anchors missing'
         Hint  = @(
-            '上游改写了本地补丁所锚定的正文，find 已匹配不到。'
-            '处理：对照上游最新内容重写 impeccable-local-patches.json 里对应的 find；'
+            '本地补丁的 find 在上游正文中匹配不到（0 次），或匹配到多处（>1 次，会被误改）。'
+            '上面每条都带 #编号，可直接对应 impeccable-local-patches.json 数组中的位置。'
+            '先用 -ValidatePatches 跑一遍看全部失效项，再对照上游最新内容重写对应的 find；'
             '优先锚定不易变动的句子，避免锚在会随版本调整的措辞上。'
         )
     }
@@ -1003,14 +1129,14 @@ function Get-FailureHint {
 }
 
 try {
-    Invoke-ImpeccableUpdate -Mode $Mode -SourcePath $SourcePath -RepoUrl $RepoUrl -Branch $Branch -CacheDir $CacheDir
+    Invoke-ImpeccableUpdate -Mode $Mode -SourcePath $SourcePath -RepoUrl $RepoUrl -Branch $Branch -CacheDir $CacheDir -SkipFetch:$SkipFetch
 }
 catch {
     $Message = [string]$_.Exception.Message
 
     Write-Host ''
     Write-Host '================================================================'
-    Write-Host ("{0} 未完成，本地 impeccable 未被改动。" -f $Mode)
+    Write-Host ("{0} 未完成。preview 不修改活动技能；apply 的恢复结果见下方原因。" -f $Mode)
     Write-Host '================================================================'
     Write-Host ''
     Write-Host '原因:'

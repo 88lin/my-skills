@@ -20,4 +20,4 @@ Proxy 没有时长或空闲退出计时器；健康的已有连接直接复用�
 
 先绑定服务端口，再连接浏览器；从发现开始的并发请求共用一次连接尝试，旧 socket 事件按上下文身份隔离。升级时集中维护一次，不能通过 Unix 或 Windows 进程批量查杀命令制造各任务的授权弹窗。维护必须由当前实例按请求、命令、标签页、连接状态判断忙碌，禁止客户端抢替共享服务。
 
-本机权威目录为 `~/Documents/.agent/skills/web-access/`，工具入口通过软链接引用。用户资料（`config.env`、`site-patterns/`）位于 `~/.web-access/`，不在仓库内、不随代码发布；仓库内旧位置（根目录 `config.env`、`references/site-patterns/`）运行时不再读取，只作一次性迁移来源（完成后写 `~/.web-access/.migrated`，不再扫描）；同名站点经验的旧副本见其文件内指引。
+本机权威目录为 `C:\Users\Computer\.agents\skills\web-access\`，工具入口通过软链接引用。用户资料（`config.env`、`site-patterns/`）位于 `~/.web-access/`，不在仓库内、不随代码发布；仓库内旧位置（根目录 `config.env`、`references/site-patterns/`）运行时不再读取，只作一次性迁移来源（完成后写 `~/.web-access/.migrated`，不再扫描）；同名站点经验的旧副本见其文件内指引。

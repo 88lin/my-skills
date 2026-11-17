@@ -660,14 +660,21 @@ async function main() {
     });
   } catch (error) {
     if (error.code === 'EADDRINUSE') {
-      let existing;
-      try {
-        const response = await fetch(`http://127.0.0.1:${PORT}/health`, { signal: AbortSignal.timeout(2000) });
-        if (response.ok) existing = await response.json();
-      } catch { /* 无法确认占用者时明确失败，不连接浏览器。 */ }
-      if (existing?.status === 'ok') {
-        lifecycleLog(`复用端口 ${PORT} 的已有实例，本启动进程退出`);
-        process.exit(0);
+      // The winning process may own the listening socket before its HTTP
+      // callback runs. Retry briefly so the loser does not mistake that small
+      // startup window for an unrelated process occupying the port.
+      for (let attempt = 0; attempt < 10; attempt++) {
+        try {
+          const response = await fetch(`http://127.0.0.1:${PORT}/health`, { signal: AbortSignal.timeout(250) });
+          if (response.ok) {
+            const existing = await response.json();
+            if (existing?.status === 'ok') {
+              lifecycleLog(`复用端口 ${PORT} 的已有实例，本启动进程退出`);
+              process.exit(0);
+            }
+          }
+        } catch { /* 端口赢家可能仍在启动；有限重试后保留原始绑定错误。 */ }
+        if (attempt < 9) await new Promise(resolve => setTimeout(resolve, 50));
       }
     }
     throw error;

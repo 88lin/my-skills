@@ -1,0 +1,62 @@
+name: Docs quality
+
+# Deterministic, stdlib-only gates (scripts/ci/*.py, Python 3.10). No third-party actions.
+on:
+  pull_request:
+    # `edited` re-runs pr-scope when only the PR title changes.
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  scripts-selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: python3 -m unittest discover -s scripts/ci/tests
+
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: GFM table lint (changed *.md)
+        run: python3 scripts/ci/md_tables.py --base "origin/${{ github.base_ref }}"
+      - name: Relative links and anchors (changed *.md)
+        run: python3 scripts/ci/md_links.py --baseline scripts/ci/link-baseline.txt --base "origin/${{ github.base_ref }}"
+
+  skill-budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: python3 scripts/ci/skill_budget.py
+
+  pr-scope:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Title type vs diff, stacked-PR warning
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}   # via env: never interpolate titles into shell
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          python3 scripts/ci/pr_scope.py --gha 1
+          --title "$PR_TITLE" --base "origin/${{ github.base_ref }}"
+          --repo "${{ github.repository }}" --pr "${{ github.event.pull_request.number }}"

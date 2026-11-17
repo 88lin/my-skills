@@ -20,6 +20,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   input across the move. The partition of every character/rig-named line as base mechanism or
   domain content is written down *before* any file moves.
 
+## [2.0.1] — 2026-11-05
+
+Ships the `SKILL.md` guidance that landed on `main` after v2.0.0, so that `npx img2threejs install`
+(which now follows the latest GitHub release, #186) gives existing users a skill that can route to
+plugins. `forge/` and `grimoire/` are unchanged since v2.0.0.
+
+- Profile preflight: pick a profile from what the image shows, list available profiles, and never
+  fall back to `generic` silently; give the user the plugin install commands and wait.
+- Document the `img2` harness: install, diagnose, and resolve plugins.
+- Release notes are generated from v2.0.0 (`previous-governed-tag`), not v1.4.3.
+
+## npm CLI 0.2.0 — 2026-11-05
+
+- `docs/INSTALL.md` §4 is now "Update an existing install": a one-line prompt the user pastes, and
+  a procedure for the agent that maps each `doctor` state (managed, dangling link, own clone,
+  copied folder) and each exit code to one action, and stops instead of moving anything itself.
+- Without `--ref`, `install` and `update` resolve the latest GitHub Release
+  (`/releases/latest` redirect) instead of a pinned `v2.0.0`. A tag counts only once the
+  governed release workflow has published its Release; prerelease, SHA and branch targets
+  from the redirect are refused (exit 1). `--ref` behaves as before.
+- `update` reports `already up to date` when the host already links the resolved commit.
+- A beta install ahead of the latest stable release is left alone (exit 0) instead of
+  failing with "refusing downgrade". Plain `install` without `--ref` no longer downgrades
+  a beta install either (0.1.1 silently replaced it with the pinned stable).
+- Known limit: Node's `fetch` ignores `HTTPS_PROXY`, so behind a proxy the latest-release
+  lookup fails (exit 1); pass `--ref <tag>`, which only uses Git.
+- A dangling host link is replaced and reported. An unmanaged link to an `img2threejs`
+  checkout now names `git -C <path> pull --ff-only` or moving the link as the way forward.
+- `version` reports `default skill ref: latest GitHub release`; `--dry-run` stays offline.
+- Help notes that Windows is not supported yet.
+
 ## npm CLI 0.1.1 — 2026-10-07
 
 - Add tag-driven trusted publishing for independent `cli-vX.Y.Z` CLI releases.

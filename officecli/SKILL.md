@@ -1,7 +1,7 @@
 ---
 name: officecli
 description: >-
-  Use this skill only when the user explicitly asks for `officecli`, needs officecli command guidance, or requires its distinctive low-level Office capabilities such as OpenXML inspection, schema validation, `view issues`, raw XML editing, or one CLI workflow spanning DOCX/XLSX/PPTX. Do NOT auto-trigger it for ordinary Word, spreadsheet, or PowerPoint creation and editing; route those tasks to `docx`, `xlsx`, or `pptx` based on the deliverable.
+  Use this skill only when the user explicitly asks for `officecli`, needs officecli command guidance, or requires its distinctive low-level Office capabilities such as OpenXML inspection, schema validation, `view issues`, raw XML editing, or one CLI workflow spanning DOCX/XLSX/PPTX. Do NOT auto-trigger it for ordinary Word, spreadsheet, or PowerPoint creation and editing; route those tasks to the current client's available document, spreadsheet, or presentation capability based on the deliverable.
 ---
 
 <!-- LOCAL ROUTING OVERRIDE START -->
@@ -18,12 +18,18 @@ Trigger it when one of these is true:
 
 For ordinary file work, route by final deliverable instead:
 
-- Word document creation or editing -> `docx`
-- Spreadsheet creation or editing -> `xlsx`
-- PowerPoint creation or editing -> `pptx`
-- PDF processing -> `pdf`
+- Word document creation or editing -> the current client's available Word/document capability
+- Spreadsheet creation or editing -> the current client's available spreadsheet capability
+- PowerPoint creation or editing -> the current client's available PowerPoint/presentation capability
+- PDF processing -> the current client's available PDF capability
 
 Do not load `officecli` merely because an Office file is present. Use it only when its tooling capabilities are part of the requested workflow.
+
+Resolve format skills from the current client's available skills or tools; they may be supplied by plugins outside this folder. Do not assume a local directory or alias exists, and do not ask the user to repeat an already clear deliverable.
+
+On this Windows host, use `C:\Users\Computer\.agents\external\officecli-runtime\Invoke-OfficeCli.ps1` with the same CLI arguments in place of the bare `officecli` executable. It sets `OFFICECLI_SKIP_UPDATE=1` for that invocation, preventing the binary's implicit skill refresh from overwriting this manual variant. The supported CLI is 1.0.160, validated on 2026-11-12. The binary's `autoUpdate` is disabled; explicit upgrades remain allowed after preserving and replaying local routing. Do not run `officecli install` or `skills install` just to read help or operate on a document.
+
+The examples below use the concise `officecli` spelling; on this host invoke them through the guarded launcher. For MCP, inspect the connected tool schema: 1.0.160 accepts one `command` field containing a CLI string or an argv array; use an array for arguments with spaces or quotes. The older structured `format/type` API does not apply to this version. Batch operations are atomic by default in this version; `--best-effort` permits partial results. Test the target file and use the installed help when an option is uncertain.
 <!-- LOCAL ROUTING OVERRIDE END -->
 
 # officecli
@@ -36,10 +42,10 @@ If `officecli` is not installed:
 
 ```bash
 # macOS / Linux
-curl -fsSL https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.sh | bash
+curl -fsSL https://d.officecli.ai/install.sh | bash
 
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/iOfficeAI/OfficeCLI/main/install.ps1 | iex
+irm https://d.officecli.ai/install.ps1 | iex
 ```
 
 Verify with `officecli --version`. If still not found after install, open a new terminal.
@@ -68,7 +74,7 @@ officecli help docx set paragraph               # Verb-filtered: only props usab
 officecli help docx paragraph --json            # Structured schema (machine-readable)
 ```
 
-Format aliases: `word`→`docx`, `excel`→`xlsx`, `ppt`/`powerpoint`→`pptx`. Verbs: `add`, `set`, `get`, `query`, `remove`. MCP exposes the same schema via `{"command":"help","format":"docx","type":"paragraph"}`.
+Format aliases: `word`→`docx`, `excel`→`xlsx`, `ppt`/`powerpoint`→`pptx`. Verbs: `add`, `set`, `get`, `query`, `remove`. MCP exposes the same schema via one `command` field: `{"command":"help docx paragraph"}` or `{"command":["help","docx","paragraph"]}`. Prefer the array when arguments contain spaces or quotes. The older structured `{"format":...,"type":...}` parameter object is not accepted by this version.
 
 ---
 
@@ -82,6 +88,8 @@ officecli close report.docx      # save and release
 ```
 
 Opt out of auto-start: `OFFICECLI_NO_AUTO_RESIDENT=1`.
+
+**Flush only at the non-officecli boundary.** officecli's own reads (`get`/`query`/`view`/`dump`) always see your latest edits, so you never need to save mid-workflow. Run `save` (keeps the resident) or `close` (flush + release) only **before a non-officecli program reads the file** — python-docx/openpyxl, Word, a renderer, delivery/upload. (Idle sessions auto-flush within seconds; `OFFICECLI_RESIDENT_FLUSH=each` makes every mutation flush before returning.)
 
 ---
 
@@ -130,6 +138,7 @@ officecli validate <file>             # Validate against OpenXML schema
 | `text` | Plain text extraction | `--start N --end N`, `--max-lines N` |
 | `annotated` | Text with formatting annotations | |
 | `html` | Static HTML snapshot — same renderer as `watch`, no server needed | `--browser`, `--page N` (docx), `--start N --end N` (pptx) |
+| `screenshot` / `svg` / `pdf` / `forms` | PNG via headless browser / SVG (pptx slide) / PDF via exporter plugin / form-fields JSON via format-handler plugin | `-o`, `--screenshot-width/-height`, pptx `--grid N` |
 
 Use `view html` for one-shot snapshots (CI artifacts, archival, diffing); use `watch` when you need live refresh or browser-side click-to-select.
 
@@ -158,14 +167,12 @@ PPT also accepts `@name=` (e.g. `shape[@name=Title 1]`), with morph `!!` prefix 
 
 ### query
 
-CSS-like selectors: `[attr=value]`, `[attr!=value]`, `[attr~=text]`, `[attr>=value]`, `[attr<=value]`, `:contains("text")`, `:empty`, `:has(formula)`, `:no-alt`.
+CSS-like selectors: `[attr=value]`, `[attr!=value]`, `[attr~=text]`, `[attr>=value]`, `[attr<=value]`, `:contains("text")`, `:empty`, `:has(formula)`, `:no-alt`. Boolean `and`/`or` supported across `query`/`set`/`remove`: `cell[value>5000 or value<100]`, `cell[(type=Number or type=Date) and value>0]`. Excel row-by-column-name: `Sheet1!row[Salary>5000]`. `set` accepts selectors and Excel-native paths (parity with `get`/`query`). Bare unscoped selectors rejected on `set`/`remove`.
 
 ```bash
 officecli query report.docx 'paragraph[style=Normal] > run[font!=Arial]'
 officecli query slides.pptx 'shape[fill=FF0000]'
 ```
-
-For large documents, use `--max-lines` to limit output.
 
 ---
 
@@ -174,7 +181,7 @@ For large documents, use `--max-lines` to limit output.
 Live HTML preview that auto-refreshes on every file change. Browsers can click / shift-click / box-drag to select shapes; the CLI can read the current browser selection and act on it.
 
 ```bash
-officecli watch <file> [--port N]      # Start preview server (default port 18080)
+officecli watch <file> [--port N]      # Start preview server (default port 26315)
 officecli unwatch <file>               # Stop
 officecli goto <file> <path>           # Scroll watching browser(s) to element (docx: p / table / tr / tc)
 ```
@@ -239,20 +246,23 @@ officecli set <file> <path> --prop key=value [--prop ...]
 
 ### find — format or replace matched text
 
-Use `find=` with `set` to target specific text for formatting or replacement. Format props are separate `--prop` flags — do NOT nest them.
+Use top-level `--find` / `--replace` on `set` (and `--find` on `query`). Legacy `--prop find=X` still works but emits a hint.
 
 ```bash
 # Format matched text (auto-splits runs)
-officecli set doc.docx '/body/p[1]' --prop find=weather --prop bold=true --prop color=red
+officecli set doc.docx '/body/p[1]' --find weather --prop bold=true --prop color=red
 
-# Regex matching
-officecli set doc.docx '/body/p[1]' --prop 'find=\d+%' --prop regex=true --prop color=red
+# Regex matching (regex= still a prop flag)
+officecli set doc.docx '/body/p[1]' --find '\d+%' --prop regex=true --prop color=red
 
 # Replace text (use `/` for whole-document scope)
-officecli set doc.docx / --prop find=draft --prop replace=final
+officecli set doc.docx / --find draft --replace final
+
+# docx: tracked Find&Replace
+officecli set doc.docx / --find draft --replace final --prop revision.author=Alice
 
 # PPT — same syntax, different paths
-officecli set slides.pptx / --prop find=draft --prop replace=final
+officecli set slides.pptx / --find draft --replace final
 ```
 
 **Path controls search scope:** `/` = whole document, `/body/p[1]` or `/slide[N]/shape[M]` = specific element, `/header[1]` / `/footer[1]` = headers/footers.
@@ -279,9 +289,9 @@ officecli add <file> <parent> --from <path>                               # clon
 
 | Format | Types |
 |--------|-------|
-| **pptx** | slide (incl. hidden), shape (textbox — font.latin/ea/cs, direction=rtl), picture (SVG, brightness/contrast/glow/shadow), chart (direction=rtl), table (cell direction=rtl), row (tr), connector (connection/line), group, video (audio/media, trim), equation (formula/math), notes (direction=rtl, lang), comment (RTL via U+200F bidi mark; full CRUD via /slide[N]/comment[M]), paragraph (para), run, zoom (slidezoom), ole (oleobject/object/embed), placeholder (phType=title/body/subtitle/footer/...). slideLayout/slideMaster direction inheritance. |
-| **docx** | paragraph (para — direction/font.latin/ea/cs, bold.cs/italic.cs/size.cs for RTL/CJK; lang.latin/ea/cs BCP-47 tags on run; wordWrap toggle), run, table (direction=rtl → bidiVisual), row (tr), cell (td), image (picture/img — SVG supported), header (direction), footer (direction), section (pageNumFmt full ECMA-376 enum incl. Hindi/Arabic/Thai/CJK numerals; direction=rtl on Add/Set; rtlGutter; pgBorders=box shorthand), bookmark, comment, footnote, endnote, formfield (text/checkbox/dropdown), sdt (contentcontrol), chart, equation, field (28 types incl. mergefield/ref/seq/styleref/docproperty/if), hyperlink, style (direction round-trip), toc, watermark, break (pagebreak/columnbreak), ole, **num / abstractNum / lvl** (numbering/list system), **tab** (paragraph or paragraph/table style tab stops). docDefaults.rtl document-wide override; `get /` exposes `locale`. Document protection: `set / --prop protection=forms\|readOnly\|comments\|trackedChanges\|none` |
-| **xlsx** | sheet (visible/hidden/veryHidden, print margins, printTitleRows/Cols, rightToLeft sheetView, cascade-aware rename), row, cell (type=richtext+runs, merge=range/sweep, direction=rtl, phonetic guide on add), chart (direction=rtl on per-axis txPr / title; incl. pareto), image (picture — SVG), comment (direction=rtl), table (listobject), namedrange (definedname, volatile, `[@name=X]` selector), pivottable (pivot, calculatedField), sparkline, validation (datavalidation), autofilter, shape, textbox, databar/colorscale/iconset/formulacf/cellIs/topN/aboveAverage (conditional formatting), ole, csv (tsv). Query supports `merge`/`mergedrange` aliases for `mergeCell`. Workbook: password. `value="=SUM(...)"` auto-detects as formula. Chart/picture/shape/slicer accept `anchor=A1:E10`. |
+| **pptx** | slide (incl. hidden), shape (font.latin/ea/cs, direction=rtl, underline.color, highlight=COLOR (Add/Set/Get/HTML preview), effective.X+effective.X.src; arrow alias for rightArrow; slideMaster/slideLayout typed add/set/remove), picture (SVG, brightness/contrast/glow/shadow, rotation, link, tooltip), chart (direction=rtl, pieOfPie, barOfPie, axisLine/gridline per-attr setters, animation+chartBuild=byCategory|bySeries, line dropLines/hiLowLines/upDownBars, anchor=x,y,w,h shorthand), table (cell direction=rtl, fill/background, built-in PowerPoint style catalogue, /col[C] get + swap/copyFrom, row/col Move/CopyFrom), row (tr), connector (from/to accept full-path `@name=`/`@id=` forms — bare `@name=Foo` is rejected, must be `/slide[N]/shape[@name=Foo]` — startshape/endshape SetByPath; edge-to-edge anchoring by default, fromSide/toSide to force an edge, fromIdx/toIdx for raw cxn index), group (link, tooltip, deep walk by get/query/add/remove, ungroup=true dissolves back to slide-absolute), align/distribute (targets= accepts shape[@id=N] paths, not just positional), video/audio (loop, autoStart alias), equation, notes (direction=rtl, lang), comment (legacy + modern p188 threaded round-trip), animation (15 emphasis + 16 exit presets, multi-effect chains, motion-path presets, repeat/restart/autoReverse, chart animations), transition (12 p15 presets + morph/p14), paragraph (para), run, zoom, ole (preview=, full dump round-trip via add-part+raw-set), placeholder (phType=...), model3d (rotation=ax,ay,az; full dump round-trip), smartart (dump round-trip via add-part), diagram (add-only mermaid → native shapes or rendered image, `--type diagram`/`flowchart`). |
+| **docx** | paragraph (direction/font.latin/ea/cs, bold.cs/italic.cs/size.cs, lang.latin/ea/cs, wordWrap, framePr.\*, tabs shorthand), run (lang slots, direction, underline.color, position half-pts, **revision.type=ins\|del\|format\|moveFrom\|moveTo + revision.action=accept\|reject** with .author/.date — bare `@author=`/`@type=` selector on `set /revision[...]` for filtered accept/reject, but `query 'revision[...]'` needs the dotted `revision.author=`/`revision.type=` form; move+revision is run-level paths only, not paragraph-level; **range=START:END** on a paragraph/shape path formats a char span by explicit 0-based half-open offset instead of addressing a run — the offset sibling of find=), table (direction=rtl, hMerge, cantSplit on row/nowrap on cell (both add+set), **virtual column ops**: add/remove/move/copyfrom on /body/tbl[N]/col), row (tr), cell (td), image, header/footer (direction), section (pageNumFmt full enum, direction=rtl, rtlGutter, pgBorders=box), bookmark, comment, footnote, endnote, formfield, sdt, chart, equation, field (28 types), hyperlink, style (direction, indents, pbdr, lineSpacing on Add/Set), toc, watermark, break, ole, **num/abstractNum/lvl**, **tab**, **textbox/shape** (add-mostly — Get returns raw XML preview only, no structured readback; Set is limited to width/height/geometry/fill/line.\*; position is `anchor.x`/`anchor.y` not bare x/y; **textbox-only** `textDirection`/rotation/gradient/shadow — docx shape itself has neither rotation nor gradient), embedded **OLE round-trip on dump→batch**, **diagram** (add-only mermaid → native shapes or rendered image, `--type diagram`/`flowchart`, no x/y at add-time — reposition via `set /body/group[N]`). docDefaults.rtl, autoHyphenation, `get /` exposes locale + /comments /footnotes /endnotes. `create --minimal` for raw OOXML scaffolding. |
+| **xlsx** | sheet (visible/hidden/veryHidden, print margins, printTitleRows/Cols, rightToLeft sheetView, cascade-aware rename), row (c{N}= cell-content shorthand; add accepts --from /Sheet/col[L]; formula-ref rewrite on insert), col (formula-ref rewrite, named-range follow on move), cell (type=richtext+runs, merge=range/sweep, direction=rtl, phonetic; **--shift left\|up on remove, shift=right\|down on add** — Excel UI dialog parity; formula auto-detect; OFFSET/INDIRECT in calc), chart (per-axis RTL/title, anchor=x,y,w,h, pareto), image (SVG), comment (direction=rtl), table (listobject), namedrange (definedname, volatile, `[@name=X]`; formula-body inlined at parse), pivottable (cache CoW + cross-pivot sharing, labelFilter=field:type:value add-time-only, topN=integer add-time-only, fillDownLabels is an alias of repeatLabels not a separate feature, calculatedField), sparkline, validation, autofilter, shape, textbox, CF (databar/colorscale/iconset/formulacf/cellIs/topN/aboveAverage), ole, csv. Query supports `merge`/`mergedrange`. Workbook: password. Shape selector enumerates leaves inside grpSp. |
 
 ### Pivot tables (xlsx)
 
@@ -342,7 +352,9 @@ When using `--after` or `--before`, `--to` can be omitted — the target contain
 
 ### batch — multiple operations in one save cycle
 
-Stops on first error by default. Use `--force` to continue.
+**Atomic by default (v1.0.137+):** every item still runs and is reported (so `N succeeded, M failed` stays meaningful and every failure surfaces), but if *any* item fails the whole batch rolls back — the file on disk is left byte-identical to before the batch ran (confirmed live in both standalone and resident mode). Use `--best-effort` to restore the old apply-what-succeeds behavior (useful for lossy `dump→batch` replays where losing the whole thing over one unsupported item is worse than a partial result). `--stop-on-error` only changes how early the run stops (remaining items are `skipped`), not whether what ran gets kept — combine it with `--best-effort` if you want "stop at first failure but keep what already succeeded." `--force` is unrelated — it's only the docx-protection bypass. Failed items carry a machine-readable `code` field (same list as `error.code`); a rolled-back batch's JSON summary carries `"atomicRolledBack": true`.
+
+`officecli dump <file> [<path>]` emits a replayable batch JSON for round-trip — `.docx` (full coverage), `.pptx` (text/tables/pictures/charts/notes/theme + OLE/3D/video/audio/SmartArt/morph/p15 transitions via raw-set passthrough), and `.xlsx` (cells/formulas/styles + tables, conditional formatting, validations, comments, charts, sparklines, pictures, shapes, pivot tables; slicers/chartEx/OLE via verbatim carrier). Path defaults to `/` (whole document); pass a subtree path (docx: `/body`, `/body/p[N]`, `/body/tbl[N]`, `/theme`, `/settings`, `/numbering`, `/styles`; xlsx: `/SheetName`, `/sheet[N]`) to scope the dump. `officecli refresh <file.docx>` recalculates TOC page numbers / PAGE / cross-references after replay (Word backend on Windows; headless-HTML fallback elsewhere). `officecli plugins list` extends support to `.doc`, `.hwpx`, `.pdf` export.
 
 ```bash
 echo '[
@@ -351,7 +363,7 @@ echo '[
 ]' | officecli batch data.xlsx --json
 
 officecli batch data.xlsx --commands '[{"op":"set","path":"/Sheet1/A1","props":{"value":"Done"}}]' --json
-officecli batch data.xlsx --input updates.json --force --json
+officecli batch data.xlsx --input updates.json --best-effort --json   # keep whatever succeeds even if some items fail
 ```
 
 Supports: `add`, `set`, `get`, `query`, `remove`, `move`, `swap`, `view`, `raw`, `raw-set`, `validate`. Fields: `command` (or `op`), `path`, `parent`, `type`, `from`, `to`, `index`, `after`, `before`, `props`, `selector`, `mode`, `depth`, `part`, `xpath`, `action`, `xml`.
@@ -429,5 +441,6 @@ Example: a fundraising deck task → `officecli load_skill pitch-deck` → use t
 
 - Paths are **1-based** (XPath convention): `'/body/p[3]'` = third paragraph
 - `--index` is **0-based** (array convention): `--index 0` = first position
+- **Excel exception**: for `add --type row` and `add --type col`, `--index N` is **1-based** (matches OOXML RowIndex / column letter index). `--index 5` inserts at row 5 / column 5.
 - After modifications, verify with `validate` and/or `view issues`
 - **When unsure**, run `officecli help <format> <element>` instead of guessing

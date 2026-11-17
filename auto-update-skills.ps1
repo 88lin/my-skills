@@ -34,6 +34,15 @@
     run against current upstream to mean anything. Pass -NoCacheRepair as well
     if the cache must not be touched at all.
 
+.PARAMETER UpstreamWatchMode
+    Protected-source observations only: cached (default for DryRun), due
+    (default for updates), or force. cached is read-only. due/force may write
+    small observation caches outside active skills, even with DryRun.
+    This does not make other source/package checks or Impeccable offline.
+
+.PARAMETER UpstreamWatchTimeoutSec
+    Shared Git/HTTP refresh budget per protected skill, default 30 seconds.
+
 .PARAMETER ImpeccableOnly
     Run only the impeccable flow and skip the rest of the skill tree.
 
@@ -51,7 +60,9 @@
     its self-clearing behaviour, so an existing flag file will be left in place.
 
 .PARAMETER NoCacheRepair
-    Skip the upstream Git cache self-heal pass.
+    Use the existing upstream skill directory without cloning, fetching,
+    pulling or repairing its Git cache, including inside preview/apply.
+    A missing cache blocks impeccable. Logs and temporary previews are still written.
 
 .EXAMPLE
     powershell -NoProfile -ExecutionPolicy Bypass -File .\auto-update-skills.ps1 -DryRun
@@ -66,6 +77,9 @@ param(
     [switch]$NoNotify,
     [switch]$NoAttentionFlag,
     [switch]$NoCacheRepair,
+    [ValidateSet('cached', 'due', 'force')]
+    [string]$UpstreamWatchMode,
+    [ValidateRange(1, 300)][int]$UpstreamWatchTimeoutSec = 30,
     [int]$GitTimeoutSec = 180,
     [int]$ImpeccableTimeoutSec = 900,
     [int]$SkillsTimeoutSec = 2400,
@@ -82,6 +96,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if (-not $UpstreamWatchMode) { $UpstreamWatchMode = if ($DryRun) { 'cached' } else { 'due' } }
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [Console]::OutputEncoding
 
@@ -102,8 +117,8 @@ $BackupRoot   = Join-Path $ExternalRoot 'impeccable-backups'
 
 $LogDir      = Join-Path $ScriptRoot 'logs'
 $LogPath     = Join-Path $LogDir ('auto-update-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '.log')
-$StatusJson  = Join-Path $LogDir 'last-status.json'
-$StatusMarkdown = Join-Path $LogDir 'LATEST-STATUS.md'
+$StatusJson = Join-Path $LogDir $(if ($DryRun) { 'last-check-status.json' } else { 'last-status.json' })
+$StatusMarkdown = Join-Path $LogDir $(if ($DryRun) { 'LATEST-CHECK-STATUS.md' } else { 'LATEST-STATUS.md' })
 
 if (-not (Test-Path -LiteralPath $LogDir)) {
     New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
@@ -257,6 +272,7 @@ $FailureCatalog = @{
     'env-git-missing'            = @{ NeedsHuman = $true;  Hint = '找不到 git，无法拉取上游。' }
     'env-node-missing'           = @{ NeedsHuman = $true;  Hint = '找不到 node，无法完成脚本语法校验。' }
     'missing-dependency'         = @{ NeedsHuman = $true;  Hint = '缺少被依赖的脚本文件。' }
+    'http-client-error'          = @{ NeedsHuman = $true; Hint = '上游返回 4xx，请核对地址、权限或仓库迁移；不要按普通断网忽略。' }
     'unknown'                    = @{ NeedsHuman = $true;  Hint = '未分类错误，请查看日志。' }
 }
 
@@ -293,7 +309,16 @@ function Get-FailureCategory {
     if ($Text -match 'git is required')                                   { return 'env-git-missing' }
     if ($Text -match 'Missing update script|Missing manage-skills')       { return 'missing-dependency' }
     if ($Text -match 'non-fast-forward|would clobber|not possible to fast-forward') { return 'git-diverged' }
-    if ($Text -match 'Could not resolve host|Failed to connect|timed out|Operation too slow|early EOF|RPC failed|unable to access') { return 'network' }
+    # Check HTTP client errors before the broad git 'unable to access' wording.
+    if ($Text -match '(?i)(?:HTTP(?:/[^\s]+)?\s+|returned error:\s*|returned an error:\s*\(?|返回错误[:：]\s*\(?|status(?: code)?[:= ]+)(4\d\d)\b') { return 'http-client-error' }
+    # Network wording differs by client: git and schannel emit English TLS
+    # errors, while Invoke-WebRequest surfaces localized .NET messages
+    # ("基础连接已经关闭", "从传输流收到意外的 EOF", ...). All are transient.
+    #
+    # 5xx is included because an overloaded upstream should simply be retried;
+    # 4xx is deliberately NOT, since a 404 usually means the skill moved or was
+    # deleted and genuinely needs a human.
+    if ($Text -match 'Could not resolve host|Failed to connect|timed out|The operation has timed out|Operation too slow|early EOF|unexpected EOF|RPC failed|unable to access|SSL/TLS|TLS connect error|schannel|Connection closed|Connection reset|The underlying connection was closed|The remote server returned an error: \(5\d\d\)|远程主机强迫关闭|基础连接已经关闭|发送时发生错误|从传输流收到意外的 EOF|或 0 个字节|连接被意外关闭|无法连接到远程服务器|操作超时|远程服务器返回错误: \(5\d\d\)') { return 'network' }
     if ($Text -match '超过 \d+ 秒未返回')                                  { return 'timeout' }
 
     return 'unknown'
@@ -314,6 +339,32 @@ function Get-Excerpt {
         return ($Joined.Substring($Joined.Length - $MaxLength))
     }
     return $Joined
+}
+
+function Get-TableErrorDetails {
+    param([string]$Text)
+
+    # manage-skills.ps1 renders its results with Format-Table, so a row looks
+    # like `<name> <type> <installed> <action> error <detail>` with two or more
+    # spaces between columns. The summary block only carries counts, so the
+    # Detail column is the only place that can distinguish a real per-skill
+    # failure from a transient network error during the status probe.
+    $Details = New-Object System.Collections.Generic.List[string]
+    foreach ($Line in ($Text -split "`n")) {
+        if ($Line -match '^SKILL_ERROR_DETAIL: (.+)$') {
+            try { $Details.Add([string]($Matches[1] | ConvertFrom-Json)) } catch {}
+        }
+    }
+    if ($Details.Count -gt 0) { return $Details.ToArray() }
+    foreach ($Line in ($Text -split "`n")) {
+        $Match = [regex]::Match($Line, '^\S.*?\s+error\s{2,}(.+?)\s*$')
+        if ($Match.Success) {
+            $Detail = $Match.Groups[1].Value.Trim()
+            if ($Detail -ne '') { $Details.Add($Detail) }
+        }
+    }
+
+    return $Details.ToArray()
 }
 
 # ------------------------------------------------------ git cache care ----
@@ -344,6 +395,19 @@ function Repair-GitCache {
             Remove-Item -LiteralPath $CacheDir -Recurse -Force
             $CacheExists = $false
             $Actions.Add('removed-invalid-cache')
+        }
+
+        # A force-killed fetch leaves .git\index.lock behind and every later git
+        # command in the cache then fails with "File exists". The cache is a pure
+        # mirror we reset anyway, so clearing the lock is always safe once no git
+        # process is alive.
+        if ($CacheExists) {
+            $StaleLock = Join-Path $CacheDir '.git\index.lock'
+            if ((Test-Path -LiteralPath $StaleLock) -and @(Get-Process git -ErrorAction SilentlyContinue).Count -eq 0) {
+                Remove-Item -LiteralPath $StaleLock -Force -ErrorAction SilentlyContinue
+                Write-Log '已清理缓存仓库中残留的 Git 锁。' 'WARN'
+                $Actions.Add('cleared-stale-lock')
+            }
         }
 
         if (-not $CacheExists) {
@@ -493,7 +557,7 @@ function Set-AttentionFlag {
                 Remove-Item -LiteralPath $Path -Force -ErrorAction Stop
                 Write-Log '本次无需人工处理，已移除桌面提示文件。'
             }
-            return
+            return $true
         }
 
         $Body = New-Object System.Collections.Generic.List[string]
@@ -508,13 +572,15 @@ function Set-AttentionFlag {
         $Body.Add("  状态摘要  $StatusMarkdown")
         $Body.Add("  完整日志  $LogPath")
         $Body.Add('')
-        $Body.Add('处理完成后本文件会在下一次正常运行时自动消失，不用手动删。')
+        $Body.Add('处理完成后本文件会在下一次完整且成功的实际更新后自动消失；只检查或部分运行不会清除。')
 
         [System.IO.File]::WriteAllText($Path, ($Body -join "`r`n"), (New-Object System.Text.UTF8Encoding $true))
         Write-Log "已写出桌面提示文件: $Path" 'WARN'
+        return $true
     }
     catch {
         Write-Log ('桌面提示文件处理失败: ' + $_.Exception.Message) 'WARN'
+        return $false
     }
 }
 
@@ -535,7 +601,7 @@ function Show-BalloonTip {
     # keep an invisible tray icon alive is pure dead time on every run.
     if (-not [Environment]::UserInteractive) {
         Write-Log '无交互会话，跳过气泡通知（状态文件仍已写入）。' 'WARN'
-        return
+        return $false
     }
 
     try {
@@ -557,10 +623,60 @@ function Show-BalloonTip {
         # briefly. Kept short: this blocks an otherwise finished manual run.
         Start-Sleep -Seconds $NotifyDwellSec
         $Notify.Dispose()
+        return $true
     }
     catch {
         Write-Log ("通知不可用（无交互会话或缺少程序集）: " + $_.Exception.Message) 'WARN'
+        return $false
     }
+}
+
+# Dedupe only upstream review notices, never failures or the visible review status.
+function Get-NewReviewNotices {
+    param([object[]]$Rows, [string]$StatePath)
+    $Known = @{}
+    if (Test-Path -LiteralPath $StatePath) {
+        try {
+            $State = [IO.File]::ReadAllText($StatePath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+            if ($State.schemaVersion -ne 1) { throw 'Unknown notification state schema.' }
+            foreach ($Item in @($State.notified)) { $Known[$Item.skill] = [string]$Item.fingerprint }
+        }
+        catch { Write-Log ('无法读取提醒去重记录，将重新提醒: ' + $_.Exception.Message) 'WARN' }
+    }
+    foreach ($Row in $Rows) {
+        $HasWatchReview = $Row.PSObject.Properties.Name -contains 'Upstream' -and $Row.Upstream -and $Row.Upstream.status -eq 'review-required'
+        if ($Row.Status -ne 'review-required' -and -not $HasWatchReview) { continue }
+        $Fingerprint = if ($Row.PSObject.Properties.Name -contains 'Upstream' -and $Row.Upstream) { [string]$Row.Upstream.fingerprint } else { '' }
+        if ($Fingerprint -notmatch '^[0-9a-f]{64}$' -or -not $Known.ContainsKey($Row.Name) -or $Known[$Row.Name] -cne $Fingerprint) {
+            [pscustomobject]@{ skill = $Row.Name; fingerprint = $Fingerprint; detail = $Row.Detail }
+        }
+    }
+}
+
+function Save-DeliveredReviewNotices {
+    param([object[]]$Notices, [string]$StatePath, [bool]$Delivered)
+    if (-not $Delivered -or $Notices.Count -eq 0) { return }
+    $Records = @{}
+    if (Test-Path -LiteralPath $StatePath) {
+        try {
+            $State = [IO.File]::ReadAllText($StatePath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+            if ($State.schemaVersion -eq 1) { foreach ($Item in @($State.notified)) { $Records[$Item.skill] = $Item } }
+        }
+        catch {}
+    }
+    foreach ($Notice in $Notices) {
+        if ($Notice.fingerprint -match '^[0-9a-f]{64}$') {
+            $Records[$Notice.skill] = [ordered]@{ skill = $Notice.skill; fingerprint = $Notice.fingerprint; notifiedAt = (Get-Date).ToString('o') }
+        }
+    }
+    $null = New-Item -ItemType Directory -Path (Split-Path -Parent $StatePath) -Force
+    $Temp = $StatePath + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
+    try {
+        [IO.File]::WriteAllText($Temp, ([ordered]@{ schemaVersion = 1; notified = @($Records.Values) } | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
+        if (Test-Path -LiteralPath $StatePath) { [IO.File]::Replace($Temp, $StatePath, [NullString]::Value) }
+        else { [IO.File]::Move($Temp, $StatePath) }
+    }
+    finally { if (Test-Path -LiteralPath $Temp) { Remove-Item -LiteralPath $Temp -Force } }
 }
 
 # ============================================================== main ======
@@ -612,6 +728,10 @@ $StartedAt = Get-Date
 $ExitCode = 0
 $NotifyTitle = 'Skills 自动更新'
 $NotifyMessages = New-Object System.Collections.Generic.List[string]
+$SkillRows = @()
+$UpstreamWarnings = @()
+$NewReviewNotices = @()
+$ReviewNoticeStatePath = Join-Path $ExternalRoot 'skill-upstream-watch\notifications.json'
 
 Write-Log '=================================================================='
 Write-Log "Skills 自动更新开始 (DryRun=$DryRun, ImpeccableOnly=$ImpeccableOnly, SkillsOnly=$SkillsOnly)"
@@ -688,7 +808,11 @@ if (-not $SkillsOnly) {
 
         if (-not $SkipImpeccable) {
             $PreviewArgs = @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $UpdateImpeccablePath, '-Mode', 'preview')
+            # NoCacheRepair must also bypass the fetch/pull inside the dedicated
+            # updater. A resolved, existing source path is strictly read-only.
+            if ($NoCacheRepair -and $SourcePath -eq '') { $SourcePath = $Resolved.Path }
             if ($SourcePath -ne '') { $PreviewArgs += @('-SourcePath', $SourcePath) }
+            else { $PreviewArgs += '-SkipFetch' } # Repair-GitCache already refreshed this revision.
 
             Write-Log '运行 impeccable preview（只读校验，不改动本地文件）。'
             $Preview = Invoke-Step -FilePath 'powershell.exe' -Arguments $PreviewArgs -TimeoutSec $ImpeccableTimeoutSec
@@ -708,7 +832,12 @@ if (-not $SkillsOnly) {
                 Add-Step -Name 'impeccable' -Status 'preview-ok' -Detail 'preview 通过（DryRun，未应用）'
             }
             else {
-                $ApplyArgs = @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $UpdateImpeccablePath, '-Mode', 'apply')
+                # -SkipFetch: the repair pass refreshed the cache and preview
+                # validated that exact commit. Fetching again can fail on a
+                # transient TLS error (which aborts a perfectly good apply) and,
+                # if upstream moved in between, would apply a commit preview
+                # never checked.
+                $ApplyArgs = @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $UpdateImpeccablePath, '-Mode', 'apply', '-SkipFetch')
                 if ($SourcePath -ne '') { $ApplyArgs += @('-SourcePath', $SourcePath) }
 
                 Write-Log 'preview 通过，运行 apply。'
@@ -734,7 +863,7 @@ if (-not $SkillsOnly) {
                         $Rollback = Restore-LatestBackup -BackupRoot $BackupRoot -LocalSkillDir $LocalSkillDir
                         Write-Log $Rollback.Detail
                         Add-Step -Name 'impeccable' -Status 'error' -Category 'unknown' -Detail ("apply 后入口文件缺失；" + $Rollback.Detail)
-                        $NotifyMessages.Add('impeccable 更新后异常，已回滚到上一个备份。')
+                        $NotifyMessages.Add("impeccable 更新后异常；$($Rollback.Detail)")
                         $ExitCode = 1
                     }
                     else {
@@ -750,7 +879,7 @@ if (-not $SkillsOnly) {
         Write-Log ("impeccable 步骤未捕获异常: " + $_.Exception.Message) 'ERROR'
         if ($_.ScriptStackTrace) { Write-Log $_.ScriptStackTrace }
         Add-Step -Name 'impeccable' -Status 'error' -Category 'unknown' -Detail $_.Exception.Message
-        $NotifyMessages.Add('impeccable 更新过程异常，已终止；本地版本保持不变。')
+        $NotifyMessages.Add('impeccable 更新过程异常，已终止；本地恢复结果请查看日志，不能假定未改动。')
         $ExitCode = 1
     }
 }
@@ -768,7 +897,9 @@ if (-not $ImpeccableOnly) {
     else {
         $Mode = if ($DryRun) { 'check' } else { 'update' }
         Write-Log "运行 manage-skills.ps1 -Mode $Mode"
-        $Skills = Invoke-Step -FilePath 'powershell.exe' -Arguments @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $ManageSkillsPath, '-Mode', $Mode) -TimeoutSec $SkillsTimeoutSec
+        $SkillsResultPath = Join-Path $LogDir $(if ($DryRun) { 'last-check-skills.json' } else { 'last-update-skills.json' })
+        if (Test-Path -LiteralPath $SkillsResultPath) { Remove-Item -LiteralPath $SkillsResultPath -Force }
+        $Skills = Invoke-Step -FilePath 'powershell.exe' -Arguments @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $ManageSkillsPath, '-Mode', $Mode, '-ResultPath', $SkillsResultPath, '-UpstreamWatchMode', $UpstreamWatchMode, '-UpstreamWatchTimeoutSec', [string]$UpstreamWatchTimeoutSec) -TimeoutSec $SkillsTimeoutSec
         Write-LogBlock -Text $Skills.Output
 
         if ($Skills.ExitCode -ne 0) {
@@ -778,18 +909,34 @@ if (-not $ImpeccableOnly) {
             $ExitCode = 1
         }
         else {
-            # manage-skills.ps1 always exits 0 and reports per-skill outcomes in
-            # its summary block, so the counts are the only signal. Treat every
-            # status that is not a healthy terminal state as a problem: an
-            # `outdated` or `patch-stale` row surviving an update run means the
-            # update did NOT converge, which is precisely how archify and
-            # modlens silently drifted for weeks while this step logged "OK".
+            # Prefer structured outcomes; keep the summary parser for older managers.
             $HealthyStatuses = @('up-to-date', 'skipped', 'unchanged', 'updated', 'applied')
             $NeedsHumanStatuses = @('patch-stale', 'error', 'missing')
 
+            if (Test-Path -LiteralPath $SkillsResultPath) {
+                $SkillsReport = [IO.File]::ReadAllText($SkillsResultPath, [Text.Encoding]::UTF8) | ConvertFrom-Json
+                if ($SkillsReport.schemaVersion -ne 1 -or $SkillsReport.mode -ne $Mode) { throw 'Invalid manager structured result.' }
+                $SkillRows = @($SkillsReport.results)
+                $UpstreamWarnings = @($SkillRows | Where-Object {
+                    $_.PSObject.Properties.Name -contains 'Upstream' -and $_.Upstream -and
+                    $_.Upstream.PSObject.Properties.Name -contains 'warning' -and $_.Upstream.warning
+                } | ForEach-Object {
+                    [pscustomobject]@{ skill = $_.Name; status = $_.Upstream.status; detail = $_.Upstream.warning }
+                })
+                foreach ($Warning in $UpstreamWarnings) { Write-Log ("上游观察提示 [$($Warning.skill)]: $($Warning.detail)") 'WARN' }
+                $NewReviewNotices = @(Get-NewReviewNotices -Rows $SkillRows -StatePath $ReviewNoticeStatePath)
+                foreach ($Notice in $NewReviewNotices) { $NotifyMessages.Add("$($Notice.skill) 有待审阅的上游变化或基线配置，详见状态文件。") }
+            }
             $Counts = @{}
-            foreach ($Match in [regex]::Matches($Skills.Output, '(?m)^-\s*([a-z][a-z-]*):\s*(\d+)\s*$')) {
-                $Counts[$Match.Groups[1].Value] = [int]$Match.Groups[2].Value
+            if ($SkillRows.Count -gt 0) {
+                foreach ($Group in @($SkillRows | Group-Object Status)) { $Counts[$Group.Name] = $Group.Count }
+                $LocalSummary = @($SkillRows | Group-Object { if ($_.PSObject.Properties.Name -contains 'LocalStatus') { $_.LocalStatus } else { $_.Status } } | Sort-Object Name | ForEach-Object { "$($_.Name)=$($_.Count)" }) -join ', '
+                Write-Log ("安装/同步结果: $LocalSummary；上游观察提示=$($UpstreamWarnings.Count)")
+            }
+            else {
+                foreach ($Match in [regex]::Matches($Skills.Output, '(?m)^-\s*([a-z][a-z-]*):\s*(\d+)\s*$')) {
+                    $Counts[$Match.Groups[1].Value] = [int]$Match.Groups[2].Value
+                }
             }
 
             if ($Counts.Count -eq 0) {
@@ -805,7 +952,7 @@ if (-not $ImpeccableOnly) {
                 # between runs, and reporting it as unhealthy trains the reader
                 # to ignore this step. After an `update` run it means the update
                 # did not converge, which is a real failure.
-                $PendingStatuses = if ($Mode -eq 'update') { @() } else { @('outdated') }
+                $PendingStatuses = if ($Mode -eq 'update') { @('review-required') } else { @('outdated', 'review-required') }
 
                 $Problems = @{}
                 $Pending = @{}
@@ -821,14 +968,26 @@ if (-not $ImpeccableOnly) {
 
                 $PendingSummary = (($Pending.Keys | Sort-Object | ForEach-Object { "$_=$($Pending[$_])" }) -join ', ')
 
+                if ($Pending.ContainsKey('review-required') -and $SkillRows.Count -eq 0) {
+                    # Older/unreadable structured output must not silently suppress a review notice.
+                    $NotifyMessages.Add('skills 有待人工审阅项；未获得结构化提醒指纹，详见状态文件。')
+                }
                 if ($Problems.Count -eq 0) {
-                    if ($Pending.Count -gt 0) {
+                    if ($Pending.ContainsKey('review-required')) {
+                        Write-Log "manage-skills 检查完成，人工维护项等待审阅：$PendingSummary" 'WARN'
+                        Add-Step -Name 'skills' -Status 'review-required' -Detail "mode=$Mode，待处理：$PendingSummary；本次新提醒=$($NewReviewNotices.Count)"
+                    }
+                    elseif ($Pending.Count -gt 0) {
                         Write-Log "manage-skills 完成，无异常；有待更新项：$PendingSummary" 'OK'
                         Add-Step -Name 'skills' -Status 'update-available' -Detail "mode=$Mode，待更新：$PendingSummary"
                     }
+                    elseif ($UpstreamWarnings.Count -gt 0) {
+                        Write-Log "manage-skills 安装/同步检查通过；$($UpstreamWarnings.Count) 项上游观察未确认或未持久化，详见独立提示。" 'WARN'
+                        Add-Step -Name 'skills' -Status 'upstream-unconfirmed' -Detail "mode=$Mode，安装/同步检查通过；上游观察提示=$($UpstreamWarnings.Count)，watchMode=$UpstreamWatchMode"
+                    }
                     else {
-                        Write-Log ('manage-skills 完成，全部为健康状态：' + (($Counts.Keys | Sort-Object | ForEach-Object { "$_=$($Counts[$_])" }) -join ', ')) 'OK'
-                        Add-Step -Name 'skills' -Status 'updated' -Detail "mode=$Mode，全部健康"
+                        Write-Log ('manage-skills 安装/同步检查通过：' + (($Counts.Keys | Sort-Object | ForEach-Object { "$_=$($Counts[$_])" }) -join ', ') + '；上游观察来源与时间见明细。') 'OK'
+                        Add-Step -Name 'skills' -Status $(if ($DryRun) { 'checked' } else { 'updated' }) -Detail "mode=$Mode，安装/同步检查通过；上游观察无待处理提示，watchMode=$UpstreamWatchMode"
                     }
                 }
                 else {
@@ -837,18 +996,49 @@ if (-not $ImpeccableOnly) {
                     $Detail = "mode=$Mode，非健康状态：$Summary"
                     if ($Pending.Count -gt 0) { $Detail += "；另有待更新：$PendingSummary" }
 
-                    Write-Log "manage-skills 存在非健康状态：$Summary" 'WARN'
-                    Add-Step -Name 'skills' -Status 'partial' -Detail $Detail
+                    $ErrorDetails = @(Get-TableErrorDetails -Text $Skills.Output)
+                    $TransientErrors = @(
+                        $ErrorDetails | Where-Object {
+                            -not (Test-NeedsHuman -Category (Get-FailureCategory -Text $_))
+                        }
+                    )
 
-                    if ($HumanNeeded.Count -gt 0) {
-                        $NotifyMessages.Add("skills 需要人工处理：$Summary（详见状态文件）。")
-                        $ExitCode = 1
+                    # `error` means two opposite things. A real per-skill failure
+                    # needs a human; a network timeout during the status probe
+                    # does not — nothing was written and the next run retries.
+                    # On 2026-10-21/22 the same tree reported 37, 3 and 1 "error"
+                    # rows, every one of them transient, and each run raised a
+                    # desktop alarm that required no action at all.
+                    #
+                    # Suppress the alert only when error is the sole problem
+                    # category, the detail rows were actually parsed, and *every*
+                    # one of them classifies as transient. Anything ambiguous
+                    # (unparseable, mixed categories) keeps the alarm.
+                    $OnlyTransientErrors =
+                        ($Problems.Count -eq 1) -and
+                        ($HumanNeeded.Count -eq 1) -and
+                        ($HumanNeeded -contains 'error') -and
+                        ($ErrorDetails.Count -ge $Problems['error']) -and
+                        ($TransientErrors.Count -eq $ErrorDetails.Count)
+
+                    if ($OnlyTransientErrors) {
+                        Write-Log "manage-skills 有 $($ErrorDetails.Count) 个因网络或超时未能检查，属瞬时故障，下次运行自动重试。" 'WARN'
+                        Add-Step -Name 'skills' -Status 'transient' -Detail "mode=$Mode，瞬时故障（网络/超时）：$Summary"
                     }
-                    elseif ($Mode -eq 'update') {
-                        # `outdated` after an update run means the update ran but
-                        # did not converge — not a transient condition.
-                        $NotifyMessages.Add("skills 更新后仍有未收敛项：$Summary。")
-                        $ExitCode = 1
+                    else {
+                        Write-Log "manage-skills 存在非健康状态：$Summary" 'WARN'
+                        Add-Step -Name 'skills' -Status 'partial' -Detail $Detail
+
+                        if ($HumanNeeded.Count -gt 0) {
+                            $NotifyMessages.Add("skills 需要人工处理：$Summary（详见状态文件）。")
+                            $ExitCode = 1
+                        }
+                        elseif ($Mode -eq 'update') {
+                            # `outdated` after an update run means the update ran but
+                            # did not converge — not a transient condition.
+                            $NotifyMessages.Add("skills 更新后仍有未收敛项：$Summary。")
+                            $ExitCode = 1
+                        }
                     }
                 }
             }
@@ -863,6 +1053,16 @@ if (-not $ImpeccableOnly) {
     }
 }
 
+# Fatal child exits and missing scripts must also reach the durable alert.
+if ($ExitCode -ne 0 -and $NotifyMessages.Count -eq 0) {
+    foreach ($Step in $Steps) {
+        if ($Step.Status -in @('error', 'blocked', 'needs-review') -and
+            (Test-NeedsHuman -Category $(if ($Step.Category) { $Step.Category } else { 'unknown' }))) {
+            $NotifyMessages.Add("$($Step.Name) 未完成：$($Step.Detail)")
+        }
+    }
+}
+
 # ------------------------------------------------------------ report -----
 $FinishedAt = Get-Date
 $Duration = [math]::Round(($FinishedAt - $StartedAt).TotalSeconds, 1)
@@ -874,19 +1074,25 @@ $StatusObject = [ordered]@{
     finishedAt  = $FinishedAt.ToString('o')
     durationSec = $Duration
     dryRun      = [bool]$DryRun
+    scope       = $(if ($SkillsOnly) { 'skills' } elseif ($ImpeccableOnly) { 'impeccable' } else { 'all' })
     exitCode    = $ExitCode
     logFile     = $LogPath
     steps       = @($Steps.ToArray())
+    skills      = @($SkillRows)
+    newReviewNotices = @($NewReviewNotices)
+    upstreamWatchMode = $UpstreamWatchMode
+    upstreamWarnings = @($UpstreamWarnings)
 }
 
-($StatusObject | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $StatusJson -Encoding UTF8
+($StatusObject | ConvertTo-Json -Depth 15) | Set-Content -LiteralPath $StatusJson -Encoding UTF8
 
 $MarkdownLines = New-Object System.Collections.Generic.List[string]
-$MarkdownLines.Add('# Skills 自动更新状态')
+$MarkdownLines.Add($(if ($DryRun) { '# Skills 检查状态（未更新）' } else { '# Skills 自动更新状态' }))
 $MarkdownLines.Add('')
 $MarkdownLines.Add(('- 运行时间: {0}' -f $StartedAt.ToString('yyyy-MM-dd HH:mm:ss')))
 $MarkdownLines.Add(('- 耗时: {0}s' -f $Duration))
 $MarkdownLines.Add(('- 模式: {0}' -f $(if ($DryRun) { 'DryRun（只校验，未写入）' } else { '正常更新' })))
+$MarkdownLines.Add(('- 人工维护项上游观察模式: {0}（缓存与实查时间见明细）' -f $UpstreamWatchMode))
 $MarkdownLines.Add(('- 退出码: {0}' -f $ExitCode))
 $MarkdownLines.Add(('- 日志: `{0}`' -f $LogPath))
 $MarkdownLines.Add('')
@@ -905,6 +1111,21 @@ foreach ($Step in $Steps) {
 
 $MarkdownLines.Add('')
 
+if ($SkillRows.Count -gt 0) {
+    $MarkdownLines.Add('| Skill | 本地状态 | 上游观察 | 来源 / 时效 | 上次成功观察 | 基线类型 | 已观察提交 | 说明 |')
+    $MarkdownLines.Add('| --- | --- | --- | --- | --- | --- | --- | --- |')
+    foreach ($Row in $SkillRows) {
+        $Watch = if ($Row.PSObject.Properties.Name -contains 'Upstream') { $Row.Upstream } else { $null }
+        $LocalStatus = if ($Row.PSObject.Properties.Name -contains 'LocalStatus') { $Row.LocalStatus } else { $Row.Status }
+        $Explanation = ([string]$Row.Detail).Replace('|', '\|').Replace("`r", ' ').Replace("`n", ' ')
+        $SourceLabel = if ($Watch -and $Watch.PSObject.Properties.Name -contains 'source') { $Watch.source + ' / ' + $Watch.freshness } else { '-' }
+        $ObservedAt = if ($Watch -and $Watch.PSObject.Properties.Name -contains 'checkedAt' -and $Watch.checkedAt) { $Watch.checkedAt } else { '-' }
+        $MarkdownLines.Add(('| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} |' -f $Row.Name, $LocalStatus, $(if ($Watch) { $Watch.status } else { '-' }), $SourceLabel, $ObservedAt, $(if ($Watch) { $Watch.baselineKind } else { '-' }), $(if ($Watch) { $Watch.observedCommit } else { '-' }), $Explanation))
+    }
+    $MarkdownLines.Add('')
+    $MarkdownLines.Add('review-required 表示存在待人工审阅的变化或基线配置，不代表已合并或更新；若观察已过期，已知待审阅项仍保留。unconfirmed 表示当前上游未核实，本地安装状态单独报告。cache 表示复用缓存，checkedAt 是上次成功观察时间；默认 72 小时过期，刷新失败退避 15 分钟，force 可立即重试。')
+    foreach ($Warning in $UpstreamWarnings) { $MarkdownLines.Add(('- 上游观察提示 [{0}]: {1}' -f $Warning.skill, ([string]$Warning.detail).Replace("`r", ' ').Replace("`n", ' '))) }
+}
 ($MarkdownLines -join "`n") | Set-Content -LiteralPath $StatusMarkdown -Encoding UTF8
 
 # Housekeeping: only the newest $LogRetention run logs are kept.
@@ -922,14 +1143,21 @@ foreach ($Old in $OldLogs) {
 # the only channel that survives a non-interactive session. Tying the two
 # together would let -NoNotify silently remove the safety net, which is exactly
 # the channel that must not be lost. Use -NoAttentionFlag to opt out explicitly.
-if (-not $NoAttentionFlag) {
-    Set-AttentionFlag -Path $AttentionFlagPath -Messages @($NotifyMessages.ToArray()) -StatusMarkdown $StatusMarkdown -LogPath $LogPath
+# Only a complete successful update may clear an older failure. A check, a
+# partial run, or a quiet network failure cannot prove that failure is fixed.
+$CanClearAttention = -not $DryRun -and -not $SkillsOnly -and -not $ImpeccableOnly -and
+    $ExitCode -eq 0 -and $UpstreamWarnings.Count -eq 0 -and @($Steps | Where-Object { $_.Status -notin @('updated', 'unchanged') }).Count -eq 0
+$NoticeDelivered = $false
+if (-not $NoAttentionFlag -and ($NotifyMessages.Count -gt 0 -or $CanClearAttention)) {
+    $NoticeDelivered = Set-AttentionFlag -Path $AttentionFlagPath -Messages @($NotifyMessages.ToArray()) -StatusMarkdown $StatusMarkdown -LogPath $LogPath
 }
 
 if (-not $NoNotify -and $NotifyMessages.Count -gt 0) {
-    Show-BalloonTip -Title $NotifyTitle -Message (($NotifyMessages -join ' ') + " 详见 $StatusMarkdown") -Level 'Warning'
+    $BalloonDelivered = Show-BalloonTip -Title $NotifyTitle -Message (($NotifyMessages -join ' ') + " 详见 $StatusMarkdown") -Level 'Warning'
+    $NoticeDelivered = $NoticeDelivered -or $BalloonDelivered
 }
 
+Save-DeliveredReviewNotices -Notices $NewReviewNotices -StatePath $ReviewNoticeStatePath -Delivered ([bool]$NoticeDelivered)
 exit $ExitCode
 
 }

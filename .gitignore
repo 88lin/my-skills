@@ -1,2 +1,10 @@
 # 运行期产物：自动更新日志与状态文件，不纳入备份版本库。
 logs/
+
+# 本机运行依赖、缓存和临时快照，不纳入备份版本库。
+node_modules/
+__pycache__/
+.cache/
+.venv/
+.pytest_cache/
+/*.bak-*

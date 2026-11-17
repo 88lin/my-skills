@@ -2,7 +2,7 @@
 name: systematic-debugging
 description: >-
   用于根因不明确、难以稳定复现、反复修复失败、跨组件故障、生产事故或复杂测试/构建失败的系统化调试。普通且原因清楚的小 bug 不自动触发，直接做最小调查、修复和与风险相称的验证。
-version: "1.0.0"
+version: "1.9.1"
 license: MIT
 metadata:
   hermes:

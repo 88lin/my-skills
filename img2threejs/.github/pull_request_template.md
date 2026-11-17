@@ -12,6 +12,18 @@ Thanks for contributing to img2threejs. Keep the pull request focused and remove
 
 -
 
+## Description matches the diff
+
+- [ ] The title and summary describe exactly what the diff changes (no unrelated files, no commits inherited from another PR). `docs:` PRs touch only docs; CI enforces this.
+
+## Verified
+
+<!-- REQUIRED. Commands you actually ran and their key output (paste the relevant lines). "N/A" only for pure typo fixes. -->
+
+## Unverified claims
+
+<!-- REQUIRED. Anything stated in docs or code comments that you did NOT execute or confirm (install steps, versions, performance, behavior on other hosts). Write "None" or list each item; do not state unverified items as fact in the docs. -->
+
 ## Validation
 
 <!-- Record the checks you ran and their results. Include render/comparison-sheet evidence for changes that affect reconstruction quality. -->
